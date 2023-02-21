@@ -1,30 +1,52 @@
 ## Fontes removidas
 
 ### Remoção solicitada pela equipe da scan
+### PT-BR
+- Hunter Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12392
 
-- Astra Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13845
+- XXX Yaoi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9535
 - Coven Scan https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14499
+- Yaoi Fan Clube https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9605
+
+### EN
+- Astra Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13845
 - Dragontea https://github.com/tachiyomiorg/tachiyomi-extensions/issues/10103
 - Gourmet Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6192
-- Hunter Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12392
-- JuinJutsuReader https://github.com/tachiyomiorg/tachiyomi-extensions/issues/2958
-- Knightnoscanlation https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4240
 - KomikTap/KomikTap.in https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6133
 - Luminous Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9923
-- Manga-Flix https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12843
-- Mangagecesi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/5367
-- Manganoon https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13866
-- MangaPro https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13989
-- Mangawow https://github.com/tachiyomiorg/tachiyomi-extensions/issues/5367
-- Manhwaid.org https://github.com/tachiyomiorg/tachiyomi-extensions/issues/10751
+- Reset Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13168
+- SetsuScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/11040
+
+### ITA
+- JuinJutsuReader https://github.com/tachiyomiorg/tachiyomi-extensions/issues/2958
+- ShinobiScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14457
+
+### ESP
+- Knightnoscanlation https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4240
 - MHScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15319
 - NarTag https://github.com/tachiyomiorg/tachiyomi-extensions/issues/8038
 - Plot-twistnf-scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4242
-- Reset Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13168
-- SetsuScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/11040
-- ShinobiScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14457
-- XXX Yaoi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9535
-- Yaoi Fan Clube https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9605
+
+### TUR
+- Mangagecesi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/5367
+- Mangawow https://github.com/tachiyomiorg/tachiyomi-extensions/issues/5367
+
+### SAU
+- Manganoon https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13866
+- MangaPro https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13989
+
+### OFFLINE
+- Manga-Flix https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12843
+- Manhwaid.org https://github.com/tachiyomiorg/tachiyomi-extensions/issues/10751
+
+
+
+
+
+
+
+
+
 
 ### Muito difícil de manter
 
