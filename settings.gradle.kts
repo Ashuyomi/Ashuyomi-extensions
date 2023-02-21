@@ -14,17 +14,37 @@ if (System.getenv("CI") == null || System.getenv("CI_MODULE_GEN") == "true") {
     // Loads all extensions
     File(rootDir, "src").eachDir { dir ->
         dir.eachDir { subdir ->
+            /*
+            ANTIGO
             val name = ":extensions:individual:${dir.name}:${subdir.name}"
             include(name)
             project(name).projectDir = File("src/${dir.name}/${subdir.name}")
+            */
+            
+            // NOVO
+            val lang = "pt"
+            val projectName = ":extensions:individual:$lang:${subdir.name}"
+            println(projectName)
+            include(projectName)
+            project(projectName).projectDir = File("src/${lang}/${subdir.name}")
         }
     }
     // Loads all generated extensions from multisrc
     File(rootDir, "generated-src").eachDir { dir ->
         dir.eachDir { subdir ->
+            /*
+            ANTIGO
             val name = ":extensions:multisrc:${dir.name}:${subdir.name}"
             include(name)
             project(name).projectDir = File("generated-src/${dir.name}/${subdir.name}")
+            */
+
+            // NOVO
+            val lang = "pt"
+            val projectName = ":extensions:multisrc:$lang:${subdir.name}"
+            println(projectName)
+            include(projectName)
+            project(projectName).projectDir = File("generated-src/${lang}/${subdir.name}")
         }
     }
 
@@ -39,6 +59,7 @@ if (System.getenv("CI") == null || System.getenv("CI_MODULE_GEN") == "true") {
 //    include(projectName)
 //    project(projectName).projectDir = File("src/${lang}/${name}")
 //    project(projectName).projectDir = File("generated-src/${lang}/${name}")
+
 } else {
     // Running in CI (GitHub Actions)
 
@@ -52,18 +73,38 @@ if (System.getenv("CI") == null || System.getenv("CI_MODULE_GEN") == "true") {
 
         // Loads generated extensions from multisrc
         File(rootDir, "generated-src").getChunk(chunk, chunkSize)?.forEach {
+
+            /* ANTIGO
             val name = ":extensions:multisrc:${it.parentFile.name}:${it.name}"
             println(name)
             include(name)
             project(name).projectDir = File("generated-src/${it.parentFile.name}/${it.name}")
+            */
+            
+            // NOVO
+            val lang = "pt"
+            val projectName = ":extensions:multisrc:$lang:${it.name}"
+            println(projectName)
+            include(projectName)
+            project(projectName).projectDir = File("generated-src/${lang}/${it.name}")
         }
     } else {
         // Loads individual extensions
         File(rootDir, "src").getChunk(chunk, chunkSize)?.forEach {
+
+            /* ANTIGO
             val name = ":extensions:individual:${it.parentFile.name}:${it.name}"
             println(name)
             include(name)
             project(name).projectDir = File("src/${it.parentFile.name}/${it.name}")
+            */
+
+            // NOVO
+            val lang = "pt"
+            val projectName = ":extensions:individual:$lang:${it.name}"
+            println(projectName)
+            include(projectName)
+            project(projectName).projectDir = File("src/${lang}/${it.name}")
         }
     }
 }
