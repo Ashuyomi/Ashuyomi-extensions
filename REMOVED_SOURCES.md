@@ -2,6 +2,7 @@
 
 ### Remoção solicitada pela equipe da scan
 ### PT-BR
+- ~Hikari Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6611~
 - Hunter Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12392
 
 - XXX Yaoi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9535
