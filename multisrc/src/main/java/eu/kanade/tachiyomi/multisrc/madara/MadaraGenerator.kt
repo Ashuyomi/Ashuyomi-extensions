@@ -24,6 +24,8 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Remangas", "https://remangas.net", "pt-BR", overrideVersionCode = 1),
         SingleLang("Império Scans", "https://imperioscans.com.br", "pt-BR", className = "ImperioScans", overrideVersionCode = 2),
         SingleLang("Final Scans", "https://finalscans.com", "pt-BR", isNsfw = true, overrideVersionCode = 2),
+        SingleLang("MiniTwo Scan", "https://minitwoscan.com", "pt-BR", overrideVersionCode = 1),
+        SingleLang("NekoBreaker Scan", "https://nekobreakerscan.com", "pt-BR", overrideVersionCode = 2),
 
         // Extenções Oficiais:
         MultiLang("Leviatan Scans", "https://leviatanscans.com", listOf("en", "es"), className = "LeviatanScansFactory", overrideVersionCode = 13),
@@ -311,7 +313,6 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Midnight Mess Scans", "https://midnightmess.org", "en", isNsfw = true, overrideVersionCode = 6),
         SingleLang("MidnightManga", "http://midnightmanga.com", "es"),
         SingleLang("Milftoon", "https://milftoon.xxx", "en", isNsfw = true, overrideVersionCode = 2),
-        SingleLang("MiniTwo Scan", "https://minitwoscan.com", "pt-BR"),
         SingleLang("Mirad Scanlator", "https://miradscanlator.site", "pt-BR", overrideVersionCode = 1),
         SingleLang("Mixed Manga", "https://mixedmanga.com", "en", overrideVersionCode = 1),
         SingleLang("Mizu Mangás", "https://mizumangas.com.br", "pt-BR", isNsfw = true, className = "MizuMangas"),
@@ -325,7 +326,6 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("My Universe Scanlator", "https://muscan.com.br", "pt-BR"),
         SingleLang("Mystical Merries", "https://mysticalmerries.com", "en", overrideVersionCode = 2),
         SingleLang("NeatManga", "https://neatmanga.com", "en", overrideVersionCode = 2),
-        SingleLang("NekoBreaker Scan", "https://nekobreakerscan.com", "pt-BR", overrideVersionCode = 1),
         SingleLang("NekoScan", "https://nekoscan.com", "en", overrideVersionCode = 2),
         SingleLang("Night Comic", "https://www.nightcomic.com", "en", overrideVersionCode = 1),
         SingleLang("Niji Translations", "https://niji-translations.com", "ar", overrideVersionCode = 1),

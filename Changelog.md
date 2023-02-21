@@ -15,4 +15,7 @@
 | Mangás Chan | Modificado | ✅ |
 | Silence Scan | Modificado | ✅ |
 | Final Scans | Modificado | ✅ |
-
+| Argos Scan | Modificado | ✅ |
+| Origami Orpheans | Modificado | ✅ |
+| MiniTwo Scan | Modificado | ✅ |
+| NekoBreaker Scan | Modificado | ✅ |

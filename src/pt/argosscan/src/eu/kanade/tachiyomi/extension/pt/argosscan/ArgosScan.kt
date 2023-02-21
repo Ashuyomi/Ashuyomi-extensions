@@ -7,7 +7,6 @@ import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceScreen
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
-import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.source.ConfigurableSource
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
@@ -35,7 +34,6 @@ import uy.kohesive.injekt.injectLazy
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class ArgosScan : HttpSource(), ConfigurableSource {
 
@@ -52,7 +50,6 @@ class ArgosScan : HttpSource(), ConfigurableSource {
 
     override val client: OkHttpClient = network.cloudflareClient.newBuilder()
         .addInterceptor(::loginIntercept)
-        .rateLimit(1, 2, TimeUnit.SECONDS)
         .build()
 
     private val json: Json by injectLazy()

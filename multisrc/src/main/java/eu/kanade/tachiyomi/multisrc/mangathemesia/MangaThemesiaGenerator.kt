@@ -20,6 +20,7 @@ class MangaThemesiaGenerator : ThemeSourceGenerator {
         SingleLang("Mundo Mangá-Kun", "https://mundomangakun.com.br", "pt-BR", className = "MundoMangaKun", isNsfw = true, overrideVersionCode = 1),
         SingleLang("Mangás Chan", "https://mangaschan.com", "pt-BR", className = "MangasChan", overrideVersionCode = 1),
         SingleLang("Silence Scan", "https://silencescan.com.br", "pt-BR", isNsfw = true, overrideVersionCode = 6),
+        SingleLang("Origami Orpheans", "https://origami-orpheans.com.br", "pt-BR", overrideVersionCode = 10),
 
         // Extenções Oficiais:
         MultiLang("Asura Scans", "https://www.asurascans.com", listOf("en", "tr"), className = "AsuraScansFactory", pkgName = "asurascans", overrideVersionCode = 18),
@@ -92,7 +93,6 @@ class MangaThemesiaGenerator : ThemeSourceGenerator {
         SingleLang("NIGHT SCANS", "https://nightscans.org", "en", isNsfw = true, className = "NightScans", overrideVersionCode = 1),
         SingleLang("Nocturnal Scans", "https://nocturnalscans.com", "en", overrideVersionCode = 1),
         SingleLang("Omega Scans", "https://omegascans.org", "en", isNsfw = true),
-        SingleLang("Origami Orpheans", "https://origami-orpheans.com.br", "pt-BR", overrideVersionCode = 9),
         SingleLang("Ozul Scans", "https://ozulscans.com", "ar"),
         SingleLang("Patatescans", "https://patatescans.com", "fr", isNsfw = true, overrideVersionCode = 2),
         SingleLang("Phantom Scans", "https://phantomscans.com", "en", overrideVersionCode = 1),
