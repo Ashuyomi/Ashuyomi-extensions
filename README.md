@@ -1,4 +1,4 @@
-## ❌ NÃO USE ESSE REPOSITÓRIO ❌
+❌ NÃO USE ESSE REPOSITÓRIO ❌
 ## ⚠️ PODE LEVAR A BANS ⚠️
 
 | Build | Support Server |
