@@ -1,7 +1,6 @@
 package eu.kanade.tachiyomi.extension.pt.muitomanga
 
 import eu.kanade.tachiyomi.network.GET
-import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
 import eu.kanade.tachiyomi.source.model.Page
@@ -24,7 +23,6 @@ import org.jsoup.nodes.Element
 import uy.kohesive.injekt.injectLazy
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import kotlin.math.ceil
 
 class MuitoManga : ParsedHttpSource() {
@@ -38,7 +36,6 @@ class MuitoManga : ParsedHttpSource() {
     override val supportsLatest = true
 
     override val client: OkHttpClient = network.cloudflareClient.newBuilder()
-        .rateLimit(1, 2, TimeUnit.SECONDS)
         .addInterceptor(::directoryCacheIntercept)
         .build()
 
