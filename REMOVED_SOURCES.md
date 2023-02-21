@@ -4,7 +4,7 @@
 ### PT-BR
 
 - ~Hikari Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6611~
-- Hunter Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12392
+- ~Hunter Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12392~
 
 - XXX Yaoi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9535
 - Coven Scan https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14499

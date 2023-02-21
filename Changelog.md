@@ -3,6 +3,7 @@
 | Extenções | Status | R/rateLimit |
 |--|--|--|
 | Hikari Scan | Criado | ✅ |
+| Hunters Scan | Criado | ✅ |
 | Golden Mangás | Modificado | ✅ |
 | Mundo Mangá-Kun | Modificado | ✅ |
 | Tao Sect | Modificado | ✅ |
