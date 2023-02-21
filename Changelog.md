@@ -1,14 +1,14 @@
 # Extenções Minhas/Modificados
 
-| Extenções | Status | Changelog |
+| Extenções | Status | R/rateLimit |
 |--|--|--|
-| Hikari Scan | Criado |  |
-| Golden Mangás | Modificado | Remover Limitação |
-| Mundo Mangá-Kun | Modificado | Remover Limitação |
-| Tao Sect | Modificado | Remover Limitação |
-| Momo no Hana Scan | Modificado | Remover Limitação |
-| Zero Scan | Modificado | Remover Limitação |
-| Muito Mangá | Modificado | Remover Limitação |
-| Drope Scan | Modificado | Remover Limitação |
-| Remangas | Modificado | Remover Limitação |
+| Hikari Scan | Criado | ✅ |
+| Golden Mangás | Modificado | ✅ |
+| Mundo Mangá-Kun | Modificado | ✅ |
+| Tao Sect | Modificado | ✅ |
+| Momo no Hana Scan | Modificado | ✅ |
+| Zero Scan | Modificado | ✅ |
+| Muito Mangá | Modificado | ✅ |
+| Drope Scan | Modificado | ✅ |
+| Remangas | Modificado | ✅ |
 
