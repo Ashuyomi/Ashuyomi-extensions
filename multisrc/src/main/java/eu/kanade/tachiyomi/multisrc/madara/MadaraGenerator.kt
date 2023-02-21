@@ -16,7 +16,9 @@ class MadaraGenerator : ThemeSourceGenerator {
         // Extenções Minhas:
         SingleLang("Hikari Scan", "https://hikariscan.com.br", "pt-BR", isNsfw = true, overrideVersionCode = 3),
 
-        // Extenções Oficiais
+        // Extenções Modificadas:
+
+        // Extenções Oficiais:
         MultiLang("Leviatan Scans", "https://leviatanscans.com", listOf("en", "es"), className = "LeviatanScansFactory", overrideVersionCode = 13),
         MultiLang("MangaForFree.net", "https://mangaforfree.net", listOf("en", "ko", "all"), isNsfw = true, className = "MangaForFreeFactory", pkgName = "mangaforfree", overrideVersionCode = 1),
         MultiLang("Manhwa18.cc", "https://manhwa18.cc", listOf("en", "ko", "all"), isNsfw = true, className = "Manhwa18CcFactory", pkgName = "manhwa18cc", overrideVersionCode = 4),
