@@ -1367,10 +1367,10 @@
   {
     "name": "Tachiyomi: Mundo Mangá-Kun",
     "pkg": "eu.kanade.tachiyomi.extension.pt.mundomangakun",
-    "apk": "tachiyomi-pt.mundomangakun-v1.4.24.apk",
+    "apk": "tachiyomi-pt.mundomangakun-v1.4.25.apk",
     "lang": "pt-BR",
-    "code": 24,
-    "version": "1.4.24",
+    "code": 25,
+    "version": "1.4.25",
     "nsfw": 1,
     "hasReadme": 1,
     "hasChangelog": 0,
