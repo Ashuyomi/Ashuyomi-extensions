@@ -18,6 +18,8 @@ class MangaThemesiaGenerator : ThemeSourceGenerator {
         // Extenções Modificadas:
 
         SingleLang("Mundo Mangá-Kun", "https://mundomangakun.com.br", "pt-BR", className = "MundoMangaKun", isNsfw = true, overrideVersionCode = 1),
+        SingleLang("Mangás Chan", "https://mangaschan.com", "pt-BR", className = "MangasChan", overrideVersionCode = 1),
+        SingleLang("Silence Scan", "https://silencescan.com.br", "pt-BR", isNsfw = true, overrideVersionCode = 6),
 
         // Extenções Oficiais:
         MultiLang("Asura Scans", "https://www.asurascans.com", listOf("en", "tr"), className = "AsuraScansFactory", pkgName = "asurascans", overrideVersionCode = 18),
@@ -72,7 +74,6 @@ class MangaThemesiaGenerator : ThemeSourceGenerator {
         SingleLang("Mangayaro", "https://mangayaro.net", "id"),
         SingleLang("MangaSwat", "https://swatmanga.net", "ar", overrideVersionCode = 6),
         SingleLang("MangKomik", "https://mangkomik.net", "id", overrideVersionCode = 1),
-        SingleLang("Mangás Chan", "https://mangaschan.com", "pt-BR", className = "MangasChan"),
         SingleLang("Manhwa Freak", "https://manhwafreak.com", "en", overrideVersionCode = 1),
         SingleLang("ManhwaDesu", "https://manhwadesu.org", "id", isNsfw = true, overrideVersionCode = 3),
         SingleLang("ManhwaIndo", "https://manhwaindo.id", "id", isNsfw = true, overrideVersionCode = 2),
@@ -108,7 +109,6 @@ class MangaThemesiaGenerator : ThemeSourceGenerator {
         SingleLang("Senpai Ediciones", "http://senpaiediciones.com", "es"),
         SingleLang("Shadow Mangas", "https://shadowmangas.com", "es"),
         SingleLang("Shea Manga", "https://sheakomik.com", "id", overrideVersionCode = 4),
-        SingleLang("Silence Scan", "https://silencescan.com.br", "pt-BR", isNsfw = true, overrideVersionCode = 5),
         SingleLang("Snudae Scans", "https://snudaescans.com", "en", isNsfw = true, className = "BatotoScans", overrideVersionCode = 1),
         SingleLang("Summer Fansub", "https://smmr.in", "pt-BR", isNsfw = true),
         SingleLang("Surya Scans", "https://suryascans.com", "en"),

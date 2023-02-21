@@ -22,6 +22,8 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Zero Scan", "https://zeroscan.com.br", "pt-BR", isNsfw = true, overrideVersionCode = 1),
         SingleLang("Drope Scan", "https://dropescan.com", "pt-BR", overrideVersionCode = 5),
         SingleLang("Remangas", "https://remangas.net", "pt-BR", overrideVersionCode = 1),
+        SingleLang("Império Scans", "https://imperioscans.com.br", "pt-BR", className = "ImperioScans", overrideVersionCode = 2),
+        SingleLang("Final Scans", "https://finalscans.com", "pt-BR", isNsfw = true, overrideVersionCode = 2),
 
         // Extenções Oficiais:
         MultiLang("Leviatan Scans", "https://leviatanscans.com", listOf("en", "es"), className = "LeviatanScansFactory", overrideVersionCode = 13),
@@ -106,7 +108,6 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("FastManhwa", "https://fastmanhwa.net", "en", isNsfw = true, overrideVersionCode = 2),
         SingleLang("Fay Scans", "https://fayscans.com.br", "pt-BR", overrideVersionCode = 1),
         SingleLang("FDM Scan", "https://fdmscan.com", "pt-BR", overrideVersionCode = 3),
-        SingleLang("Final Scans", "https://finalscans.com", "pt-BR", isNsfw = true, overrideVersionCode = 1),
         SingleLang("Fiz Manga", "https://fizmanga.com", "en"),
         SingleLang("Fleur Blanche", "https://fbsquads.com", "pt-BR", isNsfw = true, overrideVersionCode = 2),
         SingleLang("Flex Tape Scans", "https://flextapescans.com", "en", isNsfw = true),
@@ -155,7 +156,6 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Ikifeng", "https://ikifeng.com", "es", isNsfw = true),
         SingleLang("Illusion Scan", "https://illusionscan.com", "pt-BR", isNsfw = true),
         SingleLang("Immortal Updates", "https://immortalupdates.com", "en", overrideVersionCode = 6),
-        SingleLang("Império Scans", "https://imperioscans.com.br", "pt-BR", className = "ImperioScans", overrideVersionCode = 1),
         SingleLang("Inazu Manga", "https://inazumanga.com", "id", isNsfw = true),
         SingleLang("InfraFandub", "https://infrafandub.xyz", "es"),
         SingleLang("Inmortal Scan", "https://manga.mundodrama.site", "es"),

@@ -1,11 +1,9 @@
 package eu.kanade.tachiyomi.extension.pt.mangaschan
 
 import eu.kanade.tachiyomi.multisrc.mangathemesia.MangaThemesia
-import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import okhttp3.OkHttpClient
 import java.text.SimpleDateFormat
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class MangasChan : MangaThemesia(
     "Mangás Chan",
@@ -15,7 +13,6 @@ class MangasChan : MangaThemesia(
 ) {
 
     override val client: OkHttpClient = network.cloudflareClient.newBuilder()
-        .rateLimit(1, 2, TimeUnit.SECONDS)
         .build()
 
     override val altNamePrefix = "Nomes alternativos: "

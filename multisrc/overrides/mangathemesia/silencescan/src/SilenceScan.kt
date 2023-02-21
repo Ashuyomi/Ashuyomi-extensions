@@ -1,7 +1,6 @@
 package eu.kanade.tachiyomi.extension.pt.silencescan
 
 import eu.kanade.tachiyomi.multisrc.mangathemesia.MangaThemesia
-import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.source.model.SManga
 import okhttp3.OkHttpClient
 import java.text.SimpleDateFormat
@@ -20,7 +19,6 @@ class SilenceScan : MangaThemesia(
     override val client: OkHttpClient = network.cloudflareClient.newBuilder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
-        .rateLimit(1, 2, TimeUnit.SECONDS)
         .build()
 
     override val altNamePrefix = "Nome alternativo: "

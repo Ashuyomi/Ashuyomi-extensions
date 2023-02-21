@@ -11,4 +11,8 @@
 | Muito Mangá | Modificado | ✅ |
 | Drope Scan | Modificado | ✅ |
 | Remangas | Modificado | ✅ |
+| Império Scans | Modificado | ✅ |
+| Mangás Chan | Modificado | ✅ |
+| Silence Scan | Modificado | ✅ |
+| Final Scans | Modificado | ✅ |
 
