@@ -861,6 +861,27 @@
     ]
   },
   {
+    "name": "Tachiyomi: Hunters Scan",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.huntersscan",
+    "apk": "tachiyomi-pt.huntersscan-v1.4.30.apk",
+    "lang": "pt-BR",
+    "code": 30,
+    "version": "1.4.30",
+    "nsfw": 1,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "Hunters Scan",
+        "lang": "pt-BR",
+        "id": "7310576253330700902",
+        "baseUrl": "https://huntersscan.xyz/",
+        "versionId": 1,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
     "name": "Tachiyomi: Ichirin No Hana Yuri",
     "pkg": "eu.kanade.tachiyomi.extension.pt.ichirinnohanayuri",
     "apk": "tachiyomi-pt.ichirinnohanayuri-v1.4.32.apk",
