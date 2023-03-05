@@ -11,7 +11,7 @@ class MangaThemesiaGenerator : ThemeSourceGenerator {
 
     override val themeClass = "MangaThemesia"
 
-    override val baseVersionCode: Int = 24
+    override val baseVersionCode: Int = 25
 
     override val sources = listOf(
 
