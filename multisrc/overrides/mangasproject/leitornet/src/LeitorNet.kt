@@ -1,13 +1,11 @@
 package eu.kanade.tachiyomi.extension.pt.leitornet
 
-import eu.kanade.tachiyomi.lib.ratelimit.RateLimitInterceptor
 import eu.kanade.tachiyomi.multisrc.mangasproject.MangasProject
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.source.model.SChapter
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.util.concurrent.TimeUnit
 
 class LeitorNet : MangasProject("Leitor.net", "https://leitor.net", "pt-BR") {
 
@@ -18,7 +16,6 @@ class LeitorNet : MangasProject("Leitor.net", "https://leitor.net", "pt-BR") {
     override val id: Long = 2225174659569980836
 
     override val client: OkHttpClient = super.client.newBuilder()
-        .addInterceptor(RateLimitInterceptor(1, 3, TimeUnit.SECONDS))
         .build()
 
     override val licensedCheck = true

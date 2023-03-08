@@ -1,6 +1,5 @@
 package eu.kanade.tachiyomi.extension.pt.mangalivre
 
-import eu.kanade.tachiyomi.lib.ratelimit.RateLimitInterceptor
 import eu.kanade.tachiyomi.multisrc.mangasproject.MangasProject
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.source.model.Filter
@@ -9,7 +8,6 @@ import eu.kanade.tachiyomi.source.model.MangasPage
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.util.concurrent.TimeUnit
 
 class MangaLivre : MangasProject("Mangá Livre", "https://mangalivre.net", "pt-BR") {
 
@@ -17,7 +15,6 @@ class MangaLivre : MangasProject("Mangá Livre", "https://mangalivre.net", "pt-B
     override val id: Long = 4762777556012432014
 
     override val client: OkHttpClient = super.client.newBuilder()
-        .addInterceptor(RateLimitInterceptor(1, 3, TimeUnit.SECONDS))
         .build()
 
     override fun popularMangaRequest(page: Int): Request {

@@ -3,6 +3,8 @@
 | Extenções | Status | R/rateLimit |
 |--|--|--|
 | Hikari Scan | Criado | ✅ |
+| Leitor.net | Criado | ✅ |
+| Mangá Livre | Criado | ✅ |
 | Hunters Scan | Criado | ✅ |
 | Golden Mangás | Modificado | ✅ |
 | Mundo Mangá-Kun | Modificado | ✅ |

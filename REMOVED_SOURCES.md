@@ -55,7 +55,7 @@
 - Hentai Kai https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9999
 - HQ Dragon https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7065
 - Mangá Host https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7065
-- Mangá Livre and Leitor.net https://github.com/tachiyomiorg/tachiyomi-extensions/pull/8679
+- ~Mangá Livre and Leitor.net https://github.com/tachiyomiorg/tachiyomi-extensions/pull/8679~
 - MangaYabu! https://github.com/tachiyomiorg/tachiyomi-extensions/pull/9336
 - Neox Scanlator https://github.com/tachiyomiorg/tachiyomi-extensions/pull/12695
 - Union Mangás https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7065
