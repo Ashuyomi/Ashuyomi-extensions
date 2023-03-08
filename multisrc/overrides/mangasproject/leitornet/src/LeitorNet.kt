@@ -18,7 +18,7 @@ class LeitorNet : MangasProject("Leitor.net", "https://leitor.net", "pt-BR") {
     override val client: OkHttpClient = super.client.newBuilder()
         .build()
 
-    override val licensedCheck = true
+    override val licensedCheck = false
 
     /**
      * Temporary fix to bypass Cloudflare.
