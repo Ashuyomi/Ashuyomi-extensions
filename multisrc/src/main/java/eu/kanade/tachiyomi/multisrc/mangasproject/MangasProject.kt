@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
 abstract class MangasProject(
     override val name: String,
     override val baseUrl: String,
-    override val lang: String
+    override val lang: String,
 ) : HttpSource() {
 
     override val supportsLatest = true
@@ -115,8 +115,9 @@ abstract class MangasProject(
         val result = response.parseAs<MangasProjectSearchDto>()
 
         // If "series" have boolean false value, then it doesn't have results.
-        if (result.series is JsonPrimitive)
+        if (result.series is JsonPrimitive) {
             return MangasPage(emptyList(), false)
+        }
 
         val searchMangas = json.decodeFromJsonElement<List<MangasProjectSerieDto>>(result.series)
             .map(::searchMangaFromObject)
@@ -152,7 +153,7 @@ abstract class MangasProject(
                         .split(", ")
                         .reversed()
                         .joinToString(" ")
-                }
+                },
             )
 
         return SManga.create().apply {
@@ -174,8 +175,9 @@ abstract class MangasProject(
     }
 
     override fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
-        if (manga.status != SManga.LICENSED)
+        if (manga.status != SManga.LICENSED) {
             return super.fetchChapterList(manga)
+        }
 
         return Observable.error(Exception(MANGA_REMOVED))
     }
@@ -207,8 +209,9 @@ abstract class MangasProject(
         var chapterListResult = client.newCall(chapterListRequest).execute()
             .parseAs<MangasProjectChapterListDto>()
 
-        if (chapterListResult.chapters is JsonPrimitive)
+        if (chapterListResult.chapters is JsonPrimitive) {
             return emptyList()
+        }
 
         val chapters = json.decodeFromJsonElement<List<MangasProjectChapterDto>>(chapterListResult.chapters)
             .flatMap(::chaptersFromObject)
