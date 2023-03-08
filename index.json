@@ -1050,6 +1050,27 @@
     ]
   },
   {
+    "name": "Tachiyomi: Leitor.net",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.leitornet",
+    "apk": "tachiyomi-pt.leitornet-v1.4.11.apk",
+    "lang": "pt-BR",
+    "code": 11,
+    "version": "1.4.11",
+    "nsfw": 1,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "Leitor.net",
+        "lang": "pt-BR",
+        "id": "2225174659569980836",
+        "baseUrl": "https://leitor.net",
+        "versionId": 1,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
     "name": "Tachiyomi: Lima Scans",
     "pkg": "eu.kanade.tachiyomi.extension.pt.limascans",
     "apk": "tachiyomi-pt.limascans-v1.4.30.apk",
@@ -1065,6 +1086,27 @@
         "lang": "pt-BR",
         "id": "7200398491235565318",
         "baseUrl": "http://limascans.xyz/v2",
+        "versionId": 1,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
+    "name": "Tachiyomi: Mangá Livre",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.mangalivre",
+    "apk": "tachiyomi-pt.mangalivre-v1.4.11.apk",
+    "lang": "pt-BR",
+    "code": 11,
+    "version": "1.4.11",
+    "nsfw": 1,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "Mangá Livre",
+        "lang": "pt-BR",
+        "id": "4762777556012432014",
+        "baseUrl": "https://mangalivre.net",
         "versionId": 1,
         "hasCloudflare": 1
       }
