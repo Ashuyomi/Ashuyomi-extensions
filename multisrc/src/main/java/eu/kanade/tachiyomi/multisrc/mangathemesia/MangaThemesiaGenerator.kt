@@ -23,14 +23,13 @@ class MangaThemesiaGenerator : ThemeSourceGenerator {
         SingleLang("Origami Orpheans", "https://origami-orpheans.com.br", "pt-BR", overrideVersionCode = 10),
 
         // Extenções Oficiais:
-        MultiLang("Asura Scans", "https://www.asurascans.com", listOf("en", "tr"), className = "AsuraScansFactory", pkgName = "asurascans", overrideVersionCode = 18),
+        MultiLang("Asura Scans", "https://www.asurascans.com", listOf("en", "tr"), className = "AsuraScansFactory", pkgName = "asurascans", overrideVersionCode = 19),
         MultiLang("Flame Scans", "https://flamescans.org", listOf("en"), className = "FlameScansFactory", pkgName = "flamescans", overrideVersionCode = 4),
         MultiLang("Komik Lab", "https://komiklab.com", listOf("en", "id"), className = "KomikLabFactory", pkgName = "komiklab", overrideVersionCode = 1),
         MultiLang("Miau Scan", "https://miauscan.com", listOf("es", "pt-BR")),
         SingleLang("Animated Glitched Scans", "https://anigliscans.com", "en"),
         SingleLang("Arcane scan", "https://arcanescan.fr", "fr"),
         SingleLang("Arena Scans", "https://arenascans.net", "en"),
-        SingleLang("ARESManga", "https://aresmanga.net", "ar", pkgName = "iimanga", overrideVersionCode = 4),
         SingleLang("Azure Scans", "https://azuremanga.com", "en", overrideVersionCode = 1),
         SingleLang("Boosei", "https://boosei.net", "id", overrideVersionCode = 2),
         SingleLang("Cartel de Manhwas", "https://carteldemanhwas.com", "es", overrideVersionCode = 5),
