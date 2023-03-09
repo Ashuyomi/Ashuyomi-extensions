@@ -1052,10 +1052,10 @@
   {
     "name": "Tachiyomi: Leitor.net",
     "pkg": "eu.kanade.tachiyomi.extension.pt.leitornet",
-    "apk": "tachiyomi-pt.leitornet-v1.4.11.apk",
+    "apk": "tachiyomi-pt.leitornet-v1.4.12.apk",
     "lang": "pt-BR",
-    "code": 11,
-    "version": "1.4.11",
+    "code": 12,
+    "version": "1.4.12",
     "nsfw": 1,
     "hasReadme": 0,
     "hasChangelog": 0,
