@@ -1,7 +1,6 @@
 package eu.kanade.tachiyomi.extension.en.mangafox
 
 import android.webkit.CookieManager
-import eu.kanade.tachiyomi.lib.unpacker.Unpacker
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.source.model.Filter
@@ -11,8 +10,6 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.ParsedHttpSource
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.Headers
@@ -188,27 +185,17 @@ class MangaFox : ParsedHttpSource() {
     }
 
     override fun pageListRequest(chapter: SChapter): Request {
-        val headers = headersBuilder()
-            .set("Referer", "$mobileUrl/")
-            .build()
-        return GET("$mobileUrl${chapter.url}", headers)
+        val mobilePath = chapter.url.replace("/manga/", "/roll_manga/")
+
+        val headers = headersBuilder().set("Referer", "$mobileUrl/").build()
+
+        return GET("$mobileUrl$mobilePath", headers)
     }
 
-    override fun pageListParse(document: Document): List<Page> {
-        val packed = document.selectFirst("script:containsData(p,a,c,k,e)")!!.data()
-        val imagesRaw = Unpacker.unpack(packed)
-            .substringAfter("newImgs=")
-            .substringBefore(";")
-        return json.parseToJsonElement(imagesRaw).jsonArray.mapIndexed { idx, it ->
-            val rawImageUrl = it.jsonPrimitive.content
-            val imageUrl = if (rawImageUrl.startsWith("http")) {
-                rawImageUrl
-            } else {
-                "${mobileUrl.substringBefore("://")}:$rawImageUrl"
-            }
-            Page(idx, imageUrl = imageUrl)
+    override fun pageListParse(document: Document): List<Page> =
+        document.select("#viewer img").mapIndexed { idx, it ->
+            Page(idx, imageUrl = it.attr("abs:data-original"))
         }
-    }
 
     override fun imageUrlParse(document: Document): String = throw UnsupportedOperationException("Not used")
 
