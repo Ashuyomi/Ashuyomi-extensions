@@ -20,6 +20,7 @@
 - Luminous Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9923
 - Reset Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13168
 - SetsuScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/11040
+- Realm Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15586
 
 ### ITA
 
@@ -84,3 +85,8 @@
 
 - SuperMangás and SuperHentais https://github.com/tachiyomiorg/tachiyomi-extensions/pull/6348
 - Tsuki Mangás https://github.com/tachiyomiorg/tachiyomi-extensions/pull/8609
+- Realm Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15586
+- Reset Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13168
+- SetsuScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/11040
+- ShinobiScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14457
+- XXX Yaoi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9535

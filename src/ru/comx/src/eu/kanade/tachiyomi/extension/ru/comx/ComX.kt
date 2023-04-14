@@ -262,7 +262,11 @@ class ComX : ParsedHttpSource() {
         manga.genre = category + ", " + rawAgeStop + ", " + infoElement.select(".page__tags a").joinToString { it.text() }
         manga.status = parseStatus(infoElement.select(".page__list li:contains(Статус)").text())
 
-        manga.description = infoElement.select(".page__header h1").text().replace(" / ", " | ").split(" | ").first() + "\n" + ratingStar + " " + ratingValue + " (голосов: " + ratingVotes + ")\n" + Jsoup.parse(infoElement.select(".page__text ").first()!!.html().replace("<br>", "REPLACbR")).text().replace("REPLACbR", "\n")
+        manga.description = infoElement.select(".page__header h1").text().replace(" / ", " | ").split(" | ").first() + "\n" +
+            if (document.select(".page__list li:contains(Тип выпуска)").text().contains("!!! События в комиксах - ХРОНОЛОГИЯ !!!")) { "Cобытие в комиксах - ХРОНОЛОГИЯ\n" } else { "" } +
+            ratingStar + " " + ratingValue + " (голосов: " + ratingVotes + ")\n" +
+            Jsoup.parse(infoElement.select(".page__text ").first()!!.html().replace("<br>", "REPLACbR")).text().replace("REPLACbR", "\n")
+
         val src = infoElement.select(".img-wide img").attr("data-src")
         if (src.contains("://")) {
             manga.thumbnail_url = src
@@ -298,15 +302,25 @@ class ComX : ParsedHttpSource() {
 
         val data = json.decodeFromString<JsonObject>(dataStr)
         val chaptersList = data["chapters"]?.jsonArray
+        val isEvent = document.select(".page__list li:contains(Тип выпуска)").text()
+            .contains("!!! События в комиксах - ХРОНОЛОГИЯ !!!")
+
         val chapters: List<SChapter>? = chaptersList?.map {
             val chapter = SChapter.create()
-            // title_en is full chapter name, no english name
-            chapter.name = it.jsonObject["title_en"]!!.jsonPrimitive.content
-            if (chapter.name.isEmpty()) {
-                chapter.name = it.jsonObject["title"]!!.jsonPrimitive.content
+            // Usually "title" is main chapter name info, "title_en" is additional chapter name info.
+            // I decided to keep them both because who knows where they decided to put useful info today.
+            // Except when they are the same.
+            chapter.name = if (it.jsonObject["title"]!!.jsonPrimitive.content == it.jsonObject["title_en"]!!.jsonPrimitive.content) {
+                it.jsonObject["title"]!!.jsonPrimitive.content
+            } else {
+                (it.jsonObject["title"]!!.jsonPrimitive.content + " " + it.jsonObject["title_en"]!!.jsonPrimitive.content).trim()
             }
             chapter.date_upload = simpleDateFormat.parse(it.jsonObject["date"]!!.jsonPrimitive.content)?.time ?: 0L
             chapter.chapter_number = it.jsonObject["posi"]!!.jsonPrimitive.float
+            // when it is Event add reading order numbers as prefix
+            if (isEvent) {
+                chapter.name = chapter.chapter_number.toInt().toString() + " " + chapter.name
+            }
             chapter.setUrlWithoutDomain("/readcomix/" + data["news_id"] + "/" + it.jsonObject["id"]!!.jsonPrimitive.content + ".html")
             chapter
         }
