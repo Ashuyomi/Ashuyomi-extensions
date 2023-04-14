@@ -279,10 +279,10 @@ abstract class MangasProject(
 
     override fun pageListParse(response: Response): List<Page> {
         val document = response.asJsoup()
-        val readerToken = getReaderToken(document) ?: throw Exception(TOKEN_NOT_FOUND)
+        //val readerToken = getReaderToken(document) ?: throw Exception(TOKEN_NOT_FOUND)
         val chapterUrl = getChapterUrl(response)
 
-        val apiRequest = pageListApiRequest(chapterUrl, readerToken)
+        val apiRequest = pageListApiRequest(chapterUrl/*, readerToken*/)
         val apiResponse = client.newCall(apiRequest).execute()
             .parseAs<MangasProjectReaderDto>()
 
@@ -294,13 +294,14 @@ abstract class MangasProject(
     open fun getChapterUrl(response: Response): String {
         return response.request.url.toString()
     }
-
+    /* 
     protected open fun getReaderToken(document: Document): String? {
-        return document.select("script[contains*=\"window.READER_TOKEN\"]").firstOrNull()
+        return document.select("script[src*=\"window.READER_TOKEN\"]").firstOrNull()
             ?.attr("abs:src")
             ?.toHttpUrlOrNull()
             ?.queryParameter("token")
     }
+    */
 
     override fun fetchImageUrl(page: Page): Observable<String> = Observable.just(page.imageUrl!!)
 
