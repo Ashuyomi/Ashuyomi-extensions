@@ -278,7 +278,6 @@ abstract class MangasProject(
     }
 
     override fun pageListParse(response: Response): List<Page> {
-        val document = response.asJsoup()
         val chapterUrl = getChapterUrl(response)
 
         val apiRequest = pageListApiRequest(chapterUrl)
