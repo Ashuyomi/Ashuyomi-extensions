@@ -16,9 +16,11 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.decodeFromJsonElement
 import okhttp3.FormBody
 import okhttp3.Headers
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import rx.Observable
 import uy.kohesive.injekt.injectLazy
@@ -263,7 +265,7 @@ abstract class MangasProject(
         return GET(baseUrl + chapter.url, newHeaders)
     }
 
-    private fun pageListApiRequest(chapterUrl: String): Request {
+    private fun pageListApiRequest(chapterUrl: String, token: String): Request {
         val newHeaders = sourceHeadersBuilder()
             .set("Referer", chapterUrl)
             .build()
@@ -272,14 +274,15 @@ abstract class MangasProject(
             .substringBeforeLast("/")
             .substringAfterLast("/")
 
-        return GET("$baseUrl/leitor/pages/$id.json", newHeaders)
+        return GET("$baseUrl/leitor/pages/$id.json?key=$token", newHeaders)
     }
 
     override fun pageListParse(response: Response): List<Page> {
         val document = response.asJsoup()
+        val readerToken = getReaderToken(document) ?: throw Exception(TOKEN_NOT_FOUND)
         val chapterUrl = getChapterUrl(response)
 
-        val apiRequest = pageListApiRequest(chapterUrl)
+        val apiRequest = pageListApiRequest(chapterUrl, readerToken)
         val apiResponse = client.newCall(apiRequest).execute()
             .parseAs<MangasProjectReaderDto>()
 
@@ -291,6 +294,14 @@ abstract class MangasProject(
     open fun getChapterUrl(response: Response): String {
         return response.request.url.toString()
     }
+
+    protected open fun getReaderToken(document: Document): String? {
+        return document.select("script[src*=\"window.READER_TOKEN\"]").firstOrNull()
+            ?.attr("abs:src")
+            ?.toHttpUrlOrNull()
+            ?.queryParameter("token")
+    }
+
     override fun fetchImageUrl(page: Page): Observable<String> = Observable.just(page.imageUrl!!)
 
     override fun imageUrlParse(response: Response): String = ""
@@ -336,5 +347,6 @@ abstract class MangasProject(
         private val DATE_FORMATTER by lazy { SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH) }
 
         private const val MANGA_REMOVED = "Mangá licenciado e removido pela fonte."
+        private const val TOKEN_NOT_FOUND = "Não foi possível obter o token de leitura."
     }
 }
