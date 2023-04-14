@@ -16,11 +16,9 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.decodeFromJsonElement
 import okhttp3.FormBody
 import okhttp3.Headers
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import rx.Observable
 import uy.kohesive.injekt.injectLazy
@@ -278,6 +276,7 @@ abstract class MangasProject(
     }
 
     override fun pageListParse(response: Response): List<Page> {
+        val document = response.asJsoup()
         val chapterUrl = getChapterUrl(response)
 
         val apiRequest = pageListApiRequest(chapterUrl)
@@ -292,7 +291,6 @@ abstract class MangasProject(
     open fun getChapterUrl(response: Response): String {
         return response.request.url.toString()
     }
-
     override fun fetchImageUrl(page: Page): Observable<String> = Observable.just(page.imageUrl!!)
 
     override fun imageUrlParse(response: Response): String = ""
