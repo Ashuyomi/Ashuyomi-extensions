@@ -296,7 +296,7 @@ abstract class MangasProject(
     }
 
     protected open fun getReaderToken(document: Document): String? {
-        return document.select("script:containsData(window.READER_TOKEN)").firstOrNull()
+        return document.select("script[containsData*=\"window.READER_TOKEN\"]").firstOrNull()
             ?.attr("abs:src")
             ?.toHttpUrlOrNull()
             ?.queryParameter("token")
