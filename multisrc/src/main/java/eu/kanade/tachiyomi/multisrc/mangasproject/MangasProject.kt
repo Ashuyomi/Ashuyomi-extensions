@@ -279,7 +279,7 @@ abstract class MangasProject(
 
     override fun pageListParse(response: Response): List<Page> {
         val document = response.asJsoup()
-        val readerToken = getReaderToken(document) ?: throw Exception(TOKEN_NOT_FOUND)
+        val readerToken = getReaderToken(document) ?: throw Exception(TOKEN_NOT_FOUND + "Token:" YEYE)
         val chapterUrl = getChapterUrl(response)
 
         val apiRequest = pageListApiRequest(chapterUrl, readerToken)
@@ -296,7 +296,7 @@ abstract class MangasProject(
     }
 
     protected open fun getReaderToken(document: Document): String? {
-        return document.select("script:contains('window.READER_TOKEN')").firstOrNull()
+        return document.select("script[contains*=\"window.READER_TOKEN\"]").firstOrNull()
             ?.attr("abs:src")
             ?.toHttpUrlOrNull()
             ?.queryParameter("token")
@@ -348,5 +348,6 @@ abstract class MangasProject(
 
         private const val MANGA_REMOVED = "Mangá licenciado e removido pela fonte."
         private const val TOKEN_NOT_FOUND = "Não foi possível obter o token de leitura."
+        private const val YEYE = getReaderToken(document)
     }
 }
