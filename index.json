@@ -357,6 +357,27 @@
     ]
   },
   {
+    "name": "Tachiyomi: CookieToon",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.cookietoon",
+    "apk": "tachiyomi-pt.cookietoon-v1.4.28.apk",
+    "lang": "pt-BR",
+    "code": 28,
+    "version": "1.4.28",
+    "nsfw": 0,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "CookieToon",
+        "lang": "pt-BR",
+        "id": "112137012584240478",
+        "baseUrl": "https://cookietoon.online",
+        "versionId": 1,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
     "name": "Tachiyomi: Cronos Scan",
     "pkg": "eu.kanade.tachiyomi.extension.pt.cronosscan",
     "apk": "tachiyomi-pt.cronosscan-v1.4.29.apk",
@@ -498,27 +519,6 @@
         "lang": "pt-BR",
         "id": "6168945536463997067",
         "baseUrl": "https://finalscans.com",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
-    "name": "Tachiyomi: Fire Mangás",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.firemangas",
-    "apk": "tachiyomi-pt.firemangas-v1.4.7.apk",
-    "lang": "pt-BR",
-    "code": 7,
-    "version": "1.4.7",
-    "nsfw": 0,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Fire Mangás",
-        "lang": "pt-BR",
-        "id": "4512861071868695798",
-        "baseUrl": "https://firemangas.com",
         "versionId": 1,
         "hasCloudflare": 1
       }
@@ -1344,6 +1344,27 @@
     ]
   },
   {
+    "name": "Tachiyomi: Moon Witch In Love",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.moonwitchinlove",
+    "apk": "tachiyomi-pt.moonwitchinlove-v1.4.28.apk",
+    "lang": "pt-BR",
+    "code": 28,
+    "version": "1.4.28",
+    "nsfw": 0,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "Moon Witch In Love",
+        "lang": "pt-BR",
+        "id": "3135090895340447301",
+        "baseUrl": "https://moonwitchinlovescan.com",
+        "versionId": 1,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
     "name": "Tachiyomi: MR Yaoi Fansub",
     "pkg": "eu.kanade.tachiyomi.extension.pt.mryaoifansub",
     "apk": "tachiyomi-pt.mryaoifansub-v1.4.29.apk",
@@ -1409,10 +1430,10 @@
   {
     "name": "Tachiyomi: Mundo Hentai",
     "pkg": "eu.kanade.tachiyomi.extension.pt.mundohentai",
-    "apk": "tachiyomi-pt.mundohentai-v1.4.5.apk",
+    "apk": "tachiyomi-pt.mundohentai-v1.4.6.apk",
     "lang": "pt-BR",
-    "code": 5,
-    "version": "1.4.5",
+    "code": 6,
+    "version": "1.4.6",
     "nsfw": 1,
     "hasReadme": 0,
     "hasChangelog": 0,
@@ -1591,6 +1612,27 @@
         "id": "4038055363600290082",
         "baseUrl": "https://origami-orpheans.com.br",
         "versionId": 2,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
+    "name": "Tachiyomi: Peach Scan",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.peachscan",
+    "apk": "tachiyomi-pt.peachscan-v1.4.28.apk",
+    "lang": "pt-BR",
+    "code": 28,
+    "version": "1.4.28",
+    "nsfw": 1,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "Peach Scan",
+        "lang": "pt-BR",
+        "id": "3971755668019534798",
+        "baseUrl": "https://www.peachscan.com",
+        "versionId": 1,
         "hasCloudflare": 1
       }
     ]
