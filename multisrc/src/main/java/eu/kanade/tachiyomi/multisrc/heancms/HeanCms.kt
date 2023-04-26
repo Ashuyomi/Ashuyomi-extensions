@@ -19,7 +19,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import rx.Observable
-import uy.kohesive.injekt.injectLazy
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -34,7 +33,15 @@ abstract class HeanCms(
 
     override val client: OkHttpClient = network.cloudflareClient
 
-    protected val json: Json by injectLazy()
+    /**
+     * Custom Json instance to make usage of `encodeDefaults`,
+     * which is not enabled on the injected instance of the app.
+     */
+    protected val json: Json = Json {
+        ignoreUnknownKeys = true
+        explicitNulls = false
+        encodeDefaults = true
+    }
 
     protected val intl by lazy { HeanCmsIntl(lang) }
 
@@ -109,6 +116,17 @@ abstract class HeanCms(
     }
 
     override fun latestUpdatesParse(response: Response): MangasPage = popularMangaParse(response)
+
+    override fun fetchSearchManga(page: Int, query: String, filters: FilterList): Observable<MangasPage> {
+        if (!query.startsWith(SEARCH_PREFIX)) {
+            return super.fetchSearchManga(page, query, filters)
+        }
+
+        val slug = query.substringAfter(SEARCH_PREFIX)
+        val manga = SManga.create().apply { url = "/series/$slug" }
+
+        return fetchMangaDetails(manga).map { MangasPage(listOf(it), false) }
+    }
 
     override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
         /**
@@ -217,7 +235,8 @@ abstract class HeanCms(
             ?: throw Exception(intl.urlChangedError(name))
 
         return seriesDetails.apply {
-            status = response.request.url.fragment?.toIntOrNull() ?: SManga.UNKNOWN
+            status = status.takeUnless { it == SManga.UNKNOWN }
+                ?: response.request.url.fragment?.toIntOrNull() ?: SManga.UNKNOWN
         }
     }
 
@@ -325,7 +344,6 @@ abstract class HeanCms(
             page = page,
             order = "desc",
             orderBy = "total_views",
-            status = "",
             type = "Comic",
         )
 
@@ -389,5 +407,7 @@ abstract class HeanCms(
         private val JSON_MEDIA_TYPE = "application/json".toMediaType()
 
         val TIMESTAMP_REGEX = "-\\d+$".toRegex()
+
+        const val SEARCH_PREFIX = "slug:"
     }
 }

@@ -10,9 +10,10 @@ class MadaraGenerator : ThemeSourceGenerator {
 
     override val themeClass = "Madara"
 
-    override val baseVersionCode: Int = 28
+    override val baseVersionCode: Int = 29
 
     override val sources = listOf(
+        
         // Extenções Minhas:
         SingleLang("Hikari Scan", "https://hikariscan.com.br", "pt-BR", isNsfw = true, overrideVersionCode = 3),
         SingleLang("Hunters Scan", "https://huntersscan.xyz", "pt-BR", isNsfw = true, overrideVersionCode = 2),
@@ -29,6 +30,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("NekoBreaker Scan", "https://nekobreakerscan.com", "pt-BR", overrideVersionCode = 2),
 
         // Extenções Oficiais:
+        MultiLang("Atlantis Scan", "https://atlantisscan.com", listOf("es", "pt-BR"), isNsfw = true),
         MultiLang("Leviatan Scans", "https://leviatanscans.com", listOf("en", "es"), className = "LeviatanScansFactory", overrideVersionCode = 13),
         MultiLang("MangaForFree.net", "https://mangaforfree.net", listOf("en", "ko", "all"), isNsfw = true, className = "MangaForFreeFactory", pkgName = "mangaforfree", overrideVersionCode = 1),
         MultiLang("Manhwa18.cc", "https://manhwa18.cc", listOf("en", "ko", "all"), isNsfw = true, className = "Manhwa18CcFactory", pkgName = "manhwa18cc", overrideVersionCode = 4),
@@ -61,7 +63,6 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Astral Library", "https://www.astrallibrary.net", "en", overrideVersionCode = 2),
         SingleLang("Astral-Manga", "https://astral-manga.fr", "fr", className = "AstralManga"),
         SingleLang("Atikrost", "https://atikrost.com", "tr", overrideVersionCode = 1),
-        SingleLang("Atlantis scan", "https://atlantisscan.com", "es"),
         SingleLang("AZManhwa", "https://azmanhwa.net", "en"),
         SingleLang("Azora", "https://azoranov.com", "ar", overrideVersionCode = 5),
         SingleLang("Bakaman", "https://bakaman.net", "th", overrideVersionCode = 1),
@@ -98,7 +99,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("DokkoManga", "https://dokkomanga.xyz", "es"),
         SingleLang("DoujinHentai", "https://doujinhentai.net", "es", isNsfw = true, overrideVersionCode = 1),
         SingleLang("DragonTranslation", "https://dragontranslation.com", "es", isNsfw = true, overrideVersionCode = 4),
-        SingleLang("Drake Scans", "https://drakescans.com", "en", overrideVersionCode = 2),
+        SingleLang("Drake Scans", "https://drakescans.com", "en", overrideVersionCode = 3),
         SingleLang("Dream Manga", "https://www.swarmmanga.com", "en", overrideVersionCode = 3),
         SingleLang("EGY Manga", "https://egymanga.net", "ar", overrideVersionCode = 1),
         SingleLang("Emperor Scan", "https://emperorscan.com", "es", overrideVersionCode = 1),
@@ -232,7 +233,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Manga68", "https://manga68.com", "en", overrideVersionCode = 1),
         SingleLang("MangaBaz", "https://mangabaz.net", "en"),
         SingleLang("MangaBob", "https://mangabob.com", "en", overrideVersionCode = 1),
-        SingleLang("MangaBoss", "https://mangaboss.org", "en"),
+        SingleLang("MangaVisa", "https://mangavisa.com", "en", pkgName = "mangaboss", className = "MangaVisa", overrideVersionCode = 1),
         SingleLang("MangaCC", "https://mangacc.com", "en"),
         SingleLang("MangaClash", "https://mangaclash.com", "en", overrideVersionCode = 3),
         SingleLang("MangaCultivator", "https://mangacultivator.com", "en", overrideVersionCode = 2),
@@ -303,7 +304,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("ManhwaBookShelf", "https://manhwabookshelf.com", "en"),
         SingleLang("ManhwaClan", "https://manhwaclan.com", "en"),
         SingleLang("Manhwafull", "https://manhwafull.com", "en", overrideVersionCode = 1),
-        SingleLang("Manhwahentai.me", "https://manhwahentai.me", "en", className = "ManhwahentaiMe", isNsfw = true, overrideVersionCode = 2),
+        SingleLang("Manhwahentai.me", "https://manhwahentai.me", "en", className = "ManhwahentaiMe", isNsfw = true, overrideVersionCode = 3),
         SingleLang("Manhwas Men", "https://manhwas.men", "en", className = "ManhwasMen", isNsfw = true),
         SingleLang("ManhwaTime", "https://manhwatime.com", "ar"),
         SingleLang("Manhwatop", "https://manhwatop.com", "en", overrideVersionCode = 2),
@@ -322,7 +323,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Mirad Scanlator", "https://miradscanlator.site", "pt-BR", overrideVersionCode = 1),
         SingleLang("Mixed Manga", "https://mixedmanga.com", "en", overrideVersionCode = 1),
         SingleLang("Mizu Mangás", "https://mizumangas.com.br", "pt-BR", isNsfw = true, className = "MizuMangas"),
-        SingleLang("MMScans", "https://mm-scans.org", "en", overrideVersionCode = 4),
+        SingleLang("MMScans", "https://mm-scans.org", "en", overrideVersionCode = 5),
         SingleLang("MonarcaManga", "https://monarcamanga.com", "es"),
         SingleLang("Moon Witch In Love", "https://moonwitchinlovescan.com", "pt-BR"),
         SingleLang("Mortals Groove", "https://mortalsgroove.com", "en", overrideVersionCode = 1),
@@ -386,7 +387,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Shayami", "https://shayami.com", "es"),
         SingleLang("Shield Manga", "https://shieldmanga.io", "en", overrideVersionCode = 3),
         SingleLang("Shimada Scans", "https://shimadascans.com", "en"),
-        SingleLang("Shinigami", "https://shinigami.id", "id"),
+        SingleLang("Shinigami", "https://shinigami.id", "id", overrideVersionCode = 1),
         SingleLang("Shirai Scans", "https://shiraiscans.com.br", "pt-BR"),
         SingleLang("Shooting Star Scans", "https://shootingstarscans.com", "en"),
         SingleLang("ShoujoHearts", "https://shoujohearts.com", "en", overrideVersionCode = 2),
@@ -416,7 +417,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("TonizuToon", "https://tonizutoon.com", "tr", isNsfw = true),
         SingleLang("ToonChill", "https://toonchill.com", "en", overrideVersionCode = 1),
         SingleLang("ToonGod", "https://www.toongod.com", "en", isNsfw = true, overrideVersionCode = 4),
-        SingleLang("Toonily", "https://toonily.com", "en", isNsfw = true, overrideVersionCode = 9),
+        SingleLang("Toonily", "https://toonily.com", "en", isNsfw = true, overrideVersionCode = 10),
         SingleLang("Toonily.net", "https://toonily.net", "en", isNsfw = true, className = "Toonilynet", overrideVersionCode = 2),
         SingleLang("ToonMany", "https://toonmany.com", "en", isNsfw = true),
         SingleLang("Top Manhua", "https://topmanhua.com", "en", overrideVersionCode = 2),
@@ -430,6 +431,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("Ver Manhwas", "https://vermanhwa.es", "es", isNsfw = true, overrideVersionCode = 1),
         SingleLang("VinManga", "https://vinload.com", "en", isNsfw = true),
         SingleLang("Visbellum", "https://visbellum.com", "pt-BR", overrideVersionCode = 2),
+        SingleLang("VoirComic", "https://voircomic.com", "fr"),
         SingleLang("Wakamics", "https://wakamics.net", "en"),
         SingleLang("Wakascan", "https://wakascan.com", "fr", overrideVersionCode = 1),
         SingleLang("War Queen Scan", "https://wqscan.com", "pt-BR", overrideVersionCode = 6),
@@ -453,7 +455,7 @@ class MadaraGenerator : ThemeSourceGenerator {
         SingleLang("YaoiScan", "https://yaoiscan.com", "en", isNsfw = true),
         SingleLang("YaoiToon", "https://yaoitoon.com", "en", isNsfw = true),
         SingleLang("YonaBar", "https://yonabar.com", "ar", isNsfw = true, overrideVersionCode = 2),
-        SingleLang("YugenMangas", "https://yugenmangas.com.br", "pt-BR", overrideVersionCode = 1),
+        SingleLang("YugenMangas", "https://yugenmangas.com.br", "pt-BR", overrideVersionCode = 2),
         SingleLang("Yuri Verso", "https://yuri.live", "pt-BR", overrideVersionCode = 3),
         SingleLang("ZinChanManga", "https://zinchanmanga.com", "en", isNsfw = true),
         SingleLang("Zinmanga", "https://zinmanga.com", "en", overrideVersionCode = 1),

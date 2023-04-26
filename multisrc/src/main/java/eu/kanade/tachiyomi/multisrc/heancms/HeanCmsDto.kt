@@ -29,6 +29,7 @@ data class HeanCmsSearchDto(
     @SerialName("series_slug") val slug: String,
     @SerialName("series_type") val type: String,
     val title: String,
+    val thumbnail: String? = null,
 ) {
 
     fun toSManga(
@@ -37,13 +38,11 @@ data class HeanCmsSearchDto(
         slugMap: Map<String, HeanCms.HeanCmsTitle>,
     ): SManga = SManga.create().apply {
         val slugOnly = slug.replace(HeanCms.TIMESTAMP_REGEX, "")
-        val thumbnailFileName = slugMap[slugOnly]?.thumbnailFileName.orEmpty()
+        val thumbnailFileName = slugMap[slugOnly]?.thumbnailFileName
 
         title = this@HeanCmsSearchDto.title
-        thumbnail_url = when {
-            thumbnailFileName.isNotEmpty() -> "$apiUrl/$coverPath$thumbnailFileName"
-            else -> ""
-        }
+        thumbnail_url = thumbnail?.toAbsoluteThumbnailUrl(apiUrl, coverPath)
+            ?: thumbnailFileName?.toAbsoluteThumbnailUrl(apiUrl, coverPath)
         url = "/series/$slugOnly"
     }
 }
@@ -75,7 +74,8 @@ data class HeanCmsSeriesDto(
         genre = tags.orEmpty()
             .sortedBy(HeanCmsTagDto::name)
             .joinToString { it.name }
-        thumbnail_url = "$apiUrl/$coverPath$thumbnail"
+        thumbnail_url = thumbnail.ifEmpty { null }
+            ?.toAbsoluteThumbnailUrl(apiUrl, coverPath)
         status = this@HeanCmsSeriesDto.status?.toStatus() ?: SManga.UNKNOWN
         url = "/series/${slug.replace(HeanCms.TIMESTAMP_REGEX, "")}"
     }
@@ -116,13 +116,17 @@ data class HeanCmsQuerySearchPayloadDto(
     val order: String,
     val page: Int,
     @SerialName("order_by") val orderBy: String,
-    @SerialName("series_status") val status: String,
+    @SerialName("series_status") val status: String? = null,
     @SerialName("series_type") val type: String,
     @SerialName("tags_ids") val tagIds: List<Int> = emptyList(),
 )
 
 @Serializable
 data class HeanCmsSearchPayloadDto(val term: String)
+
+private fun String.toAbsoluteThumbnailUrl(apiUrl: String, coverPath: String): String {
+    return if (startsWith("https://")) this else "$apiUrl/$coverPath$this"
+}
 
 fun String.toStatus(): Int = when (this) {
     "Ongoing" -> SManga.ONGOING
