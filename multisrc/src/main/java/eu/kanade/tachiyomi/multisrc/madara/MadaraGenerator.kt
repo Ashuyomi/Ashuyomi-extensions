@@ -13,7 +13,7 @@ class MadaraGenerator : ThemeSourceGenerator {
     override val baseVersionCode: Int = 29
 
     override val sources = listOf(
-        
+
         // Extenções Minhas:
         SingleLang("Hikari Scan", "https://hikariscan.com.br", "pt-BR", isNsfw = true, overrideVersionCode = 3),
         SingleLang("Hunters Scan", "https://huntersscan.xyz", "pt-BR", isNsfw = true, overrideVersionCode = 2),
