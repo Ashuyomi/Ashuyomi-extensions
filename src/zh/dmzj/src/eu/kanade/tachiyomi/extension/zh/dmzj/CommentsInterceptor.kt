@@ -24,11 +24,9 @@ object CommentsInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val response = chain.proceed(request)
-        if (request.tag(Tag::class.java) == null) return response
+        if (request.tag(Tag::class) == null) return response
 
-        val comments = ApiV3.parseChapterComments(response)
-            .take(MAX_HEIGHT / (UNIT * 2))
-            .ifEmpty { listOf("没有吐槽") }
+        val comments = ApiV3.parseChapterComments(response, MAX_HEIGHT / (UNIT * 2))
 
         val paint = TextPaint().apply {
             color = Color.BLACK

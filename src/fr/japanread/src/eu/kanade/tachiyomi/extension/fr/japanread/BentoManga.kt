@@ -3,6 +3,7 @@ package eu.kanade.tachiyomi.extension.fr.japanread
 import android.net.Uri
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.asObservableSuccess
+import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.source.model.Filter
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.Page
@@ -23,6 +24,7 @@ import org.jsoup.nodes.Element
 import rx.Observable
 import uy.kohesive.injekt.injectLazy
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 class BentoManga : ParsedHttpSource() {
 
@@ -38,7 +40,11 @@ class BentoManga : ParsedHttpSource() {
 
     private val json: Json by injectLazy()
 
-    override val client: OkHttpClient = network.cloudflareClient
+    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .rateLimit(2,1)
+        .build()
 
     override fun headersBuilder(): Headers.Builder = Headers.Builder()
         .add("Referer", "$baseUrl/")
@@ -46,15 +52,15 @@ class BentoManga : ParsedHttpSource() {
     // Generic (used by popular/latest/search)
     private fun mangaListFromElement(element: Element): SManga {
         return SManga.create().apply {
-            title = element.select("a.component-manga-cover span.div-manga_cover-title")
+            title = element.select("div").select("div.manga_header h1")
                 .text()
             setUrlWithoutDomain(element.select("a").attr("href"))
-            thumbnail_url = element.select("a.component-manga-cover img ")
+            thumbnail_url = element.select("div").select("img[alt=couverture manga]")
                 .attr("src")
         }
     }
 
-    private fun mangaListSelector() = "div#mangas_content div.div-manga div.div-manga_cover"
+    private fun mangaListSelector() = "div#mangas_content div.manga"
     private fun mangaListNextPageSelector() = ".paginator button:contains(>)"
 
     // Popular
@@ -178,6 +184,7 @@ class BentoManga : ParsedHttpSource() {
                 chapterListParse(response, requestUrl)
             }
     }
+
     private fun chapterListParse(response: Response, requestUrl: String): List<SChapter> {
         val chapters = mutableListOf<SChapter>()
         var document = response.asJsoup()

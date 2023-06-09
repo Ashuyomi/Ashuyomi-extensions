@@ -166,6 +166,14 @@ class Remanga : ConfigurableSource, HttpSource() {
             .rateLimitHost(exManga.toHttpUrl(), 3)
             .addInterceptor { imageContentTypeIntercept(it) }
             .addInterceptor { authIntercept(it) }
+            .addInterceptor { chain ->
+                val originalRequest = chain.request()
+                val response = chain.proceed(originalRequest)
+                if (originalRequest.url.toString().contains(exManga) and !response.isSuccessful) {
+                    throw IOException("HTTP error ${response.code}. Домен ${exManga.substringAfter("//")} сервиса ExManga недоступен, выберите другой в настройках ⚙️ расширения")
+                }
+                response
+            }
             .addNetworkInterceptor { chain ->
                 val originalRequest = chain.request()
                 val response = chain.proceed(originalRequest)
@@ -287,7 +295,7 @@ class Remanga : ConfigurableSource, HttpSource() {
                 is MyList -> {
                     if (filter.state > 0) {
                         if (USER_ID == "") {
-                            throw Exception("Пользователь не найден, необходима авторизация через WebView")
+                            throw Exception("Пользователь не найден, необходима авторизация через WebView\uD83C\uDF0E")
                         }
                         val TypeQ = getMyList()[filter.state].id
                         val UserProfileUrl = "$baseUrl/api/users/$USER_ID/bookmarks/?type=$TypeQ&page=$page".toHttpUrl().newBuilder()
@@ -382,7 +390,7 @@ class Remanga : ConfigurableSource, HttpSource() {
                 }
             }
             .map { response ->
-                (if (warnLogin) manga.apply { description = "Для просмотра 18+ контента необходима авторизация через WebView" } else mangaDetailsParse(response))
+                (if (warnLogin) manga.apply { description = "Для просмотра контента необходима авторизация через WebView\uD83C\uDF0E︎" } else mangaDetailsParse(response))
                     .apply {
                         initialized = true
                     }
@@ -413,6 +421,29 @@ class Remanga : ConfigurableSource, HttpSource() {
         }
     }
 
+    private fun filterPaid(tempChaptersList: MutableList<SChapter>): MutableList<SChapter> {
+        val lastEx = tempChaptersList.find { it.scanlator.equals("exmanga") }
+        return if (!preferences.getBoolean(PAID_PREF, false)) {
+            tempChaptersList.filter {
+                !it.name.contains("\uD83D\uDCB2") || if (lastEx != null) {
+                    (
+                        (
+                            it.name.substringBefore(
+                                ". Глава",
+                            ).toIntOrNull()!! <=
+                                (lastEx.name.substringBefore(". Глава").toIntOrNull()!!)
+                            ) &&
+                            (it.chapter_number < lastEx.chapter_number)
+                        )
+                } else {
+                    false
+                }
+            } as MutableList<SChapter>
+        } else {
+            tempChaptersList
+        }
+    }
+
     private fun selector(b: BranchesDto): Int = b.count_chapters
     override fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
         val branch = branches.getOrElse(manga.url.substringAfter("/api/titles/").substringBefore("/").substringBefore("?")) { mangaBranches(manga) }
@@ -422,7 +453,7 @@ class Remanga : ConfigurableSource, HttpSource() {
             }
             branch.isEmpty() -> {
                 if (USER_ID == "") {
-                    Observable.error(Exception("Для просмотра 18+ контента необходима авторизация через WebView"))
+                    Observable.error(Exception("Для просмотра контента необходима авторизация через WebView\uD83C\uDF0E"))
                 } else {
                     return Observable.just(listOf())
                 }
@@ -430,34 +461,36 @@ class Remanga : ConfigurableSource, HttpSource() {
             else -> {
                 val mangaID = mangaIDs[manga.url.substringAfter("/api/titles/").substringBefore("/").substringBefore("?")]
                 val exChapters = if (preferences.getBoolean(exPAID_PREF, true)) {
-                    try {
-                        json.decodeFromString<SeriesExWrapperDto<List<ExBookDto>>>(client.newCall(GET("$exManga/chapter/history/$mangaID", exHeaders())).execute().body.string()).data
-                    } catch (_: Exception) {
-                        throw Exception("Домен ${exManga.substringAfter("//")} сервиса ExManga недоступен, выберите другой в настройках ⚙️ расширения")
-                    }
+                    json.decodeFromString<SeriesExWrapperDto<List<ExBookDto>>>(client.newCall(GET("$exManga/chapter/history/$mangaID", exHeaders())).execute().body.string()).data
                 } else {
                     emptyList()
                 }
                 val selectedBranch = branch.maxByOrNull { selector(it) }!!
                 val tempChaptersList = mutableListOf<SChapter>()
-                if (branch.size > 1) {
-                    val selectedBranch2 =
-                        branch.filter { it.id != selectedBranch.id }.maxByOrNull { selector(it) }!!
-                    if (selectedBranch.count_chapters < json.decodeFromString<SeriesWrapperDto<List<BookDto>>>(
-                            chapterListRequest(selectedBranch2.id, 1).body.string(),
-                        ).content.firstOrNull()?.chapter?.toFloatOrNull()!!
-                    ) {
-                        (1..(selectedBranch2.count_chapters / 100 + 1)).map {
-                            val response = chapterListRequest(selectedBranch2.id, it)
-                            chapterListParse(response, manga, exChapters)
-                        }.let { tempChaptersList.addAll(it.flatten()) }
-                    }
-                }
                 (1..(selectedBranch.count_chapters / 100 + 1)).map {
                     val response = chapterListRequest(selectedBranch.id, it)
                     chapterListParse(response, manga, exChapters)
                 }.let { tempChaptersList.addAll(it.flatten()) }
-                return tempChaptersList.distinctBy { it.name.substringBefore(". Глава") + "--" + it.chapter_number }.sortedWith(compareBy({ -it.chapter_number }, { it.name.substringBefore(". Глава") })).let { Observable.just(it) }
+                if (branch.size > 1) {
+                    val selectedBranch2 =
+                        branch.filter { it.id != selectedBranch.id }.maxByOrNull { selector(it) }!!
+                    if (selectedBranch2.count_chapters > 0) {
+                        if (selectedBranch.count_chapters < (
+                            json.decodeFromString<SeriesWrapperDto<List<BookDto>>>(
+                                    chapterListRequest(selectedBranch2.id, 1).body.string(),
+                                ).content.firstOrNull()?.chapter?.toFloatOrNull() ?: -2F
+                            )
+                        ) {
+                            (1..(selectedBranch2.count_chapters / 100 + 1)).map {
+                                val response = chapterListRequest(selectedBranch2.id, it)
+                                chapterListParse(response, manga, exChapters)
+                            }.let { tempChaptersList.addAll(0, it.flatten()) }
+                            return filterPaid(tempChaptersList).distinctBy { it.name.substringBefore(". Глава") + "--" + it.chapter_number }.sortedWith(compareBy({ it.name.substringBefore(". Глава").toIntOrNull()!! }, { it.chapter_number })).reversed().let { Observable.just(it) }
+                        }
+                    }
+                }
+
+                return filterPaid(tempChaptersList).let { Observable.just(it) }
             }
         }
     }
@@ -481,7 +514,7 @@ class Remanga : ConfigurableSource, HttpSource() {
     private fun chapterListParse(response: Response, manga: SManga, exChapters: List<ExBookDto>): List<SChapter> {
         val chapters = json.decodeFromString<SeriesWrapperDto<List<BookDto>>>(response.body.string()).content
 
-        var chaptersList = chapters.map { chapter ->
+        val chaptersList = chapters.map { chapter ->
             SChapter.create().apply {
                 chapter_number = chapter.chapter.split(".").take(2).joinToString(".").toFloat()
                 url = "/manga/${manga.url.substringAfterLast("/api/titles/")}ch${chapter.id}"
@@ -492,11 +525,11 @@ class Remanga : ConfigurableSource, HttpSource() {
                     null
                 }
 
-                var exChID = exChapters.find { (it.id == chapter.id) }
+                var exChID = exChapters.find { (it.id == chapter.id) || ((it.tome == chapter.tome) && (it.chapter == chapter.chapter)) }
                 if (preferences.getBoolean(exPAID_PREF, true)) {
                     if (chapter.is_paid and (chapter.is_bought != true)) {
                         if (exChID != null) {
-                            url = "$exManga/chapter?id=${exChID.id}"
+                            url = "/chapter?id=${exChID.id}"
                             scanlator = "exmanga"
                         }
                     }
@@ -521,17 +554,6 @@ class Remanga : ConfigurableSource, HttpSource() {
                 name = chapterName
             }
         }
-        if (!preferences.getBoolean(PAID_PREF, false)) {
-            chaptersList = chaptersList.filter {
-                !it.name.contains("\uD83D\uDCB2") || (
-                    it.name.substringBefore(
-                        ". Глава",
-                    ).toIntOrNull()!! <=
-                        (exChapters.firstOrNull()?.tome ?: -2) &&
-                        it.chapter_number < exChapters.firstOrNull()?.chapter?.toFloatOrNull()!!
-                    )
-            }
-        }
         return chaptersList
     }
 
@@ -543,10 +565,10 @@ class Remanga : ConfigurableSource, HttpSource() {
     }
 
     @TargetApi(Build.VERSION_CODES.N)
-    private fun pageListParse(response: Response, urlChapter: String): List<Page> {
+    private fun pageListParse(response: Response, chapter: SChapter): List<Page> {
         val body = response.body.string()
         val heightEmptyChunks = 10
-        if (urlChapter.contains(exManga)) {
+        if (chapter.scanlator.equals("exmanga")) {
             try {
                 val exPage = json.decodeFromString<SeriesExWrapperDto<List<List<PagesDto>>>>(body)
                 val result = mutableListOf<Page>()
@@ -560,7 +582,7 @@ class Remanga : ConfigurableSource, HttpSource() {
                 throw IOException("Главы больше нет на ExManga. Попробуйте обновить список глав (свайп сверху).")
             }
         } else {
-            if (urlChapter.contains("#is_bought") and (preferences.getBoolean(exPAID_PREF, true))) {
+            if (chapter.url.contains("#is_bought") and (preferences.getBoolean(exPAID_PREF, true))) {
                 val newHeaders = exHeaders().newBuilder()
                     .add("Content-Type", "application/json")
                     .build()
@@ -593,8 +615,8 @@ class Remanga : ConfigurableSource, HttpSource() {
     override fun pageListParse(response: Response): List<Page> = throw UnsupportedOperationException("pageListParse(response: Response, urlRequest: String)")
 
     override fun pageListRequest(chapter: SChapter): Request {
-        return if (chapter.url.contains(exManga)) {
-            GET(chapter.url, exHeaders())
+        return if (chapter.scanlator.equals("exmanga")) {
+            GET(exManga + chapter.url, exHeaders())
         } else {
             if (chapter.name.contains("\uD83D\uDCB2")) {
                 val noEX = if (preferences.getBoolean(exPAID_PREF, true)) {
@@ -610,12 +632,12 @@ class Remanga : ConfigurableSource, HttpSource() {
         return client.newCall(pageListRequest(chapter))
             .asObservableSuccess()
             .map { response ->
-                pageListParse(response, chapter.url)
+                pageListParse(response, chapter)
             }
     }
 
     override fun getChapterUrl(chapter: SChapter): String {
-        return if (chapter.url.contains(exManga)) chapter.url else baseUrl.replace("api.", "") + chapter.url.substringBefore("#is_bought")
+        return if (chapter.scanlator.equals("exmanga")) exManga + chapter.url else baseUrl.replace("api.", "") + chapter.url.substringBefore("#is_bought")
     }
 
     override fun fetchImageUrl(page: Page): Observable<String> = Observable.just(page.imageUrl!!)

@@ -1,16 +1,17 @@
 ## Fontes removidas
 
 ## Remoção solicitada pela equipe da scan
-### PT-BR
+### BRA - Brasil
 
 - ~Hikari Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6611~
 - ~Hunter Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12392~
+
 
 - XXX Yaoi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9535
 - Coven Scan https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14499
 - Yaoi Fan Clube https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9605
 
-### USA
+### USA - Estados Unidos
 
 - ARES Manga https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15396
 - Astra Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13845
@@ -22,24 +23,24 @@
 - SetsuScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/11040
 - Realm Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15586
 
-### ITA
+### ITA - Itália
 
 - JuinJutsuReader https://github.com/tachiyomiorg/tachiyomi-extensions/issues/2958
 - ShinobiScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14457
 
-### ESP
+### ESP - Espanha
 
 - Knightnoscanlation https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4240
 - MHScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15319
 - NarTag https://github.com/tachiyomiorg/tachiyomi-extensions/issues/8038
 - Plot-twistnf-scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4242
 
-### TUR
+### TUR - Turquia
 
 - Mangagecesi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/5367
 - Mangawow https://github.com/tachiyomiorg/tachiyomi-extensions/issues/5367
 
-### SAU
+### SAU - Arábia Saudita
 
 - Manganoon https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13866
 - MangaPro https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13989
@@ -51,7 +52,7 @@
 
 ## Muito difícil de manter
 
-### PT-BR
+### BRA - Brasil
 
 - Hentai Kai https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9999
 - HQ Dragon https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7065
@@ -62,7 +63,7 @@
 - Union Mangás https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7065
 - YES Mangás https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7065
 
-### USA
+### USA - Estados Unidos
 
 - Comikey https://github.com/tachiyomiorg/tachiyomi-extensions/pull/11971
 - Hitomi.la https://github.com/tachiyomiorg/tachiyomi-extensions/pull/11613
@@ -71,16 +72,20 @@
 - ManhuaScan https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7129
 - TopToon+ (https://global.toptoon.com/) https://github.com/tachiyomiorg/tachiyomi-extensions/pull/10851
 
-### ESP
+### ESP - Espanha
 
 - Mangas.pw (Mangas.in) https://github.com/tachiyomiorg/tachiyomi-extensions/pull/9489
 - ManhwaHot https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7129
+- LeerCapitulo https://github.com/tachiyomiorg/tachiyomi-extensions/pull/16255
 
-### CHN
+### CHN - China
 
 - ColaManhua (COLA漫画) https://github.com/tachiyomiorg/tachiyomi-extensions/pull/11445
 - CopyManga (拷贝漫画) https://github.com/tachiyomiorg/tachiyomi-extensions/pull/12376
 
+### VIE - Vietnã
+
+- Cứu Truyện https://github.com/tachiyomiorg/tachiyomi-extensions/pull/16654
 ### OFFLINE
 
 - SuperMangás and SuperHentais https://github.com/tachiyomiorg/tachiyomi-extensions/pull/6348
