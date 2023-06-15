@@ -11,7 +11,6 @@
 | Tao Sect | Modificado | ✅ |
 | Momo no Hana Scan | Modificado | ✅ |
 | Zero Scan | Modificado | ✅ |
-| Muito Mangá | Modificado | ✅ |
 | Drope Scan | Modificado | ✅ |
 | Remangas | Modificado | ✅ |
 | Império Scans | Modificado | ✅ |
@@ -22,3 +21,9 @@
 | Origami Orpheans | Modificado | ✅ |
 | MiniTwo Scan | Modificado | ✅ |
 | NekoBreaker Scan | Modificado | ✅ |
+
+# Extenções que morreram
+
+| Extenções | Status |
+|--|--|
+| Muito Mangá | Deletado |
