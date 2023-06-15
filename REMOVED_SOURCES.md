@@ -15,7 +15,6 @@
 
 - ARES Manga https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15396
 - Astra Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13845
-- Dragontea https://github.com/tachiyomiorg/tachiyomi-extensions/issues/10103
 - Gourmet Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6192
 - KomikTap/KomikTap.in https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6133
 - Luminous Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9923
