@@ -1344,6 +1344,27 @@
     ]
   },
   {
+    "name": "Tachiyomi: MoonLovers Scan",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.moonloversscan",
+    "apk": "tachiyomi-pt.moonloversscan-v1.4.29.apk",
+    "lang": "pt-BR",
+    "code": 29,
+    "version": "1.4.29",
+    "nsfw": 1,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "MoonLovers Scan",
+        "lang": "pt-BR",
+        "id": "5928343539095265237",
+        "baseUrl": "https://moonloversscan.com.br",
+        "versionId": 1,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
     "name": "Tachiyomi: Moon Witch In Love",
     "pkg": "eu.kanade.tachiyomi.extension.pt.moonwitchinlove",
     "apk": "tachiyomi-pt.moonwitchinlove-v1.4.29.apk",
@@ -1401,27 +1422,6 @@
         "lang": "pt-BR",
         "id": "1062606379654091909",
         "baseUrl": "https://www.muitohentai.com",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
-    "name": "Tachiyomi: Muito Mangá",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.muitomanga",
-    "apk": "tachiyomi-pt.muitomanga-v1.4.7.apk",
-    "lang": "pt-BR",
-    "code": 7,
-    "version": "1.4.7",
-    "nsfw": 1,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Muito Mangá",
-        "lang": "pt-BR",
-        "id": "6826283891957751011",
-        "baseUrl": "https://muitomanga.com",
         "versionId": 1,
         "hasCloudflare": 1
       }
@@ -1556,10 +1556,10 @@
   {
     "name": "Tachiyomi: Nix Mangás",
     "pkg": "eu.kanade.tachiyomi.extension.pt.nixmangas",
-    "apk": "tachiyomi-pt.nixmangas-v1.4.2.apk",
+    "apk": "tachiyomi-pt.nixmangas-v1.4.3.apk",
     "lang": "pt-BR",
-    "code": 2,
-    "version": "1.4.2",
+    "code": 3,
+    "version": "1.4.3",
     "nsfw": 1,
     "hasReadme": 0,
     "hasChangelog": 0,
@@ -2199,6 +2199,27 @@
         "lang": "pt-BR",
         "id": "4207492914234184899",
         "baseUrl": "https://universohentai.com",
+        "versionId": 1,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
+    "name": "Tachiyomi: Valkyrie Scan",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.valkyriescan",
+    "apk": "tachiyomi-pt.valkyriescan-v1.4.29.apk",
+    "lang": "pt-BR",
+    "code": 29,
+    "version": "1.4.29",
+    "nsfw": 1,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "Valkyrie Scan",
+        "lang": "pt-BR",
+        "id": "2530661012733105383",
+        "baseUrl": "https://valkyriescan.com",
         "versionId": 1,
         "hasCloudflare": 1
       }
