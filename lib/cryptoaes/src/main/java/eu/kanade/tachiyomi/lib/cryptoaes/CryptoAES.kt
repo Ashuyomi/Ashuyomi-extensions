@@ -35,9 +35,11 @@ object CryptoAES {
             val cipherTextBytes = Arrays.copyOfRange(ctBytes, 16, ctBytes.size)
             val md5: MessageDigest = MessageDigest.getInstance("MD5")
             val keyAndIV = generateKeyAndIV(32, 16, 1, saltBytes, password.toByteArray(Charsets.UTF_8), md5)
-            return decryptAES(cipherTextBytes,
+            return decryptAES(
+                cipherTextBytes,
                 keyAndIV?.get(0) ?: ByteArray(32),
-                keyAndIV?.get(1) ?: ByteArray(16))
+                keyAndIV?.get(1) ?: ByteArray(16),
+            )
         } catch (e: Exception) {
             return ""
         }
@@ -103,7 +105,6 @@ object CryptoAES {
 
             // Repeat process until sufficient data has been generated
             while (generatedLength < keyLength + ivLength) {
-
                 // Digest data (last digest if available, password data, salt if available)
                 if (generatedLength > 0) md.update(generatedData, generatedLength - digestLength, digestLength)
                 md.update(password)

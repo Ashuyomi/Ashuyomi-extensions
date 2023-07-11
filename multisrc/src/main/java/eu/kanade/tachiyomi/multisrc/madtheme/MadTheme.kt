@@ -230,8 +230,8 @@ abstract class MadTheme(
                 // we've got no choice but to fallback to chapter images from HTML.
                 // TODO: This might need to be solved one day ^
                 if (chapterImagesFromJs.all { e ->
-                    e.startsWith("http://") || e.startsWith("https://")
-                }
+                        e.startsWith("http://") || e.startsWith("https://")
+                    }
                 ) {
                     // Great, we can use these.
                     if (chapterImagesFromHtml.count() < chapterImagesFromJs.count()) {

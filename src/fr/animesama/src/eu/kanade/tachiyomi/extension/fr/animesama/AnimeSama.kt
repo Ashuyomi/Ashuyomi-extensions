@@ -86,9 +86,9 @@ class AnimeSama : ParsedHttpSource() {
             setUrlWithoutDomain(element.select("a").attr("href"))
             thumbnail_url =
                 cdn_url + title.replace(
-                " [SCANS]",
-                "",
-            ).replace(" ", "-").trim() + "carre.jpg"
+                    " [SCANS]",
+                    "",
+                ).replace(" ", "-").trim() + "carre.jpg"
         }
     }
 

@@ -23,8 +23,6 @@ class FMTEAM : ParsedHttpSource() {
     override val lang = "fr"
     override val supportsLatest = true
 
-
-
     companion object {
         private val dateFormat = SimpleDateFormat("yyyy.MM.dd", Locale.FRENCH)
         private val allPagesRegex = "\"url\":\"(.*?)\"".toRegex()

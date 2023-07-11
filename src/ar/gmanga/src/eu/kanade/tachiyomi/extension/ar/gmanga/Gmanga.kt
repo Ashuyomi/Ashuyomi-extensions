@@ -137,7 +137,7 @@ class Gmanga : ConfigurableSource, HttpSource() {
                     url = "/mangas/${it.jsonObject["id"]!!.jsonPrimitive.content}"
                     title = it.jsonObject["title"]!!.jsonPrimitive.content
                     val thumbnail = "medium_${
-                    it.jsonObject["cover"]!!.jsonPrimitive.content.substringBeforeLast(".")
+                        it.jsonObject["cover"]!!.jsonPrimitive.content.substringBeforeLast(".")
                     }.webp"
                     thumbnail_url =
                         "https://media.gmanga.me/uploads/manga/cover/${it.jsonObject["id"]!!.jsonPrimitive.content}/$thumbnail"
@@ -270,7 +270,7 @@ class Gmanga : ConfigurableSource, HttpSource() {
                     url = "/mangas/${it.jsonObject["id"]!!.jsonPrimitive.content}"
                     title = it.jsonObject["title"]!!.jsonPrimitive.content
                     val thumbnail = "medium_${
-                    it.jsonObject["cover"]!!.jsonPrimitive.content.substringBeforeLast(".")
+                        it.jsonObject["cover"]!!.jsonPrimitive.content.substringBeforeLast(".")
                     }.webp"
                     thumbnail_url =
                         "https://media.gmanga.me/uploads/manga/cover/${it.jsonObject["id"]!!.jsonPrimitive.content}/$thumbnail"

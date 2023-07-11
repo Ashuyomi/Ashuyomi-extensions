@@ -49,9 +49,9 @@ abstract class GroupLe(
             val originalRequest = chain.request()
             val response = chain.proceed(originalRequest)
             if (originalRequest.url.toString().contains(baseUrl) && (
-                originalRequest.url.toString()
-                    .contains("internal/redirect") or (response.code == 301)
-                )
+                    originalRequest.url.toString()
+                        .contains("internal/redirect") or (response.code == 301)
+                    )
             ) {
                 throw IOException("Ссылка на мангу была изменена. Перемигрируйте мангу на тот же (или смежный с GroupLe) источник или передобавьте из Поисковика/Каталога.")
             }
@@ -167,8 +167,8 @@ abstract class GroupLe(
         }
         manga.description =
             "$ratingStar $ratingValue[ⓘ$ratingValueOver] (голосов: $ratingVotes)\n$altName" + document.select(
-            "div#tab-description  .manga-description",
-        ).text()
+                "div#tab-description  .manga-description",
+            ).text()
         manga.status = when {
             infoElement.html()
                 .contains("Запрещена публикация произведения по копирайту") || infoElement.html()
