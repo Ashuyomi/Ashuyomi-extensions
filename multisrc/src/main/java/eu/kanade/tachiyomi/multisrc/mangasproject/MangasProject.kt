@@ -299,7 +299,7 @@ abstract class MangasProject(
         return document.select("script[src*=\"window.READER_TOKEN\"]").firstOrNull()
             ?.attr("abs:src")
             ?.toHttpUrlOrNull()
-            //?.queryParameter("token")
+            // ?.queryParameter("token")
     }
 
     override fun fetchImageUrl(page: Page): Observable<String> = Observable.just(page.imageUrl!!)
