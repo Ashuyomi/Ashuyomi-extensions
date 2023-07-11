@@ -2,11 +2,13 @@ package eu.kanade.tachiyomi.multisrc.madara
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
+import eu.kanade.tachiyomi.lib.cryptoaes.CryptoAES
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.asObservable
@@ -21,6 +23,7 @@ import eu.kanade.tachiyomi.source.online.ParsedHttpSource
 import eu.kanade.tachiyomi.util.asJsoup
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.CacheControl
@@ -534,6 +537,7 @@ abstract class Madara(
         "Concluído",
         "Concluido",
         "Finalizado",
+        "Achevé",
         "Terminé",
         "Hoàn Thành",
         "مكتملة",
@@ -543,7 +547,7 @@ abstract class Madara(
 
     protected val ongoingStatusList: Array<String> = arrayOf(
         "OnGoing", "Продолжается", "Updating", "Em Lançamento", "Em lançamento", "Em andamento",
-        "Em Andamento", "En cours", "Ativo", "Lançando", "Đang Tiến Hành", "Devam Ediyor",
+        "Em Andamento", "En cours", "En Cours", "En cours de publication", "Ativo", "Lançando", "Đang Tiến Hành", "Devam Ediyor",
         "Devam ediyor", "In Corso", "In Arrivo", "مستمرة", "مستمر", "En Curso", "En curso", "Emision",
         "Curso", "En marcha", "Publicandose", "En emision", "连载中",
     )
@@ -629,7 +633,17 @@ abstract class Madara(
                 }
             }
 
-            manga.genre = genres.toList().joinToString(", ") { it.capitalize(Locale.ROOT) }
+            manga.genre = genres.toList().joinToString(", ") { genre ->
+                genre.replaceFirstChar {
+                    if (it.isLowerCase()) {
+                        it.titlecase(
+                            Locale.ROOT,
+                        )
+                    } else {
+                        it.toString()
+                    }
+                }
+            }
 
             // add alternative name to manga description
             document.select(altNameSelector).firstOrNull()?.ownText()?.let {
@@ -867,17 +881,37 @@ abstract class Madara(
 
     open val pageListParseSelector = "div.page-break, li.blocks-gallery-item, .reading-content .text-left:not(:has(.blocks-gallery-item)) img"
 
+    open val chapterProtectorSelector = "#chapter-protector-data"
+
     override fun pageListParse(document: Document): List<Page> {
         countViews(document)
 
-        return document.select(pageListParseSelector).mapIndexed { index, element ->
-            Page(
-                index,
-                document.location(),
-                element.select("img").first()?.let {
-                    it.absUrl(if (it.hasAttr("data-src")) "data-src" else "src")
-                },
-            )
+        val chapterProtector = document.selectFirst(chapterProtectorSelector)
+            ?: return document.select(pageListParseSelector).mapIndexed { index, element ->
+                val imageUrl = element.selectFirst("img")?.let { imageFromElement(it) }
+                Page(index, document.location(), imageUrl)
+            }
+        val chapterProtectorHtml = chapterProtector.html()
+        val password = chapterProtectorHtml
+            .substringAfter("wpmangaprotectornonce='")
+            .substringBefore("';")
+        val chapterData = json.parseToJsonElement(
+            chapterProtectorHtml
+                .substringAfter("chapter_data='")
+                .substringBefore("';")
+                .replace("\\/", "/"),
+        ).jsonObject
+
+        val unsaltedCiphertext = Base64.decode(chapterData["ct"]!!.jsonPrimitive.content, Base64.DEFAULT)
+        val salt = chapterData["s"]!!.jsonPrimitive.content.decodeHex()
+        val ciphertext = SALTED + salt + unsaltedCiphertext
+
+        val rawImgArray = CryptoAES.decrypt(Base64.encodeToString(ciphertext, Base64.DEFAULT), password)
+        val imgArrayString = json.parseToJsonElement(rawImgArray).jsonPrimitive.content
+        val imgArray = json.parseToJsonElement(imgArrayString).jsonArray
+
+        return imgArray.mapIndexed { idx, it ->
+            Page(idx, document.location(), it.jsonPrimitive.content)
         }
     }
 
@@ -1034,6 +1068,15 @@ abstract class Madara(
         }
     }
 
+    // https://stackoverflow.com/a/66614516
+    private fun String.decodeHex(): ByteArray {
+        check(length % 2 == 0) { "Must have an even length" }
+
+        return chunked(2)
+            .map { it.toInt(16).toByte() }
+            .toByteArray()
+    }
+
     companion object {
         const val TITLE_RANDOM_UA = "Use Random Latest User-Agent"
         const val PREF_KEY_RANDOM_UA = "pref_key_random_ua"
@@ -1047,6 +1090,8 @@ abstract class Madara(
         const val DOESNOT_SUPPORT_STRING = "This extension doesn't support User-Agent options."
         const val URL_SEARCH_PREFIX = "slug:"
         private const val UA_DB_URL = "https://tachiyomiorg.github.io/user-agents/user-agents.json"
+
+        val SALTED = "Salted__".toByteArray(Charsets.UTF_8)
     }
 }
 

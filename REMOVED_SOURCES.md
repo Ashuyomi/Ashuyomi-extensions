@@ -70,6 +70,7 @@
 - MangaDig https://github.com/tachiyomiorg/tachiyomi-extensions/pull/14974
 - ManhuaScan https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7129
 - TopToon+ (https://global.toptoon.com/) https://github.com/tachiyomiorg/tachiyomi-extensions/pull/10851
+- Reaper Scans (EN) https://github.com/tachiyomiorg/tachiyomi-extensions/pull/16819
 
 ### ESP - Espanha
 
