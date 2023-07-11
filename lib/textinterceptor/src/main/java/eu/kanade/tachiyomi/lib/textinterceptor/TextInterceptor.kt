@@ -54,13 +54,8 @@ class TextInterceptor : Interceptor {
 
         @Suppress("DEPRECATION")
         val heading: StaticLayout = StaticLayout(
-            creator,
-            paintHeading,
-            (WIDTH - 2 * X_PADDING).toInt(),
-            Layout.Alignment.ALIGN_NORMAL,
-            SPACING_MULT,
-            SPACING_ADD,
-            true,
+            creator, paintHeading, (WIDTH - 2 * X_PADDING).toInt(),
+            Layout.Alignment.ALIGN_NORMAL, SPACING_MULT, SPACING_ADD, true
         )
 
         // Body
@@ -73,13 +68,8 @@ class TextInterceptor : Interceptor {
 
         @Suppress("DEPRECATION")
         val body: StaticLayout = StaticLayout(
-            story,
-            paintBody,
-            (WIDTH - 2 * X_PADDING).toInt(),
-            Layout.Alignment.ALIGN_NORMAL,
-            SPACING_MULT,
-            SPACING_ADD,
-            true,
+            story, paintBody, (WIDTH - 2 * X_PADDING).toInt(),
+            Layout.Alignment.ALIGN_NORMAL, SPACING_MULT, SPACING_ADD, true
         )
 
         // Image building
@@ -107,7 +97,7 @@ class TextInterceptor : Interceptor {
 
     private fun textFixer(htmlString: String): String {
         return if (Build.VERSION.SDK_INT >= 24) {
-            Html.fromHtml(htmlString, Html.FROM_HTML_MODE_LEGACY).toString()
+            Html.fromHtml(htmlString , Html.FROM_HTML_MODE_LEGACY).toString()
         } else {
             Html.fromHtml(htmlString).toString()
         }

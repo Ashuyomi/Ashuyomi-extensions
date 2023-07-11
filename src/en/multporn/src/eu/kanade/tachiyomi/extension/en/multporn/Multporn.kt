@@ -328,10 +328,7 @@ class Multporn : ParsedHttpSource() {
         URISelectFilter(
             "Sort By",
             filters.map { filter ->
-                filter.let {
-                    it.name = "[${it.requestType}] ${it.name}"
-                    it
-                }
+                filter.let { it.name = "[${it.requestType}] ${it.name}"; it }
             },
             state,
         ) {

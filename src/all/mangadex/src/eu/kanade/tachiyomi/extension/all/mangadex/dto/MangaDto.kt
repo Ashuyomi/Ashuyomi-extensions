@@ -90,9 +90,8 @@ data class TagDto(override val attributes: TagAttributesDto? = null) : EntityDto
 @Serializable
 data class TagAttributesDto(val group: String) : AttributesDto()
 
-typealias LocalizedString =
-    @Serializable(LocalizedStringSerializer::class)
-    Map<String, String>
+typealias LocalizedString = @Serializable(LocalizedStringSerializer::class)
+Map<String, String>
 
 /**
  * Temporary workaround while Dex API still returns arrays instead of objects

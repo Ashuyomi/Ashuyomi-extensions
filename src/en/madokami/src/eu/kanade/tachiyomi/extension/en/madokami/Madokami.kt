@@ -95,10 +95,7 @@ class Madokami : ConfigurableSource, ParsedHttpSource() {
             // to accomodate path pattern of /Raws/Magz/Series, this will remove all latter path segments that starts with !
             // will fails if there's ever manga with ! prefix, but for now it works
             var i = url.pathSize - 1
-            while (url.pathSegments[i].startsWith("!") && i >= 2) {
-                builder.removePathSegment(i)
-                i--
-            }
+            while (url.pathSegments[i].startsWith("!") && i >= 2) { builder.removePathSegment(i); i--; }
             return authenticate(GET(builder.build().toUrl().toExternalForm(), headers))
         }
         return authenticate(GET(url.toUrl().toExternalForm(), headers))
