@@ -19,7 +19,6 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import rx.Observable
 import uy.kohesive.injekt.injectLazy
@@ -264,7 +263,7 @@ abstract class MangasProject(
         return GET(baseUrl + chapter.url, newHeaders)
     }
 
-    private fun pageListApiRequest(chapterUrl: String, token: String): Request {
+    private fun pageListApiRequest(chapterUrl: String): Request {
         val newHeaders = sourceHeadersBuilder()
             .set("Referer", chapterUrl)
             .build()
@@ -273,32 +272,23 @@ abstract class MangasProject(
             .substringBeforeLast("/")
             .substringAfterLast("/")
 
-        return GET("$baseUrl/leitor/pages/$id.json?key=$token", newHeaders)
+        return GET("$baseUrl/leitor/pages/$id.json", newHeaders)
     }
 
     override fun pageListParse(response: Response): List<Page> {
-        val document = response.asJsoup()
-        val readerToken = getReaderToken(document) ?: throw Exception(TOKEN_NOT_FOUND)
         val chapterUrl = getChapterUrl(response)
 
-        val apiRequest = pageListApiRequest(chapterUrl, readerToken)
+        val apiRequest = pageListApiRequest(chapterUrl)
         val apiResponse = client.newCall(apiRequest).execute()
             .parseAs<MangasProjectReaderDto>()
 
         return apiResponse.images
-            .filter { it.startsWith("http") }
+            .filter { it.startsWith("https") }
             .mapIndexed { i, imageUrl -> Page(i, chapterUrl, imageUrl) }
     }
 
     open fun getChapterUrl(response: Response): String {
         return response.request.url.toString()
-    }
-
-    protected open fun getReaderToken(document: Document): String? {
-        return document.select("script[src*=\"window.READER_TOKEN\"]").firstOrNull()?.data()
-        // ?.attr("abs:src")
-        // ?.toHttpUrlOrNull()
-        // ?.queryParameter("token")
     }
 
     override fun fetchImageUrl(page: Page): Observable<String> = Observable.just(page.imageUrl!!)
@@ -315,7 +305,7 @@ abstract class MangasProject(
     }
 
     private inline fun <reified T> Response.parseAs(): T {
-        val responseBody = body.string().orEmpty()
+        val responseBody = body?.string().orEmpty()
 
         val errorResult = json.decodeFromString<MangasProjectErrorDto>(responseBody)
 
@@ -336,9 +326,9 @@ abstract class MangasProject(
 
     companion object {
         private const val ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9," +
-            "image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
+            "images/legacy,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
         private const val ACCEPT_JSON = "application/json, text/javascript, */*; q=0.01"
-        private const val ACCEPT_IMAGE = "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
+        private const val ACCEPT_IMAGE = "images/legacy,image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
         private const val ACCEPT_LANGUAGE = "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7,es;q=0.6,gl;q=0.5"
         private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Safari/537.36"
