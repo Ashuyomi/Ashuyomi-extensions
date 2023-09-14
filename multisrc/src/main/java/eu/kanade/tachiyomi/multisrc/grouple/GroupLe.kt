@@ -150,14 +150,14 @@ abstract class GroupLe(
             else -> rawAgeValue
         }
         val manga = SManga.create()
-        manga.title = document.select("h1.names .name").text()
+        manga.title = document.select(".names > .name").text()
         manga.author = infoElement.select("span.elem_author").first()?.text() ?: infoElement.select(
             "span.elem_screenwriter",
         ).first()?.text()
         manga.artist = infoElement.select("span.elem_illustrator").first()?.text()
         manga.genre = (
-            "$category, $rawAgeStop, " + infoElement.select("span.elem_genre")
-                .text() + ", " + infoElement.select("span.elem_tag").text()
+            "$category, $rawAgeStop, " + infoElement.select("p:contains(Жанры:) a, p:contains(Теги:) a")
+                .joinToString { it.text() }
             ).split(", ")
             .filter { it.isNotEmpty() }.joinToString { it.trim().lowercase() }
         val altName = if (infoElement.select(".another-names").isNotEmpty()) {
@@ -179,6 +179,7 @@ abstract class GroupLe(
                     "продолжается" -> SManga.ONGOING
                     "начат" -> SManga.ONGOING
                     "переведено" -> SManga.COMPLETED
+                    "завершён" -> SManga.COMPLETED
                     "приостановлен" -> SManga.ON_HIATUS
                     else -> SManga.UNKNOWN
                 }
@@ -201,7 +202,7 @@ abstract class GroupLe(
 
     private fun chapterListParse(response: Response, manga: SManga): List<SChapter> {
         val document = response.asJsoup()
-        if ((document.select(".expandable.hide-dn").isNotEmpty() || document.select("img.logo").first()?.attr("title")?.contains("Allhentai") == true) && document.select(".user-avatar").isNullOrEmpty()) {
+        if ((document.select(".expandable.hide-dn").isNotEmpty() && document.select(".user-avatar").isNullOrEmpty() && document.toString().contains("current_user_country_code = 'RU'")) || (document.select("img.logo").first()?.attr("title")?.contains("Allhentai") == true && document.select(".user-avatar").isNullOrEmpty())) {
             throw Exception("Для просмотра контента необходима авторизация через WebView\uD83C\uDF0E")
         }
         return document.select(chapterListSelector()).map { chapterFromElement(it, manga) }

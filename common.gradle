@@ -3,11 +3,13 @@ apply plugin: 'org.jmailen.kotlinter'
 android {
     compileSdkVersion AndroidConfig.compileSdk
 
+    namespace "eu.kanade.tachiyomi.extension"
     sourceSets {
         main {
             manifest.srcFile "AndroidManifest.xml"
             java.srcDirs = ['src']
             res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
         }
         release {
             manifest.srcFile "AndroidManifest.xml"

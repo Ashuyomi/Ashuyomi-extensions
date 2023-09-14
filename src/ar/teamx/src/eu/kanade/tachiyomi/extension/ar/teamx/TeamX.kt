@@ -22,7 +22,7 @@ class TeamX : ParsedHttpSource() {
 
     override val name = "Team X"
 
-    override val baseUrl = "https://team1x1.fun"
+    override val baseUrl = "https://teamxnovel.com"
 
     override val lang = "ar"
 
@@ -190,7 +190,7 @@ class TeamX : ParsedHttpSource() {
     // Pages
 
     override fun pageListParse(document: Document): List<Page> {
-        return document.select("div.image_list img").mapIndexed { i, img ->
+        return document.select("div.image_list img[src]").mapIndexed { i, img ->
             Page(i, "", img.absUrl("src"))
         }
     }

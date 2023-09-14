@@ -8,7 +8,7 @@ import eu.kanade.tachiyomi.source.model.SManga
 import okhttp3.Request
 import org.jsoup.nodes.Element
 
-class ManhwaFreak : MangaThemesia("Manhwa Freak", "https://manhwafreak.com", "en") {
+class ManhwaFreak : MangaThemesia("Manhwa Freak", "https://manhwa-freak.com", "en") {
 
     // they called the theme "mangareaderfix"
 
@@ -51,7 +51,7 @@ class ManhwaFreak : MangaThemesia("Manhwa Freak", "https://manhwafreak.com", "en
     override fun chapterFromElement(element: Element) = SChapter.create().apply {
         val urlElements = element.select("a")
         setUrlWithoutDomain(urlElements.attr("href"))
-        name = element.select(".chapter-info p:nth-child(1)")!!.text().ifBlank { urlElements.first()!!.text() }
+        name = element.select(".chapter-info p:nth-child(1)").text().ifBlank { urlElements.first()!!.text() }
         date_upload = element.selectFirst(".chapter-info p:nth-child(2)")?.text().parseChapterDate()
     }
 

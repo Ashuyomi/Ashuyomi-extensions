@@ -21,6 +21,7 @@
 | Origami Orpheans | Modificado | ✅ |
 | MiniTwo Scan | Modificado | ✅ |
 | NekoBreaker Scan | Modificado | ✅ |
+| Bakai | Modificado | ❌ |
 
 # Extenções que morreram
 

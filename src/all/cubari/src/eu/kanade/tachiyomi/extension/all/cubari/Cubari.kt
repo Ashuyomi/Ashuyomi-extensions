@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Build
 import eu.kanade.tachiyomi.AppInfo
 import eu.kanade.tachiyomi.network.GET
+import eu.kanade.tachiyomi.network.asObservable
 import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
@@ -105,7 +106,7 @@ open class Cubari(override val lang: String) : HttpSource() {
 
     override fun fetchChapterList(manga: SManga): Observable<List<SChapter>> {
         return client.newCall(chapterListRequest(manga))
-            .asObservableSuccess()
+            .asObservable()
             .map { response -> chapterListParse(response, manga) }
     }
 

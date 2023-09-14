@@ -28,18 +28,15 @@ import java.util.concurrent.TimeUnit
 
 class AsuraScansEn : MangaThemesia(
     "Asura Scans",
-    "https://www.asurascans.com",
+    "https://asuracomics.com",
     "en",
     dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.US),
 ) {
 
     private val preferences = Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
 
-    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
+    override val client: OkHttpClient = super.client.newBuilder()
         .addInterceptor(::urlChangeInterceptor)
-        .addInterceptor(uaIntercept)
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
         .rateLimit(1, 3, TimeUnit.SECONDS)
         .build()
 
@@ -232,7 +229,7 @@ class AsuraScansEn : MangaThemesia(
             setDefaultValue(true)
         }.also(screen::addPreference)
 
-        addRandomAndCustomUserAgentPreferences(screen)
+        super.setupPreferenceScreen(screen)
     }
 
     private val SharedPreferences.permaUrlPref

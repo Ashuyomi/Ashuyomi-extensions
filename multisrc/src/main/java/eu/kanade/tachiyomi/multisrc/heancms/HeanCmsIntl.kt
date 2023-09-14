@@ -16,6 +16,12 @@ class HeanCmsIntl(lang: String) {
         else -> "Status"
     }
 
+    val statusAll: String = when (availableLang) {
+        BRAZILIAN_PORTUGUESE -> "Todos"
+        SPANISH -> "Todos"
+        else -> "All"
+    }
+
     val statusOngoing: String = when (availableLang) {
         BRAZILIAN_PORTUGUESE -> "Em andamento"
         SPANISH -> "En curso"
@@ -80,6 +86,12 @@ class HeanCmsIntl(lang: String) {
         else ->
             "The URL of the series has changed. Migrate from $sourceName " +
                 "to $sourceName to update the URL."
+    }
+
+    val idNotFoundError: String = when (availableLang) {
+        BRAZILIAN_PORTUGUESE -> "Falha ao obter o ID do slug: "
+        SPANISH -> "No se pudo encontrar el ID para: "
+        else -> "Failed to get the ID for slug: "
     }
 
     companion object {

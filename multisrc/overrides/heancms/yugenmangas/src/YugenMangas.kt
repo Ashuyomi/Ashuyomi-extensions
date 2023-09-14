@@ -2,25 +2,30 @@ package eu.kanade.tachiyomi.extension.es.yugenmangas
 
 import eu.kanade.tachiyomi.multisrc.heancms.Genre
 import eu.kanade.tachiyomi.multisrc.heancms.HeanCms
-import eu.kanade.tachiyomi.network.interceptor.rateLimit
+import eu.kanade.tachiyomi.network.interceptor.rateLimitHost
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
-class YugenMangas : HeanCms(
-    "YugenMangas",
-    "https://yugenmangas.net",
-    "es",
-    "https://api.yugenmangas.net",
-) {
+class YugenMangas :
+    HeanCms(
+        "YugenMangas",
+        "https://yugenmangas.net",
+        "es",
+        "https://api.yugenmangas.net",
+    ) {
 
     // Site changed from Madara to HeanCms.
     override val versionId = 2
 
+    override val slugStrategy = SlugStrategy.ID
+    override val useNewQueryEndpoint = true
+
     override val client = super.client.newBuilder()
         .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(90, TimeUnit.SECONDS)
-        .rateLimit(1, 1)
+        .rateLimitHost(apiUrl.toHttpUrl(), 2, 3)
         .build()
 
     override val coverPath: String = ""
