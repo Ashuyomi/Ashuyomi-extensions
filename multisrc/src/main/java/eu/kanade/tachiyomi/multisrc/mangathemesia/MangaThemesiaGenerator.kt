@@ -21,7 +21,7 @@ class MangaThemesiaGenerator : ThemeSourceGenerator {
         SingleLang("Silence Scan", "https://silencescan.com.br", "pt-BR", isNsfw = true, overrideVersionCode = 6),
         SingleLang("Origami Orpheans", "https://origami-orpheans.com.br", "pt-BR", overrideVersionCode = 10),
 
-                // Extenções Oficiais:
+        // Extenções Oficiais:
         MultiLang("Asura Scans", "https://asuratoon.com", listOf("en", "tr"), className = "AsuraScansFactory", pkgName = "asurascans", overrideVersionCode = 31),
         MultiLang("Miau Scan", "https://miaucomics.org", listOf("es", "pt-BR"), overrideVersionCode = 2),
         SingleLang("Ainz Scans ID", "https://ainzscans.site", "id"),
