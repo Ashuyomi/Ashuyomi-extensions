@@ -47,7 +47,7 @@ body:
       options:
         - label: I have checked that the extension does not already exist on the [website extensions list](https://tachiyomi.org/extensions/) or the app.
           required: true
-        - label: I have checked that the extension is not on [the removed sources list](https://github.com/tachiyomiorg/tachiyomi-extensions/blob/new/REMOVED_SOURCES.md).
+        - label: I have checked that the extension is not on [the removed sources list](https://github.com/tachiyomiorg/tachiyomi-extensions/blob/master/REMOVED_SOURCES.md).
           required: true
         - label: I have searched the existing issues and this is a new ticket, **NOT** a duplicate or related to another open or closed issue.
           required: true
