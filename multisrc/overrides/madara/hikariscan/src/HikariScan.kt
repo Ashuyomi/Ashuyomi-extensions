@@ -7,7 +7,7 @@ import java.util.Locale
 
 class HikariScan : Madara(
     "HikariScan",
-    "https://hikariscan.org/",
+    "https://hikariscan.org",
     "pt-BR",
     SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR")),
 ) {
