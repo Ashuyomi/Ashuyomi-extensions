@@ -6,7 +6,6 @@
 | Leitor.net | Criado | ✅ |
 | Mangá Livre | Criado | ✅ |
 | Hunters Scan | Criado | ✅ |
-| Golden Mangás | Modificado | ✅ |
 | Mundo Mangá-Kun | Modificado | ✅ |
 | Tao Sect | Modificado | ✅ |
 | Momo no Hana Scan | Modificado | ✅ |
@@ -27,3 +26,4 @@
 | Extenções | Status |
 |--|--|
 | Muito Mangá | Deletado |
+| Golden Mangás | Deletado |
