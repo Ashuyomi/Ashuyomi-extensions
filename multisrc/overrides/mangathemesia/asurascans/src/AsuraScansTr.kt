@@ -19,7 +19,10 @@ class AsuraScansTr : MangaThemesia(
     "tr",
     dateFormat = SimpleDateFormat("MMM d, yyyy", Locale("tr")),
 ) {
-    override val client: OkHttpClient = super.client.newBuilder()
+    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
+        .addInterceptor(uaIntercept)
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
         .rateLimit(1, 3, TimeUnit.SECONDS)
         .build()
 

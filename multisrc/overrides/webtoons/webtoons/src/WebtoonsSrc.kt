@@ -57,10 +57,10 @@ open class WebtoonsSrc(
         var pages = document.select("div#_imageList > img").mapIndexed { i, element -> Page(i, "", element.attr("data-url")) }
 
         if (showAuthorsNotesPref()) {
-            val note = document.select("div.creator_note p.author_text").text()
+            val note = document.select("div.comment_area div.info_area p").text()
 
             if (note.isNotEmpty()) {
-                val creator = document.select("div.creator_note a.author_name span").text().trim()
+                val creator = document.select("div.creator_note span.author a").text().trim()
 
                 pages = pages + Page(
                     pages.size,

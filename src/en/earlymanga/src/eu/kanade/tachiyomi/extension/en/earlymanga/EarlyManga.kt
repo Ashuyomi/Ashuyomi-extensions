@@ -28,7 +28,7 @@ class EarlyManga : ParsedHttpSource() {
 
     override val name = "EarlyManga"
 
-    override val baseUrl = "https://earlycomic.com"
+    override val baseUrl = "https://v1.earlym.org"
 
     override val lang = "en"
 

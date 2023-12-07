@@ -9,14 +9,12 @@ import java.util.concurrent.TimeUnit
 
 class RandomScan : Madara(
     "Random Scan",
-    "https://randomscanlators.net",
+    "https://randomscans.com",
     "pt-BR",
-    SimpleDateFormat("MMMMM dd, yyyy", Locale("pt", "BR")),
+    SimpleDateFormat("dd 'de' MMMM 'de' yyyy", Locale("pt", "BR")),
 ) {
 
     override val client: OkHttpClient = super.client.newBuilder()
         .rateLimit(1, 2, TimeUnit.SECONDS)
         .build()
-
-    override val useNewChapterEndpoint = true
 }

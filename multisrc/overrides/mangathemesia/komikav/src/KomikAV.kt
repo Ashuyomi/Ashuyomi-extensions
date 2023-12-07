@@ -8,6 +8,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class KomikAV : MangaThemesia(
     "Komik AV (WP Manga Stream)",
@@ -18,7 +19,9 @@ class KomikAV : MangaThemesia(
     // Formerly "Komik AV (WP Manga Stream)"
     override val id = 7875815514004535629
 
-    override val client: OkHttpClient = super.client.newBuilder()
+    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
         .rateLimit(4)
         .build()
 

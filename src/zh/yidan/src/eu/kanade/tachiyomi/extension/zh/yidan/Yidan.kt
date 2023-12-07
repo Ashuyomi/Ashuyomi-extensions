@@ -47,7 +47,7 @@ class Yidan : HttpSource(), ConfigurableSource {
 
     override fun popularMangaParse(response: Response): MangasPage {
         val listing: ListingDto = response.parseAs()
-        val mangas = listing.list.map { it.toSManga(baseUrl) }
+        val mangas = listing.list.map { it.toSManga() }
         val hasNextPage = run {
             val url = response.request.url
             val pageSize = url.queryParameter("pageSize")!!.toInt()
@@ -84,7 +84,7 @@ class Yidan : HttpSource(), ConfigurableSource {
     }
 
     override fun mangaDetailsParse(response: Response) =
-        response.parseAs<MangaDto>().toSManga(baseUrl)
+        response.parseAs<MangaDto>().toSManga()
 
     override fun chapterListRequest(manga: SManga) =
         GET("$baseUrl/prod-api/app-api/vv/mh-episodes/list?mhid=${manga.url}", headers)
@@ -132,6 +132,6 @@ class Yidan : HttpSource(), ConfigurableSource {
 
     companion object {
         private const val MIRROR_PREF = "MIRROR"
-        private val MIRRORS get() = arrayOf("ydan.cc", "yidan.one", "yidan.in", "yidan.info")
+        private val MIRRORS get() = arrayOf("ydan.cc", "ydan.vip", "dans.cc")
     }
 }

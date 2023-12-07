@@ -17,6 +17,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 class KomikCast : MangaThemesia(
     "Komik Cast",
@@ -27,11 +28,13 @@ class KomikCast : MangaThemesia(
     // Formerly "Komik Cast (WP Manga Stream)"
     override val id = 972717448578983812
 
-    override val client: OkHttpClient = super.client.newBuilder()
+    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
+        .connectTimeout(10, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
         .rateLimit(3)
         .build()
 
-    override fun headersBuilder(): Headers.Builder = super.headersBuilder()
+    override fun headersBuilder(): Headers.Builder = Headers.Builder()
         .add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
         .add("Accept-language", "en-US,en;q=0.9,id;q=0.8")
         .add("Referer", baseUrl)
@@ -73,7 +76,7 @@ class KomikCast : MangaThemesia(
     override fun chapterFromElement(element: Element) = SChapter.create().apply {
         val urlElements = element.select("a")
         setUrlWithoutDomain(urlElements.attr("href"))
-        name = element.select(".chapter-link-item").text()
+        name = element.select(".lch a, .chapternum")!!.text().ifBlank { urlElements.first()!!.text() }
         date_upload = parseChapterDate2(element.select(".chapter-link-time").text())
     }
 

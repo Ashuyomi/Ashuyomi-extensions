@@ -26,6 +26,8 @@ class Manga18fx : Madara(
 ) {
     override val id = 3157287889751723714
 
+    override val client = network.client
+
     override val fetchGenres = false
     override val sendViewCount = false
 

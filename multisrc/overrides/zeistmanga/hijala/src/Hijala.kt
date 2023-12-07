@@ -1,12 +1,16 @@
 package eu.kanade.tachiyomi.extension.ar.hijala
 
 import eu.kanade.tachiyomi.multisrc.zeistmanga.Genre
+import eu.kanade.tachiyomi.multisrc.zeistmanga.Language
 import eu.kanade.tachiyomi.multisrc.zeistmanga.ZeistManga
 
 class Hijala : ZeistManga("Hijala", "https://hijala.blogspot.com", "ar") {
 
     override val hasFilters = true
-    override val hasLanguageFilter = false
+
+    override fun getLanguageList(): List<Language> = listOf(
+        Language(intl.all, ""),
+    )
 
     override fun getGenreList(): List<Genre> = listOf(
         Genre("أكشن", "Action"),

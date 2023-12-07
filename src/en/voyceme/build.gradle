@@ -6,7 +6,7 @@ ext {
     extName = 'Voyce.Me'
     pkgNameSuffix = 'en.voyceme'
     extClass = '.VoyceMe'
-    extVersionCode = 3
+    extVersionCode = 2
 }
 
 apply from: "$rootDir/common.gradle"

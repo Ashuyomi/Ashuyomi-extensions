@@ -1,7 +1,5 @@
 ## Fontes removidas
 
-- Japscan https://github.com/tachiyomiorg/tachiyomi-extensions/pull/17892
-
 ## Remoção solicitada pela equipe da scan
 ### BRA - Brasil
 
@@ -18,9 +16,6 @@
 - ARES Manga https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15396
 - Astra Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13845
 - Gourmet Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6192
-- MangaSY https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12007
-- TopToon+/Day Comics https://github.com/tachiyomiorg/tachiyomi-extensions/pull/10851
-- Constellar Scans https://github.com/tachiyomiorg/tachiyomi-extensions/pull/17277
 - KomikTap/KomikTap.in https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6133
 - Luminous Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9923
 - Reset Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13168
@@ -36,7 +31,6 @@
 
 - Knightnoscanlation https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4240
 - MHScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15319
-- Mono Manga https://github.com/tachiyomiorg/tachiyomi-extensions/issues/17634
 - NarTag https://github.com/tachiyomiorg/tachiyomi-extensions/issues/8038
 - Plot-twistnf-scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4242
 
@@ -67,7 +61,6 @@
 - Neox Scanlator https://github.com/tachiyomiorg/tachiyomi-extensions/pull/12695
 - Union Mangás https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7065
 - YES Mangás https://github.com/tachiyomiorg/tachiyomi-extensions/pull/7065
-- Mode Scanlator https://github.com/tachiyomiorg/tachiyomi-extensions/pull/17865
 
 ### USA - Estados Unidos
 

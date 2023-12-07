@@ -13,22 +13,17 @@ import java.util.Locale
 
 class MiauScanFactory : SourceFactory {
     override fun createSources() = listOf(
-        MiauScan("es"),
-        MiauScan("pt-BR"),
+        MiauScan("es", Filter.TriState.STATE_EXCLUDE),
+        MiauScan("pt-BR", Filter.TriState.STATE_INCLUDE),
     )
 }
 
-open class MiauScan(lang: String) : MangaThemesia(
+open class MiauScan(lang: String, private val portugueseMode: Int) : MangaThemesia(
     name = "Miau Scan",
-    baseUrl = "https://miauscans.com",
+    baseUrl = "https://miauscan.com",
     lang = lang,
     dateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale("es")),
 ) {
-
-    private val portugueseMode =
-        if (lang == "pt-BR") Filter.TriState.STATE_INCLUDE else Filter.TriState.STATE_EXCLUDE
-
-    override val seriesGenreSelector = ".mgen a:not(:contains(Português))"
 
     override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
         val genreFilterIndex = filters.indexOfFirst { it is GenreListFilter }
@@ -37,7 +32,7 @@ open class MiauScan(lang: String) : MangaThemesia(
 
         val overloadedGenreFilter = GenreListFilter(
             genres = genreFilter.state + listOf(
-                Genre("", PORTUGUESE_GENRE_ID, portugueseMode),
+                Genre("", PORTUGUESE_GENRE, portugueseMode),
             ),
         )
 
@@ -65,11 +60,11 @@ open class MiauScan(lang: String) : MangaThemesia(
     }
 
     override fun getGenreList(): List<Genre> {
-        return super.getGenreList().filter { it.value != PORTUGUESE_GENRE_ID }
+        return super.getGenreList().filter { it.value != PORTUGUESE_GENRE }
     }
 
     companion object {
-        const val PORTUGUESE_GENRE_ID = "307"
+        const val PORTUGUESE_GENRE = "307"
 
         val PORTUGUESE_SUFFIX = "^\\(\\s*Portugu[êe]s\\s*\\)\\s*".toRegex(RegexOption.IGNORE_CASE)
     }

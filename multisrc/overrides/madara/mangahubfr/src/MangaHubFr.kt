@@ -4,4 +4,6 @@ import eu.kanade.tachiyomi.multisrc.madara.Madara
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MangaHubFr : Madara("MangaHub.fr", "https://mangahub.fr", "fr", dateFormat = SimpleDateFormat("d MMMM yyyy", Locale.FRENCH))
+class MangaHubFr : Madara("MangaHub.fr", "https://mangahub.fr", "fr", dateFormat = SimpleDateFormat("d MMMM yyyy", Locale.FRENCH)) {
+    override fun chapterListSelector() = "li.wp-mangas-chapters"
+}

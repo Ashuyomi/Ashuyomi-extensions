@@ -12,7 +12,7 @@ class ReadAllComicsGenerator : ThemeSourceGenerator {
     override val baseVersionCode: Int = 1
 
     override val sources = listOf(
-        SingleLang("ReadAllComics", "https://readallcomics.com", "en", className = "ReadAllComicsCom", overrideVersionCode = 1),
+        SingleLang("ReadAllComics", "https://readallcomics.com", "en", className = "ReadAllComicsCom"),
         SingleLang("ReadAllManga", "https://readallmanga.com", "en"),
     )
 

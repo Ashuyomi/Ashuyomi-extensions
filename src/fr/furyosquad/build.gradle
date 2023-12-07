@@ -5,7 +5,7 @@ ext {
     extName = 'FuryoSquad'
     pkgNameSuffix = 'fr.furyosquad'
     extClass = '.FuryoSquad'
-    extVersionCode = 3
+    extVersionCode = 2
 }
 
 apply from: "$rootDir/common.gradle"

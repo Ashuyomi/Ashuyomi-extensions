@@ -7,10 +7,9 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.ParsedHttpSource
 import okhttp3.Headers
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.text.SimpleDateFormat
@@ -24,7 +23,7 @@ class GoldenMangas : ParsedHttpSource() {
 
     override val name = "Golden Mangás"
 
-    override val baseUrl = "https://goldenmanga.top"
+    override val baseUrl = "https://goldenmangas.top"
 
     override val lang = "pt-BR"
 
@@ -46,8 +45,8 @@ class GoldenMangas : ParsedHttpSource() {
     override fun popularMangaSelector(): String = "div#maisLidos div.itemmanga"
 
     override fun popularMangaFromElement(element: Element): SManga = SManga.create().apply {
-        title = element.selectFirst("h3")!!.text().withoutLanguage()
-        thumbnail_url = element.selectFirst("img")!!.absUrl("src")
+        title = element.select("h3").text().withoutLanguage()
+        thumbnail_url = element.select("img").attr("abs:src")
         url = element.attr("href")
     }
 
@@ -61,12 +60,12 @@ class GoldenMangas : ParsedHttpSource() {
     override fun latestUpdatesSelector() = "div.col-sm-12.atualizacao > div.row"
 
     override fun latestUpdatesFromElement(element: Element): SManga = SManga.create().apply {
-        val infoElement = element.selectFirst("div.col-sm-10.col-xs-8 h3")!!
-        val thumbElement = element.selectFirst("a:first-child div img")!!
+        val infoElement = element.select("div.col-sm-10.col-xs-8 h3").first()!!
+        val thumbElement = element.select("a:first-child div img").first()!!
 
         title = infoElement.text().withoutLanguage()
-        thumbnail_url = thumbElement.absUrl("src")
-            .replace("w=100&h=140", "w=380&h=600")
+        thumbnail_url = thumbElement.attr("abs:src")
+            .replace("w=80&h=120", "w=380&h=600")
         url = element.select("a:first-child").attr("href")
     }
 
@@ -77,7 +76,7 @@ class GoldenMangas : ParsedHttpSource() {
             .set("Referer", "$baseUrl/mangas")
             .build()
 
-        val url = "$baseUrl/mangas".toHttpUrl().newBuilder()
+        val url = "$baseUrl/mangas".toHttpUrlOrNull()!!.newBuilder()
             .addQueryParameter("busca", query)
             .toString()
 
@@ -87,28 +86,17 @@ class GoldenMangas : ParsedHttpSource() {
     override fun searchMangaSelector() = "div.mangas.col-lg-2 a"
 
     override fun searchMangaFromElement(element: Element): SManga = SManga.create().apply {
-        title = element.selectFirst("h3")!!.text().withoutLanguage()
-        thumbnail_url = element.selectFirst("img")!!.absUrl("src")
+        title = element.select("h3").text().withoutLanguage()
+        thumbnail_url = element.select("img").attr("abs:src")
         url = element.attr("href")
     }
 
     override fun searchMangaNextPageSelector(): String? = null
 
-    override fun mangaDetailsParse(response: Response): SManga {
-        val mangaResult = runCatching { super.mangaDetailsParse(response) }
-        val manga = mangaResult.getOrNull()
-
-        if (manga?.title.isNullOrEmpty()) {
-            throw Exception(MIGRATE_WARNING)
-        }
-
-        return manga!!
-    }
-
     override fun mangaDetailsParse(document: Document): SManga = SManga.create().apply {
-        val infoElement = document.selectFirst("div.row > div.col-sm-8 > div.row")!!
-        val firstColumn = infoElement.selectFirst("div.col-sm-4.text-right > img")!!
-        val secondColumn = infoElement.selectFirst("div.col-sm-8")!!
+        val infoElement = document.select("div.row > div.col-sm-8 > div.row").first()!!
+        val firstColumn = infoElement.select("div.col-sm-4.text-right > img").first()!!
+        val secondColumn = infoElement.select("div.col-sm-8").first()!!
 
         title = secondColumn.select("h2:eq(0)").text().withoutLanguage()
         author = secondColumn.select("h5:contains(Autor)").text().withoutLabel()
@@ -121,24 +109,14 @@ class GoldenMangas : ParsedHttpSource() {
         thumbnail_url = firstColumn.attr("abs:src")
     }
 
-    override fun chapterListParse(response: Response): List<SChapter> {
-        val chaptersResult = runCatching { super.chapterListParse(response) }
-        val chapterList = chaptersResult.getOrNull()
-
-        if (chapterList.isNullOrEmpty()) {
-            throw Exception(MIGRATE_WARNING)
-        }
-
-        return chapterList
-    }
-
     override fun chapterListSelector() = "ul#capitulos li.row"
 
     override fun chapterFromElement(element: Element): SChapter = SChapter.create().apply {
-        val firstColumn = element.selectFirst("a > div.col-sm-5")!!
-        val secondColumn = element.select("div.col-sm-5.text-right a:not([href^='/'])")
+        val firstColumn = element.select("a > div.col-sm-5")
+        val secondColumn = element.select("div.col-sm-5.text-right a[href^='http']")
 
-        name = firstColumn.text().substringBefore("(").trim()
+        name = firstColumn.select("div.col-sm-5").first()!!.text()
+            .substringBefore("(").trim()
         scanlator = secondColumn.joinToString { it.text() }
         date_upload = firstColumn.select("div.col-sm-5 span[style]").text().toDate()
         url = element.select("a").attr("href")
@@ -153,19 +131,17 @@ class GoldenMangas : ParsedHttpSource() {
     }
 
     override fun pageListParse(document: Document): List<Page> {
-        val chapterImages = document.selectFirst("div.col-sm-12[id^='capitulos_images']:has(img[pag])")
+        val chapterImages = document
+            .select("div.col-sm-12[id^='capitulos_images']:has(img[pag])")
+            .firstOrNull()
 
-        val isNovel = document.selectFirst(".block_text_border") !== null
+        val isNovel = document.select(".block_text_border").firstOrNull() !== null
 
         if (chapterImages == null && isNovel) {
             throw Exception(CHAPTER_IS_NOVEL_ERROR)
         }
 
-        if (chapterImages == null) {
-            throw Exception(MIGRATE_WARNING)
-        }
-
-        return chapterImages.select("img[pag]")
+        return chapterImages!!.select("img[pag]")
             .mapIndexed { i, element ->
                 Page(i, document.location(), element.attr("abs:src"))
             }
@@ -183,7 +159,7 @@ class GoldenMangas : ParsedHttpSource() {
     }
 
     private fun String.toDate(): Long {
-        return runCatching { DATE_FORMATTER.parse(trim())?.time }
+        return runCatching { DATE_FORMATTER.parse(trim())?. time }
             .getOrNull() ?: 0L
     }
 
@@ -209,10 +185,8 @@ class GoldenMangas : ParsedHttpSource() {
         private const val CHAPTER_IS_NOVEL_ERROR =
             "O capítulo é uma novel em formato de texto e não possui imagens."
 
-        private const val MIGRATE_WARNING = "Migre o item da Golden Mangás para Golden Mangás para atualizar a URL."
-
         private val DATE_FORMATTER by lazy {
-            SimpleDateFormat("(dd/MM/yyyy)", Locale("pt", "BR"))
+            SimpleDateFormat("(dd/MM/yyyy)", Locale.ENGLISH)
         }
     }
 }

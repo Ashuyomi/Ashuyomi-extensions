@@ -1,20 +1,8 @@
 package eu.kanade.tachiyomi.extension.vi.hentaivn
 
-import android.app.Application
-import android.content.SharedPreferences
-import android.widget.Toast
-import androidx.preference.EditTextPreference
-import androidx.preference.ListPreference
-import androidx.preference.PreferenceScreen
-import androidx.preference.SwitchPreferenceCompat
-import eu.kanade.tachiyomi.extension.BuildConfig
-import eu.kanade.tachiyomi.lib.randomua.getPrefCustomUA
-import eu.kanade.tachiyomi.lib.randomua.getPrefUAType
-import eu.kanade.tachiyomi.lib.randomua.setRandomUserAgent
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.network.interceptor.rateLimit
-import eu.kanade.tachiyomi.source.ConfigurableSource
 import eu.kanade.tachiyomi.source.model.Filter
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
@@ -23,91 +11,174 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.ParsedHttpSource
 import eu.kanade.tachiyomi.util.asJsoup
+import okhttp3.CookieJar
 import okhttp3.Headers
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import rx.Observable
-import uy.kohesive.injekt.Injekt
-import uy.kohesive.injekt.api.get
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class HentaiVN : ParsedHttpSource(), ConfigurableSource {
+class HentaiVN : ParsedHttpSource() {
 
-    private val preferences: SharedPreferences by lazy {
-        Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
-    }
-
+    override val baseUrl = "https://hentaivn.site"
+    override val lang = "vi"
     override val name = "HentaiVN"
+    override val supportsLatest = true
 
-    private val defaultBaseUrl = "https://hentaivn.tv"
-    override val baseUrl = preferences.getString(PREF_KEY_BASE_URL, defaultBaseUrl)!!
-
-    private val domain = baseUrl.toHttpUrl().host
     private val searchUrl = "$baseUrl/forum/search-plus.php"
     private val searchByAuthorUrl = "$baseUrl/tim-kiem-tac-gia.html"
     private val searchAllURL = "$baseUrl/tim-kiem-truyen.html"
+    private val searchClient = network.cloudflareClient
 
-    override val lang = "vi"
-
-    override val supportsLatest = true
-
-    override val client: OkHttpClient by lazy {
-        val baseClient = if (preferences.getBoolean(PREF_KEY_ENABLE_CLOUDFLARE_BYPASS, true)) {
-            network.cloudflareClient
-        } else {
-            network.client
+    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
+        .cookieJar(CookieJar.NO_COOKIES)
+        .addInterceptor { chain ->
+            val originalRequest = chain.request()
+            when {
+                originalRequest.url.toString().startsWith(searchUrl) -> {
+                    searchClient.newCall(originalRequest).execute()
+                }
+                else -> chain.proceed(originalRequest)
+            }
         }
-
-        baseClient.newBuilder()
-            .addNetworkInterceptor(CookieInterceptor(domain, "view1", "1"))
-            .addNetworkInterceptor(CookieInterceptor(domain, "view4", "1"))
-            .setRandomUserAgent(
-                preferences.getPrefUAType(),
-                preferences.getPrefCustomUA(),
-            )
-            .rateLimit(1)
-            .build()
-    }
+        .rateLimit(3)
+        .build()
 
     override fun headersBuilder(): Headers.Builder = super.headersBuilder()
-        .add("Referer", "$baseUrl/")
+        .add("Referer", baseUrl)
+        .add("Cookie", "view1=1; view4=1") // bypass "captcha" and get popular manga
+
+    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
 
     // latestUpdates
     override fun latestUpdatesRequest(page: Int): Request {
         return GET("$baseUrl/chap-moi.html?page=$page", headers)
     }
 
-    override fun latestUpdatesSelector() = ".block-item ul li.item"
-
+    override fun latestUpdatesSelector() = ".main > .block-left > .block-item > ul > li.item"
+    override fun latestUpdatesNextPageSelector() = "ul.pagination > li:contains(Next)"
     override fun latestUpdatesFromElement(element: Element): SManga {
         val manga = SManga.create()
-        element.select(".box-description a, .box-description-2 a").first()!!.let {
+        element.select(".box-description a").first()!!.let {
             manga.setUrlWithoutDomain(it.attr("href"))
             manga.title = it.text().trim()
         }
-        manga.thumbnail_url = imageFromElement(element.selectFirst(".box-cover a img, .box-cover-2 a img"))
+        manga.thumbnail_url = element.select(".box-cover a img").attr("data-src")
         return manga
     }
-
-    override fun latestUpdatesNextPageSelector() = ".pagination *:contains(Next)"
 
     // Popular
     override fun popularMangaRequest(page: Int): Request {
         return GET("$baseUrl/danh-sach.html?page=$page", headers)
     }
 
+    override fun popularMangaFromElement(element: Element) = latestUpdatesFromElement(element)
+    override fun popularMangaNextPageSelector() = latestUpdatesNextPageSelector()
     override fun popularMangaSelector() = latestUpdatesSelector()
 
-    override fun popularMangaFromElement(element: Element) = latestUpdatesFromElement(element)
+    // Chapter
+    override fun chapterListSelector() = "table.listing > tbody > tr"
+    override fun chapterFromElement(element: Element): SChapter {
+        if (element.select("a").isEmpty()) throw Exception(element.select("h2").html())
+        val chapter = SChapter.create()
+        element.select("a").first()!!.let {
+            chapter.name = it.select("h2").text()
+            chapter.setUrlWithoutDomain(it.attr("href"))
+        }
+        chapter.date_upload = parseDate(element.select("td:nth-child(2)").text().trim())
+        return chapter
+    }
 
-    override fun popularMangaNextPageSelector() = latestUpdatesNextPageSelector()
+    override fun chapterListRequest(manga: SManga): Request {
+        val mangaId = manga.url.substringAfterLast("/").substringBefore('-')
+        return GET("$baseUrl/list-showchapter.php?idchapshow=$mangaId", headers)
+    }
+
+    private fun parseDate(dateString: String): Long {
+        return try {
+            dateFormat.parse(dateString)?.time ?: 0L
+        } catch (e: ParseException) {
+            return 0L
+        }
+    }
+
+    override fun imageUrlParse(document: Document) = ""
+
+    // Detail
+    override fun mangaDetailsParse(document: Document): SManga {
+        val infoElement = document.select(".main > .page-left > .left-info > .page-info")
+        val manga = SManga.create()
+        manga.title = document.selectFirst(".breadcrumb2 li:last-child span")!!.text()
+        manga.author = infoElement.select("p:contains(Tác giả:) a").text()
+        manga.description = infoElement.select(":root > p:contains(Nội dung:) + p").text()
+        manga.genre = infoElement.select("p:contains(Thể loại:) a").joinToString { it.text() }
+        manga.thumbnail_url =
+            document.select(".main > .page-right > .right-info > .page-ava > img").attr("src")
+        manga.status =
+            parseStatus(infoElement.select("p:contains(Tình Trạng:) a").firstOrNull()?.text())
+        return manga
+    }
+
+    private fun parseStatus(status: String?) = when {
+        status == null -> SManga.UNKNOWN
+        status.contains("Đang tiến hành") -> SManga.ONGOING
+        status.contains("Đã hoàn thành") -> SManga.COMPLETED
+        else -> SManga.UNKNOWN
+    }
+
+    // Pages
+    override fun pageListParse(document: Document): List<Page> {
+        return document.select("#image > img").mapIndexed { i, e ->
+            Page(i, imageUrl = e.attr("abs:src"))
+        }
+    }
 
     // Search
+    override fun searchMangaParse(response: Response): MangasPage {
+        val document = response.asJsoup()
+        if (document.select("p").toString()
+            .contains("Bạn chỉ có thể sử dụng chức năng này khi đã đăng ký thành viên")
+        ) {
+            throw Exception("Đăng nhập qua WebView để kích hoạt tìm kiếm")
+        }
+
+        val mangas = document.select(searchMangaSelector()).map { element ->
+            searchMangaFromElement(element)
+        }
+
+        val hasNextPage = searchMangaNextPageSelector().let { selector ->
+            document.select(selector).first()
+        } != null
+
+        return MangasPage(mangas, hasNextPage)
+    }
+
+    override fun searchMangaFromElement(element: Element): SManga {
+        val manga = SManga.create()
+        element.select(".search-des > a, .box-description a").first()!!.let {
+            manga.setUrlWithoutDomain(it.attr("href"))
+            manga.title = it.text().trim()
+        }
+        manga.thumbnail_url = element.select("div.search-img img, .box-cover a img").attr("abs:src")
+        return manga
+    }
+
+    override fun searchMangaNextPageSelector() = "ul.pagination > li:contains(Cuối)"
+
+    private fun searchMangaByIdRequest(id: String) = GET("$searchAllURL?key=$id", headers)
+    private fun searchMangaByIdParse(response: Response, ids: String): MangasPage {
+        val details = mangaDetailsParse(response)
+        details.url = "/$ids-doc-truyen-id.html"
+        return MangasPage(listOf(details), false)
+    }
+
     override fun fetchSearchManga(
         page: Int,
         query: String,
@@ -158,242 +229,34 @@ class HentaiVN : ParsedHttpSource(), ConfigurableSource {
         }
     }
 
-    override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
-        val url = searchUrl.toHttpUrl().newBuilder().apply {
-            addQueryParameter("name", query)
-            addQueryParameter("dou", "")
-            addQueryParameter("char", "")
-            addQueryParameter("search", "")
-
-            if (page > 1) {
-                addQueryParameter("page", page.toString())
-            }
-
-            (if (filters.isEmpty()) getFilterList() else filters).forEach { filter ->
-                when (filter) {
-                    is TextField -> setQueryParameter(filter.key, filter.state)
-                    is GenreList ->
-                        filter.state
-                            .filter { it.state }
-                            .map { it.id }
-                            .forEach { addQueryParameter("tag[]", it) }
-                    is GroupList -> {
-                        val group = getGroupList()[filter.state]
-                        addQueryParameter("group", group.id)
-                    }
-                    else -> {}
-                }
-            }
-        }.build()
-
-        return GET(url, headers)
+    companion object {
+        const val PREFIX_ID_SEARCH = "id:"
     }
 
-    override fun searchMangaParse(response: Response): MangasPage {
-        val document = response.asJsoup()
-        if (document.select("p").toString()
-            .contains("Bạn chỉ có thể sử dụng chức năng này khi đã đăng ký thành viên")
-        ) {
-            throw Exception("Đăng nhập qua WebView để kích hoạt tìm kiếm")
+    override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
+        val url = "$searchUrl?name=$query&page=$page&dou=&char=&group=0&search=".toHttpUrlOrNull()!!
+            .newBuilder()
+        (if (filters.isEmpty()) getFilterList() else filters).forEach { filter ->
+            when (filter) {
+                is TextField -> url.addQueryParameter(filter.key, filter.state)
+                is GenreList ->
+                    filter.state
+                        .filter { it.state }
+                        .map { it.id }
+                        .forEach { url.addQueryParameter("tag[]", it) }
+                is GroupList -> {
+                    val group = getGroupList()[filter.state]
+                    url.addQueryParameter("group", group.id)
+                }
+                else -> {}
+            }
         }
 
-        val mangas = document.select(searchMangaSelector()).map { element ->
-            searchMangaFromElement(element)
-        }
-
-        val hasNextPage = searchMangaNextPageSelector().let { selector ->
-            document.select(selector).first()
-        } != null
-
-        return MangasPage(mangas, hasNextPage)
+        return GET(url.toString(), headers)
     }
 
     override fun searchMangaSelector() =
-        ".search-ul .search-li, ${latestUpdatesSelector()}"
-
-    override fun searchMangaFromElement(element: Element): SManga {
-        val manga = SManga.create()
-        element.select(".search-des a, .box-description a, .box-description-2 a").first()!!.let {
-            manga.setUrlWithoutDomain(it.attr("href"))
-            manga.title = it.text().trim()
-        }
-        manga.thumbnail_url = imageFromElement(element.selectFirst("div.search-img img, .box-cover a img, .box-cover-2 a img"))
-        return manga
-    }
-
-    override fun searchMangaNextPageSelector() = ".pagination *:contains(Cuối), .pagination *:contains(Next)"
-
-    private fun searchMangaByIdRequest(id: String) = GET("$searchAllURL?key=$id", headers)
-    private fun searchMangaByIdParse(response: Response, ids: String): MangasPage {
-        val details = mangaDetailsParse(response)
-        details.url = "/$ids-doc-truyen-id.html"
-        return MangasPage(listOf(details), false)
-    }
-
-    // Detail
-    private val genreUrlRegex = Regex("""\"(list-info-theloai-mobile\.php?.+)\"""")
-
-    override fun mangaDetailsParse(document: Document): SManga {
-        if (document.toString().contains("document.cookie = \"mobile=1")) { // Desktop version
-            val infoElement = document.select(".main > .page-left > .left-info > .page-info")
-            return SManga.create().apply {
-                title = document.selectFirst(".breadcrumb2 li:last-child span")!!.text()
-                author = infoElement.select("p:contains(Tác giả:) a").text()
-                description = infoElement.select(":root > p:contains(Nội dung:) + p").text()
-                genre = infoElement.select("p:contains(Thể loại:) a").joinToString { it.text() }
-                thumbnail_url =
-                    imageFromElement(document.selectFirst(".main > .page-right > .right-info > .page-ava > img"))
-                status =
-                    parseStatus(infoElement.select("p:contains(Tình Trạng:) a").firstOrNull()?.text())
-            }
-        } else { // Mobile version
-            val id = document.location().substringAfterLast("/").substringBefore("-")
-            val documentText = document.toString()
-
-            return SManga.create().apply {
-                val thumbnailElem = document.selectFirst(".content-images-1 img.cover-1")
-                thumbnail_url = imageFromElement(thumbnailElem)
-
-                title = thumbnailElem?.attr("alt")?.substringBeforeLast(" Cover")?.trim() ?: client
-                    .newCall(GET("$baseUrl/list-info-ten-mobile.php?id_anime=$id"))
-                    .execute()
-                    .asJsoup()
-                    .select("h3")
-                    .text()
-
-                val genreUrl = genreUrlRegex.find(documentText)?.groupValues?.get(1)
-                genre = client
-                    .newCall(GET("$baseUrl/$genreUrl"))
-                    .execute()
-                    .asJsoup()
-                    .select("a.tag")
-                    .joinToString { it.text() }
-
-                val infoElement = client
-                    .newCall(GET("$baseUrl/list-info-all-mobile.php?id_anime=$id"))
-                    .execute()
-                    .asJsoup()
-                author = infoElement.select("p:contains(Tác giả:) a").text()
-                status = parseStatus(infoElement.select("p:contains(Tình Trạng:) a").firstOrNull()?.text())
-                description = infoElement.select("p:contains(Nội dung:) + p").text()
-            }
-        }
-    }
-
-    // Chapter
-    override fun chapterListRequest(manga: SManga): Request {
-        val mangaId = manga.url.substringAfterLast("/").substringBefore('-')
-        return GET("$baseUrl/list-showchapter.php?idchapshow=$mangaId", headers)
-    }
-
-    override fun chapterListSelector() = "table.listing > tbody > tr"
-
-    override fun chapterFromElement(element: Element): SChapter {
-        if (element.select("a").isEmpty()) throw Exception(element.select("h2").html())
-        val chapter = SChapter.create()
-        element.select("a").first()!!.let {
-            chapter.name = it.select("h2").text()
-            chapter.setUrlWithoutDomain(it.attr("href"))
-        }
-        chapter.date_upload = parseDate(element.select("td:nth-child(2)").text().trim())
-        return chapter
-    }
-
-    // Pages
-    override fun pageListParse(document: Document): List<Page> {
-        return document.select("#image > img").mapIndexed { i, e ->
-            Page(i, imageUrl = imageFromElement(e))
-        }
-    }
-
-    override fun imageUrlParse(document: Document) = ""
-
-    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
-
-    private fun parseDate(dateString: String): Long {
-        return kotlin.runCatching {
-            dateFormat.parse(dateString)?.time
-        }.getOrNull() ?: 0L
-    }
-
-    private fun parseStatus(status: String?) = when {
-        status == null -> SManga.UNKNOWN
-        status.contains("Đang tiến hành") -> SManga.ONGOING
-        status.contains("Đã hoàn thành") -> SManga.COMPLETED
-        status.contains("Tạm ngưng") -> SManga.ON_HIATUS
-        else -> SManga.UNKNOWN
-    }
-
-    private fun imageFromElement(element: Element?): String? {
-        if (element == null) return null
-
-        return when {
-            element.hasAttr("data-src") -> element.attr("abs:data-src")
-            element.hasAttr("data-lazy-src") -> element.attr("abs:data-lazy-src")
-            element.hasAttr("data-cfsrc") -> element.attr("abs:data-cfsrc")
-            element.hasAttr("srcset") -> element.attr("abs:srcset").substringBefore(" ")
-            else -> element.attr("abs:src")
-        }
-    }
-
-    override fun setupPreferenceScreen(screen: PreferenceScreen) {
-        SwitchPreferenceCompat(screen.context).apply {
-            key = PREF_KEY_ENABLE_CLOUDFLARE_BYPASS
-            title = TITLE_ENABLE_CLOUDFLARE_BYPASS
-            summary = SUMMARY_ENABLE_CLOUDFLARE_BYPASS
-
-            setDefaultValue(true)
-
-            setOnPreferenceChangeListener { _, _ ->
-                Toast.makeText(screen.context, RESTART_TACHIYOMI, Toast.LENGTH_LONG).show()
-                true
-            }
-        }.also(screen::addPreference)
-
-        EditTextPreference(screen.context).apply {
-            key = PREF_KEY_BASE_URL
-            title = TITLE_BASE_URL
-            summary = SUMMARY_BASE_URL
-
-            setDefaultValue(defaultBaseUrl)
-            dialogTitle = TITLE_BASE_URL
-
-            setOnPreferenceChangeListener { _, _ ->
-                Toast.makeText(screen.context, RESTART_TACHIYOMI, Toast.LENGTH_LONG).show()
-                true
-            }
-        }.also(screen::addPreference)
-
-        ListPreference(screen.context).apply {
-            key = PREF_KEY_RANDOM_UA
-            title = TITLE_RANDOM_UA
-            entries = ENTRIES_RANDOM_UA
-            entryValues = VALUES_RANDOM_UA
-            summary = "%s"
-            setDefaultValue("off")
-
-            setOnPreferenceChangeListener { _, _ ->
-                Toast.makeText(screen.context, RESTART_TACHIYOMI, Toast.LENGTH_LONG).show()
-                true
-            }
-        }.also(screen::addPreference)
-
-        EditTextPreference(screen.context).apply {
-            key = PREF_KEY_CUSTOM_UA
-            title = TITLE_CUSTOM_UA
-            summary = SUMMARY_CUSTOM_UA
-            setOnPreferenceChangeListener { _, newValue ->
-                try {
-                    Headers.Builder().add("User-Agent", newValue as String).build()
-                    Toast.makeText(screen.context, RESTART_TACHIYOMI, Toast.LENGTH_LONG).show()
-                    true
-                } catch (e: IllegalArgumentException) {
-                    Toast.makeText(screen.context, "Chuỗi đại diện người dùng không hợp lệ: ${e.message}", Toast.LENGTH_LONG).show()
-                    false
-                }
-            }
-        }.also(screen::addPreference)
-    }
+        ".search-ul .search-li, .main > .block-left > .block-item > ul > li.item"
 
     private class Alls : Filter.Text("Tìm tất cả")
     private class Author : Filter.Text("Tác giả")
@@ -416,12 +279,12 @@ class HentaiVN : ParsedHttpSource(), ConfigurableSource {
         Author(),
         TextField("Doujinshi", "dou"),
         TextField("Nhân vật", "char"),
-        GroupList(getGroupList()),
         GenreList(getGenreList()),
+        GroupList(getGroupList()),
     )
 
-    // console.log(jQuery.makeArray($('ul.ul-search > li').map((i, e) => `Genre("${e.textContent}", "${e.children[0].value}")`)).join(',\n'))
-    // https://hentaivn.autos/forum/search-plus.php
+    // jQuery.makeArray($('#container > div > div > div.box-box.textbox > form > ul:nth-child(7) > li').map((i, e) => `Genre("${e.textContent}", "${e.children[0].value}")`)).join(',\n')
+    // https://hentaivn.net/forum/search-plus.php
     private fun getGenreList() = listOf(
         Genre("3D Hentai", "3"),
         Genre("Action", "5"),
@@ -596,7 +459,7 @@ class HentaiVN : ParsedHttpSource(), ConfigurableSource {
     )
 
     // jQuery.makeArray($('#container > div > div > div.box-box.textbox > form > ul:nth-child(8) > li').map((i, e) => `TransGroup("${e.textContent}", "${e.children[0].value}")`)).join(',\n')
-    // https://hentaivn.autos/forum/search-plus.php
+    // https://hentaivn.net/forum/search-plus.php
     private fun getGroupList() = arrayOf(
         TransGroup("Tất cả", "0"),
         TransGroup("Đang cập nhật", "1"),
@@ -650,27 +513,4 @@ class HentaiVN : ParsedHttpSource(), ConfigurableSource {
         TransGroup("Depressed Lolicons Squad - DLS", "52"),
         TransGroup("Heaven Of The Fuck", "53"),
     )
-
-    companion object {
-        const val PREFIX_ID_SEARCH = "id:"
-
-        const val RESTART_TACHIYOMI = "Khởi động lại Tachiyomi để áp dụng thay đổi."
-
-        const val PREF_KEY_ENABLE_CLOUDFLARE_BYPASS = "enable_cloudflare"
-        const val TITLE_ENABLE_CLOUDFLARE_BYPASS = "Kích hoạt bỏ qua Cloudflare"
-        const val SUMMARY_ENABLE_CLOUDFLARE_BYPASS = "Nếu bật khi không cần thiết, có thể gây lỗi \"Bỏ qua Cloudflare thất bại\" giả."
-
-        const val PREF_KEY_BASE_URL = "override_base_url_${BuildConfig.VERSION_CODE}"
-        const val TITLE_BASE_URL = "Thay đổi tên miền"
-        const val SUMMARY_BASE_URL = "Thay đổi này là tạm thời và sẽ bị xoá khi cập nhật tiện ích mở rộng."
-
-        const val PREF_KEY_RANDOM_UA = "pref_key_random_ua_"
-        const val TITLE_RANDOM_UA = "Chuỗi đại diện người dùng ngẫu nhiên"
-        val ENTRIES_RANDOM_UA = arrayOf("Tắt", "Máy tính", "Di động")
-        val VALUES_RANDOM_UA = arrayOf("off", "desktop", "mobile")
-
-        const val PREF_KEY_CUSTOM_UA = "pref_key_custom_ua_"
-        const val TITLE_CUSTOM_UA = "Chuỗi đại diện người dùng tuỳ chỉnh"
-        const val SUMMARY_CUSTOM_UA = "Để trống để dùng chuỗi đại diện người dùng mặc định của ứng dụng. Cài đặt này bị vô hiệu nếu chuỗi đại diện người dùng ngẫu nhiên được bật."
-    }
 }

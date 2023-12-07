@@ -9,30 +9,30 @@ import kotlinx.serialization.Serializable
 data class SearchManga(
     val hid: String,
     val title: String,
-    @SerialName("md_covers") val mdCovers: List<MDcovers> = emptyList(),
-    @SerialName("cover_url") val cover: String? = null,
+    val md_covers: List<MDcovers>,
+    val cover_url: String? = null,
 
 ) {
     fun toSManga() = SManga.create().apply {
-        // appending # at end as part of migration from slug to hid
+        // appennding # at end as part of migration from slug to hid
         url = "/comic/$hid#"
         title = this@SearchManga.title
-        thumbnail_url = parseCover(cover, mdCovers)
+        thumbnail_url = parseCover(cover_url, md_covers)
     }
 }
 
 @Serializable
 data class Manga(
     val comic: Comic,
-    val artists: List<Name> = emptyList(),
-    val authors: List<Name> = emptyList(),
-    val genres: List<Name> = emptyList(),
+    val artists: List<Artist> = emptyList(),
+    val authors: List<Author> = emptyList(),
+    val genres: List<Genre> = emptyList(),
 ) {
     fun toSManga() = SManga.create().apply {
         // appennding # at end as part of migration from slug to hid
         url = "/comic/${comic.hid}#"
         title = comic.title
-        description = comic.desc?.beautifyDescription()
+        description = comic.desc.beautifyDescription()
         if (comic.altTitles.isNotEmpty()) {
             if (description.isNullOrEmpty()) {
                 description = "Alternative Titles:\n"
@@ -44,12 +44,11 @@ data class Manga(
                 title.title?.let { "• $it" }
             }.joinToString("\n")
         }
-        status = comic.status.parseStatus(comic.translationComplete)
-        thumbnail_url = parseCover(comic.cover, comic.mdCovers)
+        status = comic.status.parseStatus(comic.translation_completed)
+        thumbnail_url = parseCover(comic.cover_url, comic.md_covers)
         artist = artists.joinToString { it.name.trim() }
         author = authors.joinToString { it.name.trim() }
-        genre = (listOfNotNull(comic.origination) + genres)
-            .joinToString { it.name.trim() }
+        genre = genres.joinToString { it.name.trim() }
     }
 }
 
@@ -57,21 +56,13 @@ data class Manga(
 data class Comic(
     val hid: String,
     val title: String,
-    val country: String? = null,
-    @SerialName("md_titles") val altTitles: List<Title> = emptyList(),
-    val desc: String? = null,
-    val status: Int? = 0,
-    @SerialName("translation_completed") val translationComplete: Boolean? = true,
-    @SerialName("md_covers") val mdCovers: List<MDcovers> = emptyList(),
-    @SerialName("cover_url") val cover: String? = null,
-) {
-    val origination = when (country) {
-        "jp" -> Name("Manga")
-        "kr" -> Name("Manhwa")
-        "cn" -> Name("Manhua")
-        else -> null
-    }
-}
+    @SerialName("md_titles") val altTitles: List<MDtitles>,
+    val desc: String = "N/A",
+    val status: Int = 0,
+    val translation_completed: Boolean = true,
+    val md_covers: List<MDcovers>,
+    val cover_url: String? = null,
+)
 
 @Serializable
 data class MDcovers(
@@ -79,12 +70,25 @@ data class MDcovers(
 )
 
 @Serializable
-data class Title(
+data class MDtitles(
     val title: String?,
 )
 
 @Serializable
-data class Name(
+data class Artist(
+    val name: String,
+    val slug: String,
+)
+
+@Serializable
+data class Author(
+    val name: String,
+    val slug: String,
+)
+
+@Serializable
+data class Genre(
+    val slug: String,
     val name: String,
 )
 
@@ -97,18 +101,18 @@ data class ChapterList(
 @Serializable
 data class Chapter(
     val hid: String,
-    val lang: String = "",
+    val lang: String,
     val title: String = "",
-    @SerialName("created_at") val createdAt: String = "",
+    val created_at: String = "",
     val chap: String = "",
     val vol: String = "",
-    @SerialName("group_name") val groups: List<String> = emptyList(),
+    val group_name: List<String> = emptyList(),
 ) {
     fun toSChapter(mangaUrl: String) = SChapter.create().apply {
         url = "$mangaUrl/$hid-chapter-$chap-$lang"
         name = beautifyChapterName(vol, chap, title)
-        date_upload = createdAt.parseDate()
-        scanlator = groups.joinToString().takeUnless { it.isBlank() } ?: "Unknown"
+        date_upload = created_at.parseDate()
+        scanlator = group_name.joinToString().takeUnless { it.isBlank() } ?: "Unknown"
     }
 }
 

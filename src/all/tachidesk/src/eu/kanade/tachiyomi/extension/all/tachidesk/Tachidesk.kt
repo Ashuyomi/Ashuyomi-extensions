@@ -30,6 +30,7 @@ import okhttp3.Response
 import okhttp3.internal.toImmutableList
 import rx.Observable
 import rx.Single
+import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -205,7 +206,7 @@ class Tachidesk : ConfigurableSource, UnmeteredSource, HttpSource() {
             client.newCall(GET("$baseUrl/api/v1/category", headers)).execute()
         }
             .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { response ->
                     categoryList = try {

@@ -6,6 +6,7 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.util.asJsoup
 import okhttp3.Response
+import org.jsoup.nodes.Document
 
 class Tooncubus : ZeistManga("Tooncubus", "https://www.tooncubus.top", "id") {
 
@@ -24,8 +25,7 @@ class Tooncubus : ZeistManga("Tooncubus", "https://www.tooncubus.top", "id") {
 
     override fun getChapterUrl(chapter: SChapter) = chapter.url
 
-    override fun mangaDetailsParse(response: Response): SManga {
-        val document = response.asJsoup()
+    override fun mangaDetailsParse(document: Document): SManga {
         val profileManga = document.selectFirst(".grid.gtc-235fr")!!
         return SManga.create().apply {
             thumbnail_url = profileManga.selectFirst("img")!!.attr("src")

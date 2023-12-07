@@ -1,7 +1,5 @@
 package eu.kanade.tachiyomi.multisrc.mangahub
 
-import eu.kanade.tachiyomi.lib.randomua.UserAgentType
-import eu.kanade.tachiyomi.lib.randomua.setRandomUserAgent
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.interceptor.rateLimit
@@ -50,10 +48,7 @@ abstract class MangaHub(
     private var baseCdnUrl = "https://imgx.mghubcdn.com"
 
     override val client: OkHttpClient = super.client.newBuilder()
-        .setRandomUserAgent(
-            userAgentType = UserAgentType.DESKTOP,
-            filterInclude = listOf("chrome"),
-        )
+        .addInterceptor(::uaIntercept)
         .addInterceptor(::apiAuthInterceptor)
         .rateLimit(1)
         .build()
@@ -69,6 +64,35 @@ abstract class MangaHub(
         .add("Upgrade-Insecure-Requests", "1")
 
     open val json: Json by injectLazy()
+
+    private var userAgent: String? = null
+    private var checkedUa = false
+
+    private fun uaIntercept(chain: Interceptor.Chain): Response {
+        if (userAgent == null && !checkedUa) {
+            val uaResponse = chain.proceed(GET(UA_DB_URL))
+
+            if (uaResponse.isSuccessful) {
+                // only using desktop chromium-based browsers, apparently they refuse to load(403) if not chrome(ium)
+                val uaList = json.decodeFromString<Map<String, List<String>>>(uaResponse.body.string())
+                val chromeUserAgentString = uaList["desktop"]!!.filter { it.contains("chrome", ignoreCase = true) }
+                userAgent = chromeUserAgentString.random()
+                checkedUa = true
+            }
+
+            uaResponse.close()
+        }
+
+        if (userAgent != null) {
+            val newRequest = chain.request().newBuilder()
+                .header("User-Agent", userAgent!!)
+                .build()
+
+            return chain.proceed(newRequest)
+        }
+
+        return chain.proceed(chain.request())
+    }
 
     private fun apiAuthInterceptor(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
@@ -490,4 +514,8 @@ abstract class MangaHub(
         Genre("Wuxia", "wuxia"),
         Genre("Yuri", "yuri"),
     )
+
+    companion object {
+        private const val UA_DB_URL = "https://tachiyomiorg.github.io/user-agents/user-agents.json"
+    }
 }

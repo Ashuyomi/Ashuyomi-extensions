@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="eu.kanade.tachiyomi.extension">
+ 
     <application>
         <activity
             android:name="eu.kanade.tachiyomi.multisrc.mangasee.MangaseeUrlActivity"
@@ -9,10 +10,10 @@
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
+ 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
+ 
                 <data
                     android:host="mangasee123.com"
                     android:pathPattern="/manga/..*"
@@ -21,3 +22,4 @@
         </activity>
     </application>
 </manifest>
+ 

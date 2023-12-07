@@ -48,7 +48,7 @@ class Jinmantiantang : ParsedHttpSource(), ConfigurableSource {
             preferences.getString(MAINSITE_RATELIMIT_PREF, MAINSITE_RATELIMIT_PREF_DEFAULT)!!.toInt(),
             preferences.getString(MAINSITE_RATELIMIT_PERIOD, MAINSITE_RATELIMIT_PERIOD_DEFAULT)!!.toLong(),
         )
-        .apply { interceptors().add(0, updateUrlInterceptor) }
+        .addInterceptor(updateUrlInterceptor)
         .addInterceptor(ScrambledImageInterceptor).build()
 
     // 点击量排序(人气)

@@ -10,7 +10,7 @@ class FirstKissMangaClub : Madara(
     "en",
 ) {
 
-    override val client = super.client.newBuilder()
+    override val client = network.cloudflareClient.newBuilder()
         .rateLimit(1, 3, TimeUnit.SECONDS)
         .build()
 }

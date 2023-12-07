@@ -146,7 +146,6 @@ enum class Language {
     PORTUGUESE_BR,
     RUSSIAN,
     THAI,
-    VIETNAMESE,
 }
 
 @Serializable

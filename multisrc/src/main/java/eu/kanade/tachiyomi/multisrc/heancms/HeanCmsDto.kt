@@ -1,6 +1,5 @@
 package eu.kanade.tachiyomi.multisrc.heancms
 
-import eu.kanade.tachiyomi.multisrc.heancms.HeanCms.SlugStrategy
 import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
 import kotlinx.serialization.SerialName
@@ -27,7 +26,7 @@ data class HeanCmsQuerySearchMetaDto(
 @Serializable
 data class HeanCmsSearchDto(
     val description: String? = null,
-    @SerialName("series_slug") var slug: String,
+    @SerialName("series_slug") val slug: String,
     @SerialName("series_type") val type: String,
     val title: String,
     val thumbnail: String? = null,
@@ -37,10 +36,10 @@ data class HeanCmsSearchDto(
         apiUrl: String,
         coverPath: String,
         slugMap: Map<String, HeanCms.HeanCmsTitle>,
-        slugStrategy: SlugStrategy,
     ): SManga = SManga.create().apply {
-        val slugOnly = slug.toPermSlugIfNeeded(slugStrategy)
+        val slugOnly = slug.replace(HeanCms.TIMESTAMP_REGEX, "")
         val thumbnailFileName = slugMap[slugOnly]?.thumbnailFileName
+
         title = this@HeanCmsSearchDto.title
         thumbnail_url = thumbnail?.toAbsoluteThumbnailUrl(apiUrl, coverPath)
             ?: thumbnailFileName?.toAbsoluteThumbnailUrl(apiUrl, coverPath)
@@ -61,16 +60,10 @@ data class HeanCmsSeriesDto(
     val title: String,
     val tags: List<HeanCmsTagDto>? = emptyList(),
     val chapters: List<HeanCmsChapterDto>? = emptyList(),
-    val seasons: List<HeanCmsSeasonsDto>? = emptyList(),
 ) {
 
-    fun toSManga(
-        apiUrl: String,
-        coverPath: String,
-        slugStrategy: SlugStrategy,
-    ): SManga = SManga.create().apply {
+    fun toSManga(apiUrl: String, coverPath: String): SManga = SManga.create().apply {
         val descriptionBody = this@HeanCmsSeriesDto.description?.let(Jsoup::parseBodyFragment)
-        val slugOnly = slug.toPermSlugIfNeeded(slugStrategy)
 
         title = this@HeanCmsSeriesDto.title
         author = this@HeanCmsSeriesDto.author?.trim()
@@ -84,19 +77,9 @@ data class HeanCmsSeriesDto(
         thumbnail_url = thumbnail.ifEmpty { null }
             ?.toAbsoluteThumbnailUrl(apiUrl, coverPath)
         status = this@HeanCmsSeriesDto.status?.toStatus() ?: SManga.UNKNOWN
-        url = if (slugStrategy != SlugStrategy.NONE) {
-            "/series/$slugOnly#$id"
-        } else {
-            "/series/$slug"
-        }
+        url = "/series/${slug.replace(HeanCms.TIMESTAMP_REGEX, "")}"
     }
 }
-
-@Serializable
-data class HeanCmsSeasonsDto(
-    val index: Int,
-    val chapters: List<HeanCmsChapterDto>? = emptyList(),
-)
 
 @Serializable
 data class HeanCmsTagDto(val name: String)
@@ -110,16 +93,12 @@ data class HeanCmsChapterDto(
     @SerialName("created_at") val createdAt: String,
     val price: Int? = null,
 ) {
-    fun toSChapter(
-        seriesSlug: String,
-        dateFormat: SimpleDateFormat,
-        slugStrategy: SlugStrategy,
-    ): SChapter = SChapter.create().apply {
-        val seriesSlugOnly = seriesSlug.toPermSlugIfNeeded(slugStrategy)
+
+    fun toSChapter(seriesSlug: String, dateFormat: SimpleDateFormat): SChapter = SChapter.create().apply {
         name = this@HeanCmsChapterDto.name.trim()
         date_upload = runCatching { dateFormat.parse(createdAt)?.time }
             .getOrNull() ?: 0L
-        url = "/series/$seriesSlugOnly/$slug#$id"
+        url = "/series/$seriesSlug/$slug#$id"
     }
 }
 
@@ -148,14 +127,6 @@ data class HeanCmsSearchPayloadDto(val term: String)
 
 private fun String.toAbsoluteThumbnailUrl(apiUrl: String, coverPath: String): String {
     return if (startsWith("https://")) this else "$apiUrl/$coverPath$this"
-}
-
-private fun String.toPermSlugIfNeeded(slugStrategy: SlugStrategy): String {
-    return if (slugStrategy != SlugStrategy.NONE) {
-        this.replace(HeanCms.TIMESTAMP_REGEX, "")
-    } else {
-        this
-    }
 }
 
 fun String.toStatus(): Int = when (this) {

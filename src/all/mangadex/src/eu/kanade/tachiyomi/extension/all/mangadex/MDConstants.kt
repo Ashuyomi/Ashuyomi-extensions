@@ -1,10 +1,8 @@
 package eu.kanade.tachiyomi.extension.all.mangadex
 
-import eu.kanade.tachiyomi.lib.i18n.Intl
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.time.Duration.Companion.minutes
 
 object MDConstants {
 
@@ -33,7 +31,7 @@ object MDConstants {
     const val atHomePostUrl = "https://api.mangadex.network/report"
     val whitespaceRegex = "\\s".toRegex()
 
-    val mdAtHomeTokenLifespan = 5.minutes.inWholeMilliseconds
+    const val mdAtHomeTokenLifespan = 5 * 60 * 1000
 
     val dateFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss+SSS", Locale.US)
         .apply { timeZone = TimeZone.getTimeZone("UTC") }
@@ -51,8 +49,8 @@ object MDConstants {
         return "${coverQualityPref}_$dexLang"
     }
 
-    fun getCoverQualityPreferenceEntries(intl: Intl) =
-        arrayOf(intl["cover_quality_original"], intl["cover_quality_medium"], intl["cover_quality_low"])
+    fun getCoverQualityPreferenceEntries(intl: MangaDexIntl) =
+        arrayOf(intl.coverQualityOriginal, intl.coverQualityMedium, intl.coverQualityLow)
 
     fun getCoverQualityPreferenceEntryValues() = arrayOf("", ".512.jpg", ".256.jpg")
 
@@ -76,12 +74,6 @@ object MDConstants {
     const val contentRatingPrefValErotica = "erotica"
     const val contentRatingPrefValPornographic = "pornographic"
     val contentRatingPrefDefaults = setOf(contentRatingPrefValSafe, contentRatingPrefValSuggestive)
-    val allContentRatings = setOf(
-        contentRatingPrefValSafe,
-        contentRatingPrefValSuggestive,
-        contentRatingPrefValErotica,
-        contentRatingPrefValPornographic,
-    )
 
     fun getContentRatingPrefKey(dexLang: String): String {
         return "${contentRatingPref}_$dexLang"
