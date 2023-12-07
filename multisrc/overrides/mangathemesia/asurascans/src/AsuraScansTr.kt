@@ -15,14 +15,11 @@ import java.util.concurrent.TimeUnit
 
 class AsuraScansTr : MangaThemesia(
     "Asura Scans",
-    "https://asurascanstr.com",
+    "https://armoniscans.com",
     "tr",
     dateFormat = SimpleDateFormat("MMM d, yyyy", Locale("tr")),
 ) {
-    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
-        .addInterceptor(uaIntercept)
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
+    override val client: OkHttpClient = super.client.newBuilder()
         .rateLimit(1, 3, TimeUnit.SECONDS)
         .build()
 
@@ -53,7 +50,7 @@ class AsuraScansTr : MangaThemesia(
         val jsonString = scriptContent.substringAfter("ts_reader.run(").substringBefore(");")
         val tsReader = json.decodeFromString<TSReader>(jsonString)
         val imageUrls = tsReader.sources.firstOrNull()?.images ?: return emptyList()
-        return imageUrls.mapIndexed { index, imageUrl -> Page(index, imageUrl = imageUrl) }
+        return imageUrls.mapIndexed { index, imageUrl -> Page(index, document.location(), imageUrl) }
     }
 
     @Serializable

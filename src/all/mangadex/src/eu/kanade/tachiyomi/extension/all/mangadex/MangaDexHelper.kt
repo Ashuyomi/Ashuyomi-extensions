@@ -29,6 +29,7 @@ import eu.kanade.tachiyomi.extension.all.mangadex.dto.TagDto
 import eu.kanade.tachiyomi.extension.all.mangadex.dto.UnknownEntity
 import eu.kanade.tachiyomi.extension.all.mangadex.dto.UserAttributes
 import eu.kanade.tachiyomi.extension.all.mangadex.dto.UserDto
+import eu.kanade.tachiyomi.lib.i18n.Intl
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
@@ -85,7 +86,19 @@ class MangaDexHelper(lang: String) {
         }
     }
 
-    val intl = MangaDexIntl(lang)
+    val intl = Intl(
+        language = lang,
+        baseLanguage = MangaDexIntl.ENGLISH,
+        availableLanguages = MangaDexIntl.AVAILABLE_LANGS,
+        classLoader = this::class.java.classLoader!!,
+        createMessageFileName = { lang ->
+            when (lang) {
+                MangaDexIntl.SPANISH_LATAM -> Intl.createDefaultMessageFileName(MangaDexIntl.SPANISH)
+                MangaDexIntl.PORTUGUESE -> Intl.createDefaultMessageFileName(MangaDexIntl.BRAZILIAN_PORTUGUESE)
+                else -> Intl.createDefaultMessageFileName(lang)
+            }
+        },
+    )
 
     /**
      * Gets the UUID from the url
@@ -130,12 +143,19 @@ class MangaDexHelper(lang: String) {
         (MDConstants.latestChapterLimit * (page - 1)).toString()
 
     /**
-     * Remove any HTML characters in description or chapter name to actual
-     * characters. For example &hearts; will show ♥. It also removes
-     * Markdown syntax for links, italic and bold.
+     * Remove any HTML characters in manga or chapter name to actual
+     * characters. For example &hearts; will show ♥.
+     */
+    private fun String.removeEntities(): String {
+        return Parser.unescapeEntities(this, false)
+    }
+
+    /**
+     * Remove any HTML characters in description to actual characters.
+     * It also removes Markdown syntax for links, italic and bold.
      */
     private fun String.removeEntitiesAndMarkdown(): String {
-        return Parser.unescapeEntities(this, false)
+        return removeEntities()
             .substringBefore("---")
             .replace(markdownLinksRegex, "$1")
             .replace(markdownItalicBoldRegex, "$1")
@@ -199,20 +219,18 @@ class MangaDexHelper(lang: String) {
      * Check the token map to see if the MD@Home host is still valid.
      */
     fun getValidImageUrlForPage(page: Page, headers: Headers, client: OkHttpClient): Request {
-        val data = page.url.split(",")
+        val (host, tokenRequestUrl, time) = page.url.split(",")
 
         val mdAtHomeServerUrl =
-            when (Date().time - data[2].toLong() > MDConstants.mdAtHomeTokenLifespan) {
-                false -> data[0]
+            when (Date().time - time.toLong() > MDConstants.mdAtHomeTokenLifespan) {
+                false -> host
                 true -> {
-                    val tokenRequestUrl = data[1]
                     val tokenLifespan = Date().time - (tokenTracker[tokenRequestUrl] ?: 0)
-                    val cacheControl =
-                        if (tokenLifespan > MDConstants.mdAtHomeTokenLifespan) {
-                            CacheControl.FORCE_NETWORK
-                        } else {
-                            USE_CACHE
-                        }
+                    val cacheControl = if (tokenLifespan > MDConstants.mdAtHomeTokenLifespan) {
+                        CacheControl.FORCE_NETWORK
+                    } else {
+                        USE_CACHE
+                    }
                     getMdAtHomeUrl(tokenRequestUrl, client, headers, cacheControl)
                 }
             }
@@ -265,22 +283,20 @@ class MangaDexHelper(lang: String) {
         coverFileName: String?,
         coverSuffix: String?,
         lang: String,
-    ): SManga {
-        return SManga.create().apply {
-            url = "/manga/${mangaDataDto.id}"
-            val titleMap = mangaDataDto.attributes!!.title
-            val dirtyTitle =
-                titleMap.values.firstOrNull() // use literally anything from title as first resort
-                    ?: mangaDataDto.attributes.altTitles
-                        .find { (it[lang] ?: it["en"]) !== null }
-                        ?.values?.singleOrNull() // find something else from alt titles
-            title = (dirtyTitle ?: "").removeEntitiesAndMarkdown()
+    ): SManga = SManga.create().apply {
+        url = "/manga/${mangaDataDto.id}"
+        val titleMap = mangaDataDto.attributes!!.title
+        val dirtyTitle =
+            titleMap.values.firstOrNull() // use literally anything from title as first resort
+                ?: mangaDataDto.attributes.altTitles
+                    .find { (it[lang] ?: it["en"]) !== null }
+                    ?.values?.singleOrNull() // find something else from alt titles
+        title = dirtyTitle?.removeEntities().orEmpty()
 
-            coverFileName?.let {
-                thumbnail_url = when (!coverSuffix.isNullOrEmpty()) {
-                    true -> "${MDConstants.cdnUrl}/covers/${mangaDataDto.id}/$coverFileName$coverSuffix"
-                    else -> "${MDConstants.cdnUrl}/covers/${mangaDataDto.id}/$coverFileName"
-                }
+        coverFileName?.let {
+            thumbnail_url = when (!coverSuffix.isNullOrEmpty()) {
+                true -> "${MDConstants.cdnUrl}/covers/${mangaDataDto.id}/$coverFileName$coverSuffix"
+                else -> "${MDConstants.cdnUrl}/covers/${mangaDataDto.id}/$coverFileName"
             }
         }
     }
@@ -302,10 +318,11 @@ class MangaDexHelper(lang: String) {
         val dexLocale = Locale.forLanguageTag(lang)
 
         val nonGenres = listOfNotNull(
-            attr.publicationDemographic?.let { intl.publicationDemographic(it) },
+            attr.publicationDemographic
+                ?.let { intl["publication_demographic_${it.name.lowercase()}"] },
             attr.contentRating
                 .takeIf { it != ContentRatingDto.SAFE }
-                ?.let { intl.contentRatingGenre(it) },
+                ?.let { intl.format("content_rating_genre", intl["content_rating_${it.name.lowercase()}"]) },
             attr.originalLanguage
                 ?.let { Locale.forLanguageTag(it) }
                 ?.getDisplayName(dexLocale)
@@ -335,10 +352,12 @@ class MangaDexHelper(lang: String) {
 
         val genreList = MDConstants.tagGroupsOrder.flatMap { genresMap[it].orEmpty() } + nonGenres
 
-        var desc = (attr.description[lang] ?: attr.description["en"])?.removeEntitiesAndMarkdown() ?: ""
+        var desc = (attr.description[lang] ?: attr.description["en"])
+            ?.removeEntitiesAndMarkdown()
+            .orEmpty()
 
         if (altTitlesInDesc) {
-            val romanizedOriginalLang = MDConstants.romanizedLangCodes[attr.originalLanguage] ?: ""
+            val romanizedOriginalLang = MDConstants.romanizedLangCodes[attr.originalLanguage].orEmpty()
             val altTitles = attr.altTitles
                 .filter { it.containsKey(lang) || it.containsKey(romanizedOriginalLang) }
                 .mapNotNull { it.values.singleOrNull() }
@@ -346,19 +365,19 @@ class MangaDexHelper(lang: String) {
 
             if (altTitles.isNotEmpty()) {
                 val altTitlesDesc = altTitles
-                    .joinToString("\n", "${intl.altTitleText}\n") { "• $it" }
-                desc += (if (desc.isNullOrBlank()) "" else "\n\n") + altTitlesDesc.removeEntitiesAndMarkdown()
+                    .joinToString("\n", "${intl["alternative_titles"]}\n") { "• $it" }
+                desc += (if (desc.isBlank()) "" else "\n\n") + altTitlesDesc.removeEntities()
             }
         }
 
         return createBasicManga(mangaDataDto, coverFileName, coverSuffix, lang).apply {
             description = desc
-            author = authors.joinToString(", ")
-            artist = artists.joinToString(", ")
+            author = authors.joinToString()
+            artist = artists.joinToString()
             status = getPublicationStatus(attr, chapters)
             genre = genreList
                 .filter(String::isNotEmpty)
-                .joinToString(", ")
+                .joinToString()
         }
     }
 
@@ -378,9 +397,9 @@ class MangaDexHelper(lang: String) {
                 val users = chapterDataDto.relationships
                     .filterIsInstance<UserDto>()
                     .mapNotNull { it.attributes?.username }
-                if (users.isNotEmpty()) intl.uploadedBy(users) else ""
+                if (users.isNotEmpty()) intl.format("uploaded_by", users.joinToString(" & ")) else ""
             }
-            .ifEmpty { intl.noGroup } // "No Group" as final resort
+            .ifEmpty { intl["no_group"] } // "No Group" as final resort
 
         val chapterName = mutableListOf<String>()
         // Build chapter name
@@ -415,7 +434,7 @@ class MangaDexHelper(lang: String) {
 
         return SChapter.create().apply {
             url = "/chapter/${chapterDataDto.id}"
-            name = chapterName.joinToString(" ").removeEntitiesAndMarkdown()
+            name = chapterName.joinToString(" ").removeEntities()
             date_upload = parseDate(attr.publishAt)
             scanlator = groups
         }
@@ -447,13 +466,9 @@ class MangaDexHelper(lang: String) {
         editText.addTextChangedListener(
             object : TextWatcher {
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                    // Do nothing.
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    // Do nothing.
-                }
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 override fun afterTextChanged(editable: Editable?) {
                     requireNotNull(editable)
@@ -465,7 +480,7 @@ class MangaDexHelper(lang: String) {
                         .map(String::trim)
                         .all(::isUuid)
 
-                    editText.error = if (!isValid) intl.invalidUuids else null
+                    editText.error = if (!isValid) intl["invalid_uuids"] else null
                     editText.rootView.findViewById<Button>(android.R.id.button1)
                         ?.isEnabled = editText.error == null
                 }

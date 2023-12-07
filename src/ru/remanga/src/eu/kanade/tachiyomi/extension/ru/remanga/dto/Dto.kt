@@ -49,7 +49,7 @@ data class MangaDetDto(
     val rus_name: String,
     val another_name: String,
     val dir: String,
-    val description: String,
+    val description: String?,
     val issue_year: Int?,
     val img: ImgDto,
     val type: TagsDto,
@@ -97,7 +97,7 @@ data class BookDto(
 )
 
 @Serializable
-data class SeriesExWrapperDto<T>(
+data class ExWrapperDto<T>(
     val data: T,
 )
 
@@ -106,6 +106,14 @@ data class ExBookDto(
     val id: Long,
     val tome: Int,
     val chapter: String,
+)
+
+@Serializable
+data class ExLibraryDto(
+    val id: Long,
+    val dir: String,
+    val name: String = "Без названия",
+    val img: String?,
 )
 
 @Serializable

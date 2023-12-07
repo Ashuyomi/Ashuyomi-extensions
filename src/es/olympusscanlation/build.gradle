@@ -7,7 +7,7 @@ ext {
     extName = 'Olympus Scanlation'
     pkgNameSuffix = 'es.olympusscanlation'
     extClass = '.OlympusScanlation'
-    extVersionCode = 3
+    extVersionCode = 6
 }
 
 apply from: "$rootDir/common.gradle"

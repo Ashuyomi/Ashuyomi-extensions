@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceScreen
 import androidx.preference.SwitchPreferenceCompat
+import eu.kanade.tachiyomi.lib.i18n.Intl
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.interceptor.rateLimitHost
 import eu.kanade.tachiyomi.source.ConfigurableSource
@@ -57,7 +58,14 @@ class MangaPlus(
 
     private val json: Json by injectLazy()
 
-    private val intl by lazy { MangaPlusIntl(langCode) }
+    private val intl by lazy {
+        Intl(
+            language = lang,
+            baseLanguage = "en",
+            availableLanguages = setOf("en", "pt-BR", "vi"),
+            classLoader = this::class.java.classLoader!!,
+        )
+    }
 
     private val preferences: SharedPreferences by lazy {
         Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
@@ -73,6 +81,7 @@ class MangaPlus(
     override fun popularMangaRequest(page: Int): Request {
         val newHeaders = headersBuilder()
             .set("Referer", "$baseUrl/manga_list/hot")
+            .set("X-Page", page.toString())
             .build()
 
         return GET("$API_URL/title_list/ranking?format=json", newHeaders)
@@ -82,7 +91,7 @@ class MangaPlus(
         val result = response.asMangaPlusResponse()
 
         checkNotNull(result.success) {
-            result.error!!.langPopup(langCode)?.body ?: intl.unknownError
+            result.error!!.langPopup(langCode)?.body ?: intl["unknown_error"]
         }
 
         val titleList = result.success.titleRankingView!!.titles
@@ -90,7 +99,13 @@ class MangaPlus(
 
         titleCache = titleList.associateBy(Title::titleId)
 
-        return MangasPage(titleList.map(Title::toSManga), hasNextPage = false)
+        val page = response.request.headers["X-Page"]!!.toInt()
+        val pageList = titleList
+            .drop((page - 1) * LISTING_ITEMS_PER_PAGE)
+            .take(LISTING_ITEMS_PER_PAGE)
+        val hasNextPage = (page + 1) * LISTING_ITEMS_PER_PAGE <= titleList.size
+
+        return MangasPage(pageList.map(Title::toSManga), hasNextPage)
     }
 
     override fun latestUpdatesRequest(page: Int): Request {
@@ -105,7 +120,7 @@ class MangaPlus(
         val result = response.asMangaPlusResponse()
 
         checkNotNull(result.success) {
-            result.error!!.langPopup(langCode)?.body ?: intl.unknownError
+            result.error!!.langPopup(langCode)?.body ?: intl["unknown_error"]
         }
 
         // Fetch all titles to get newer thumbnail URLs in the interceptor.
@@ -138,6 +153,7 @@ class MangaPlus(
 
         val newHeaders = headersBuilder()
             .set("Referer", "$baseUrl/manga_list/all")
+            .set("X-Page", page.toString())
             .build()
 
         val apiUrl = "$API_URL/title_list/allV2".toHttpUrl().newBuilder()
@@ -151,7 +167,7 @@ class MangaPlus(
         val result = response.asMangaPlusResponse()
 
         checkNotNull(result.success) {
-            result.error!!.langPopup(langCode)?.body ?: intl.unknownError
+            result.error!!.langPopup(langCode)?.body ?: intl["unknown_error"]
         }
 
         if (result.success.titleDetailView != null) {
@@ -163,7 +179,7 @@ class MangaPlus(
         }
 
         if (result.success.mangaViewer != null) {
-            checkNotNull(result.success.mangaViewer.titleId) { intl.chapterExpired }
+            checkNotNull(result.success.mangaViewer.titleId) { intl["chapter_expired"] }
 
             val titleId = result.success.mangaViewer.titleId
             val cachedTitle = titleCache?.get(titleId)
@@ -173,12 +189,12 @@ class MangaPlus(
                 val titleResult = client.newCall(titleRequest).execute().asMangaPlusResponse()
 
                 checkNotNull(titleResult.success) {
-                    titleResult.error!!.langPopup(langCode)?.body ?: intl.unknownError
+                    titleResult.error!!.langPopup(langCode)?.body ?: intl["unknown_error"]
                 }
 
                 titleResult.success.titleDetailView!!
                     .takeIf { it.title.language == langCode }
-                    ?.toSManga()
+                    ?.toSManga(intl)
             }
 
             return MangasPage(listOfNotNull(title), hasNextPage = false)
@@ -197,7 +213,13 @@ class MangaPlus(
                 title.author.orEmpty().contains(filter, ignoreCase = true)
         }
 
-        return MangasPage(searchResults.map(Title::toSManga), hasNextPage = false)
+        val page = response.request.headers["X-Page"]!!.toInt()
+        val pageList = searchResults
+            .drop((page - 1) * LISTING_ITEMS_PER_PAGE)
+            .take(LISTING_ITEMS_PER_PAGE)
+        val hasNextPage = (page + 1) * LISTING_ITEMS_PER_PAGE <= searchResults.size
+
+        return MangasPage(pageList.map(Title::toSManga), hasNextPage)
     }
 
     // Remove the '#' and map to the new url format used in website.
@@ -212,7 +234,7 @@ class MangaPlus(
             .set("Referer", "$baseUrl/titles/$titleId")
             .build()
 
-        return GET("$API_URL/title_detail?title_id=$titleId&format=json", newHeaders)
+        return GET("$API_URL/title_detailV3?title_id=$titleId&format=json", newHeaders)
     }
 
     override fun mangaDetailsParse(response: Response): SManga {
@@ -222,17 +244,17 @@ class MangaPlus(
             val error = result.error!!.langPopup(langCode)
 
             when {
-                error?.subject == NOT_FOUND_SUBJECT -> intl.titleRemoved
+                error?.subject == NOT_FOUND_SUBJECT -> intl["title_removed"]
                 !error?.body.isNullOrEmpty() -> error!!.body
-                else -> intl.unknownError
+                else -> intl["unknown_error"]
             }
         }
 
         val titleDetails = result.success.titleDetailView!!
             .takeIf { it.title.language == langCode }
-            ?: throw Exception(intl.notAvailable)
+            ?: throw Exception(intl["not_available"])
 
-        return titleDetails.toSManga()
+        return titleDetails.toSManga(intl)
     }
 
     override fun chapterListRequest(manga: SManga): Request = mangaDetailsRequest(manga.url)
@@ -244,19 +266,18 @@ class MangaPlus(
             val error = result.error!!.langPopup(langCode)
 
             when {
-                error?.subject == NOT_FOUND_SUBJECT -> intl.titleRemoved
+                error?.subject == NOT_FOUND_SUBJECT -> intl["title_removed"]
                 !error?.body.isNullOrEmpty() -> error!!.body
-                else -> intl.unknownError
+                else -> intl["unknown_error"]
             }
         }
 
         val titleDetailView = result.success.titleDetailView!!
 
-        val chapters = titleDetailView.firstChapterList + titleDetailView.lastChapterList
-
-        return chapters.reversed()
+        return titleDetailView.chapterList
             .filterNot(Chapter::isExpired)
             .map(Chapter::toSChapter)
+            .reversed()
     }
 
     // Remove the '#' and map to the new url format used in website.
@@ -290,9 +311,9 @@ class MangaPlus(
             val error = result.error!!.langPopup(langCode)
 
             when {
-                error?.subject == NOT_FOUND_SUBJECT -> intl.chapterExpired
+                error?.subject == NOT_FOUND_SUBJECT -> intl["chapter_expired"]
                 !error?.body.isNullOrEmpty() -> error!!.body
-                else -> intl.unknownError
+                else -> intl["unknown_error"]
             }
         }
 
@@ -322,8 +343,12 @@ class MangaPlus(
     override fun setupPreferenceScreen(screen: PreferenceScreen) {
         val qualityPref = ListPreference(screen.context).apply {
             key = "${QUALITY_PREF_KEY}_$lang"
-            title = intl.imageQuality
-            entries = arrayOf(intl.imageQualityLow, intl.imageQualityMedium, intl.imageQualityHigh)
+            title = intl["image_quality"]
+            entries = arrayOf(
+                intl["image_quality_low"],
+                intl["image_quality_medium"],
+                intl["image_quality_high"],
+            )
             entryValues = QUALITY_PREF_ENTRY_VALUES
             setDefaultValue(QUALITY_PREF_DEFAULT_VALUE)
             summary = "%s"
@@ -331,8 +356,8 @@ class MangaPlus(
 
         val splitPref = SwitchPreferenceCompat(screen.context).apply {
             key = "${SPLIT_PREF_KEY}_$lang"
-            title = intl.splitDoublePages
-            summary = intl.splitDoublePagesSummary
+            title = intl["split_double_pages"]
+            summary = intl["split_double_pages_summary"]
             setDefaultValue(SPLIT_PREF_DEFAULT_VALUE)
         }
 
@@ -402,7 +427,9 @@ class MangaPlus(
     companion object {
         private const val API_URL = "https://jumpg-webapi.tokyo-cdn.com/api"
         private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
+
+        private const val LISTING_ITEMS_PER_PAGE = 20
 
         private const val QUALITY_PREF_KEY = "imageResolution"
         private val QUALITY_PREF_ENTRY_VALUES = arrayOf("low", "high", "super_high")

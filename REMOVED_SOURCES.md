@@ -1,3 +1,11 @@
+**There is no timetable on when or if a source request may be filled (also applies to bug reports and enhancement requests).**
+
+### In General the following sources that won't be added as an extension
+- In general heavily paywalled sites
+- Sources that require cracking some app's source code (realistically, no one's going to put in the effort to do it)
+- Sources that are known for filling a lot of DMCA complaints over repositories on GitHub
+
+Here is a list of known sources that were removed.
 ## Fontes removidas
 
 ## Remoção solicitada pela equipe da scan
@@ -13,24 +21,23 @@
 
 ### USA - Estados Unidos
 
+- MangaSY https://github.com/tachiyomiorg/tachiyomi-extensions/issues/12007
 - ARES Manga https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15396
 - Astra Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13845
 - Gourmet Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6192
 - KomikTap/KomikTap.in https://github.com/tachiyomiorg/tachiyomi-extensions/issues/6133
 - Luminous Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9923
-- Reset Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13168
-- SetsuScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/11040
-- Realm Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15586
 
 ### ITA - Itália
 
 - JuinJutsuReader https://github.com/tachiyomiorg/tachiyomi-extensions/issues/2958
-- ShinobiScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14457
 
 ### ESP - Espanha
 
 - Knightnoscanlation https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4240
 - MHScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15319
+- Mono Manga https://github.com/tachiyomiorg/tachiyomi-extensions/issues/17634
+- Moon Daisy Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/17929
 - NarTag https://github.com/tachiyomiorg/tachiyomi-extensions/issues/8038
 - Plot-twistnf-scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/4242
 
@@ -91,7 +98,19 @@
 - SuperMangás and SuperHentais https://github.com/tachiyomiorg/tachiyomi-extensions/pull/6348
 - Tsuki Mangás https://github.com/tachiyomiorg/tachiyomi-extensions/pull/8609
 - Realm Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/15586
+- Remangas https://github.com/tachiyomiorg/tachiyomi-extensions/issues/18807
 - Reset Scans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/13168
 - SetsuScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/11040
 - ShinobiScans https://github.com/tachiyomiorg/tachiyomi-extensions/issues/14457
 - XXX Yaoi https://github.com/tachiyomiorg/tachiyomi-extensions/issues/9535
+
+
+## Sem Clasificação
+- Anchira https://github.com/tachiyomiorg/tachiyomi-extensions/pull/19149
+- Bakai https://github.com/tachiyomiorg/tachiyomi-extensions/pull/17890
+- Blackout Comics and Izakaya https://github.com/tachiyomiorg/tachiyomi-extensions/pull/18500
+- Constellar Scans https://github.com/tachiyomiorg/tachiyomi-extensions/pull/17277
+- Japscan https://github.com/tachiyomiorg/tachiyomi-extensions/pull/17892
+- Koushoku https://github.com/tachiyomiorg/tachiyomi-extensions/pull/13329
+- Mode Scanlator https://github.com/tachiyomiorg/tachiyomi-extensions/pull/17865
+- TopToon+/Day Comics https://github.com/tachiyomiorg/tachiyomi-extensions/pull/10851

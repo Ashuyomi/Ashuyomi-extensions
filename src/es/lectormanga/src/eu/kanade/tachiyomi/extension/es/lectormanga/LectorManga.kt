@@ -2,6 +2,11 @@ package eu.kanade.tachiyomi.extension.es.lectormanga
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
+import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
 import eu.kanade.tachiyomi.network.asObservableSuccess
@@ -28,6 +33,7 @@ import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.CountDownLatch
 
 class LectorManga : ConfigurableSource, ParsedHttpSource() {
 
@@ -44,38 +50,72 @@ class LectorManga : ConfigurableSource, ParsedHttpSource() {
             .add("Referer", "$baseUrl/")
     }
 
-    private val imageCDNUrls = arrayOf("https://img1.followmanga.com", "https://img1.biggestchef.com", "https://img1.indalchef.com", "https://img1.recipesandcook.com")
+    private val imageCDNUrls = arrayOf(
+        "https://img1.followmanga.com",
+        "https://img1.biggestchef.com",
+        "https://img1.indalchef.com",
+        "https://img1.recipesandcook.com",
+        "https://img1.cyclingte.com",
+        "https://img1.japanreader.com",
+        "https://japanreader.com",
+    )
 
     private val preferences: SharedPreferences by lazy {
         Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
     }
 
+    private fun OkHttpClient.Builder.rateLimitImageCDNs(hosts: Array<String>, permits: Int, period: Long): OkHttpClient.Builder {
+        hosts.forEach { host ->
+            rateLimitHost(host.toHttpUrlOrNull()!!, permits, period)
+        }
+        return this
+    }
+
+    private var loadWebView = true
     override val client: OkHttpClient = network.client.newBuilder()
         .rateLimitHost(
             baseUrl.toHttpUrlOrNull()!!,
             preferences.getString(WEB_RATELIMIT_PREF, WEB_RATELIMIT_PREF_DEFAULT_VALUE)!!.toInt(),
             60,
         )
-        .rateLimitHost(
-            imageCDNUrls[0].toHttpUrlOrNull()!!,
+        .rateLimitImageCDNs(
+            imageCDNUrls,
             preferences.getString(IMAGE_CDN_RATELIMIT_PREF, IMAGE_CDN_RATELIMIT_PREF_DEFAULT_VALUE)!!.toInt(),
             60,
         )
-        .rateLimitHost(
-            imageCDNUrls[1].toHttpUrlOrNull()!!,
-            preferences.getString(IMAGE_CDN_RATELIMIT_PREF, IMAGE_CDN_RATELIMIT_PREF_DEFAULT_VALUE)!!.toInt(),
-            60,
-        )
-        .rateLimitHost(
-            imageCDNUrls[2].toHttpUrlOrNull()!!,
-            preferences.getString(IMAGE_CDN_RATELIMIT_PREF, IMAGE_CDN_RATELIMIT_PREF_DEFAULT_VALUE)!!.toInt(),
-            60,
-        )
-        .rateLimitHost(
-            imageCDNUrls[3].toHttpUrlOrNull()!!,
-            preferences.getString(IMAGE_CDN_RATELIMIT_PREF, IMAGE_CDN_RATELIMIT_PREF_DEFAULT_VALUE)!!.toInt(),
-            60,
-        )
+        .addInterceptor { chain ->
+            val request = chain.request()
+            val url = request.url
+            if (url.host.contains("japanreader.com") && loadWebView) {
+                val handler = Handler(Looper.getMainLooper())
+                val latch = CountDownLatch(1)
+                var webView: WebView? = null
+                handler.post {
+                    val webview = WebView(Injekt.get<Application>())
+                    webView = webview
+                    webview.settings.domStorageEnabled = true
+                    webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+                    webview.settings.useWideViewPort = false
+                    webview.settings.loadWithOverviewMode = false
+
+                    webview.webViewClient = object : WebViewClient() {
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            latch.countDown()
+                        }
+                    }
+
+                    val headers = mutableMapOf<String, String>()
+                    headers["Referer"] = baseUrl
+
+                    webview.loadUrl(url.toString(), headers)
+                }
+
+                latch.await()
+                loadWebView = false
+                handler.post { webView?.destroy() }
+            }
+            chain.proceed(request)
+        }
         .build()
 
     override fun popularMangaRequest(page: Int) = GET("$baseUrl/library?order_item=likes_count&order_dir=desc&type=&filter_by=title&page=$page", headers)

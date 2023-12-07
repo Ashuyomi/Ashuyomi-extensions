@@ -2,12 +2,18 @@ package eu.kanade.tachiyomi.extension.all.nhentai
 
 import android.app.Application
 import android.content.SharedPreferences
+import androidx.preference.ListPreference
+import androidx.preference.PreferenceScreen
 import eu.kanade.tachiyomi.extension.all.nhentai.NHUtils.getArtists
 import eu.kanade.tachiyomi.extension.all.nhentai.NHUtils.getGroups
 import eu.kanade.tachiyomi.extension.all.nhentai.NHUtils.getNumPages
 import eu.kanade.tachiyomi.extension.all.nhentai.NHUtils.getTagDescription
 import eu.kanade.tachiyomi.extension.all.nhentai.NHUtils.getTags
 import eu.kanade.tachiyomi.extension.all.nhentai.NHUtils.getTime
+import eu.kanade.tachiyomi.lib.randomua.addRandomUAPreferenceToScreen
+import eu.kanade.tachiyomi.lib.randomua.getPrefCustomUA
+import eu.kanade.tachiyomi.lib.randomua.getPrefUAType
+import eu.kanade.tachiyomi.lib.randomua.setRandomUserAgent
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.asObservableSuccess
 import eu.kanade.tachiyomi.network.interceptor.rateLimit
@@ -44,12 +50,19 @@ open class NHentai(
 
     override val supportsLatest = true
 
-    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
-        .rateLimit(4)
-        .build()
-
     private val preferences: SharedPreferences by lazy {
         Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
+    }
+
+    override val client: OkHttpClient by lazy {
+        network.cloudflareClient.newBuilder()
+            .setRandomUserAgent(
+                userAgentType = preferences.getPrefUAType(),
+                customUA = preferences.getPrefCustomUA(),
+                filterInclude = listOf("chrome"),
+            )
+            .rateLimit(4)
+            .build()
     }
 
     private var displayFullTitle: Boolean = when (preferences.getString(TITLE_PREF, "full")) {
@@ -60,13 +73,14 @@ open class NHentai(
     private val shortenTitleRegex = Regex("""(\[[^]]*]|[({][^)}]*[)}])""")
     private fun String.shortenTitle() = this.replace(shortenTitleRegex, "").trim()
 
-    override fun setupPreferenceScreen(screen: androidx.preference.PreferenceScreen) {
-        val serverPref = androidx.preference.ListPreference(screen.context).apply {
+    override fun setupPreferenceScreen(screen: PreferenceScreen) {
+        ListPreference(screen.context).apply {
             key = TITLE_PREF
             title = TITLE_PREF
             entries = arrayOf("Full Title", "Short Title")
             entryValues = arrayOf("full", "short")
             summary = "%s"
+            setDefaultValue("full")
 
             setOnPreferenceChangeListener { _, newValue ->
                 displayFullTitle = when (newValue) {
@@ -75,13 +89,9 @@ open class NHentai(
                 }
                 true
             }
-        }
+        }.also(screen::addPreference)
 
-        if (!preferences.contains(TITLE_PREF)) {
-            preferences.edit().putString(TITLE_PREF, "full").apply()
-        }
-
-        screen.addPreference(serverPref)
+        addRandomUAPreferenceToScreen(screen)
     }
 
     override fun latestUpdatesRequest(page: Int) = GET(if (nhLang.isBlank()) "$baseUrl/?page=$page" else "$baseUrl/language/$nhLang/?page=$page", headers)

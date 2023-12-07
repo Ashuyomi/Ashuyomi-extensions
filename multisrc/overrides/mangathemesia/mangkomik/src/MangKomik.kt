@@ -5,12 +5,14 @@ import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.source.model.Page
 import org.jsoup.nodes.Document
 
-class MangKomik : MangaThemesia("MangKomik", "https://mangkomik.net", "id") {
+class MangKomik : MangaThemesia("Siren Komik", "https://sirenkomik.my.id", "id") {
+    override val id = 8457447675410081142
+
     override val hasProjectPage = true
 
     override fun pageListParse(document: Document): List<Page> {
         // Get external JS for image urls
-        val scriptEl = document.selectFirst("script[data-minify]")!!
+        val scriptEl = document.selectFirst("script[data-minify]")
         val scriptUrl = scriptEl?.attr("src")
         if (scriptUrl.isNullOrEmpty()) {
             return super.pageListParse(document)

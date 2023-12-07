@@ -147,7 +147,7 @@ open class A3Manga(
         }.getOrNull() ?: 0
     }
 
-    override fun pageListParse(document: Document): List<Page> {
+    protected fun decodeImgList(document: Document): String {
         val htmlContentScript = document.selectFirst("script:containsData(htmlContent)")?.html()
             ?.substringAfter("var htmlContent=\"")
             ?.substringBefore("\";")
@@ -175,8 +175,41 @@ open class A3Manga(
 
         val imgListHtml = cipher.doFinal(ciphertext).toString(Charsets.UTF_8)
 
-        return Jsoup.parseBodyFragment(imgListHtml).select("img").mapIndexed { idx, it ->
-            Page(idx, imageUrl = it.attr("abs:src"))
+        return imgListHtml
+    }
+
+    override fun pageListParse(document: Document): List<Page> {
+        val imgListHtml = decodeImgList(document)
+
+        return Jsoup.parseBodyFragment(imgListHtml).select("img").mapIndexed { idx, element ->
+            val encryptedUrl = element.attributes().find { it.key.startsWith("data") }?.value
+            val effectiveUrl = encryptedUrl?.decodeUrl() ?: element.attr("abs:src")
+            Page(idx, imageUrl = effectiveUrl)
+        }
+    }
+
+    private fun String.decodeUrl(): String? {
+        // We expect the URL to start with `https://`, where the last 3 characters are encoded.
+        // The length of the encoded character is not known, but it is the same across all.
+        // Essentially we are looking for the two encoded slashes, which tells us the length.
+        val patternIdx = patternsLengthCheck.indexOfFirst { pattern ->
+            val matchResult = pattern.find(this)
+            val g1 = matchResult?.groupValues?.get(1)
+            val g2 = matchResult?.groupValues?.get(2)
+            g1 == g2 && g1 != null
+        }
+        if (patternIdx == -1) {
+            return null
+        }
+
+        // With a known length we can predict all the encoded characters.
+        // This is a slightly more expensive pattern, hence the separation.
+        val matchResult = patternsSubstitution[patternIdx].find(this)
+        return matchResult?.destructured?.let { (colon, slash, period) ->
+            this
+                .replace(colon, ":")
+                .replace(slash, "/")
+                .replace(period, ".")
         }
     }
 
@@ -202,6 +235,13 @@ open class A3Manga(
         const val PREFIX_ID_SEARCH = "id:"
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US).apply {
             timeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh")
+        }
+
+        private val patternsLengthCheck: List<Regex> = (20 downTo 1).map { i ->
+            """^https.{$i}(.{$i})(.{$i})""".toRegex()
+        }
+        private val patternsSubstitution: List<Regex> = (20 downTo 1).map { i ->
+            """^https(.{$i})(.{$i}).*(.{$i})(?:webp|jpeg|tiff|.{3})$""".toRegex()
         }
     }
 }

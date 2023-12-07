@@ -7,6 +7,7 @@ import eu.kanade.tachiyomi.source.model.Filter
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
+import eu.kanade.tachiyomi.source.model.SManga
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import okhttp3.Headers
@@ -17,27 +18,20 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
+import java.util.Locale
 
-class KomikCast : MangaThemesia(
-    "Komik Cast",
-    baseUrl = "https://komikcast.io",
-    "id",
-    mangaUrlDirectory = "/daftar-komik",
-) {
+class KomikCast : MangaThemesia("Komik Cast", "https://komikcast.lol", "id", "/daftar-komik") {
+
     // Formerly "Komik Cast (WP Manga Stream)"
     override val id = 972717448578983812
 
-    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
+    override val client: OkHttpClient = super.client.newBuilder()
         .rateLimit(3)
         .build()
 
-    override fun headersBuilder(): Headers.Builder = Headers.Builder()
+    override fun headersBuilder(): Headers.Builder = super.headersBuilder()
         .add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
         .add("Accept-language", "en-US,en;q=0.9,id;q=0.8")
-        .add("Referer", baseUrl)
 
     override fun imageRequest(page: Page): Request {
         val newHeaders = headersBuilder()
@@ -71,12 +65,43 @@ class KomikCast : MangaThemesia(
     override val seriesThumbnailSelector = ".komik_info-content-thumbnail img"
     override val seriesStatusSelector = ".komik_info-content-info:contains(Status)"
 
+    override fun mangaDetailsParse(document: Document) = SManga.create().apply {
+        document.selectFirst(seriesDetailsSelector)?.let { seriesDetails ->
+            title = seriesDetails.selectFirst(seriesTitleSelector)?.text()
+                ?.replace("bahasa indonesia", "", ignoreCase = true)?.trim().orEmpty()
+            artist = seriesDetails.selectFirst(seriesArtistSelector)?.ownText().removeEmptyPlaceholder()
+            author = seriesDetails.selectFirst(seriesAuthorSelector)?.ownText().removeEmptyPlaceholder()
+            description = seriesDetails.select(seriesDescriptionSelector).joinToString("\n") { it.text() }.trim()
+            // Add alternative name to manga description
+            val altName = seriesDetails.selectFirst(seriesAltNameSelector)?.ownText().takeIf { it.isNullOrBlank().not() }
+            altName?.let {
+                description = "$description\n\n$altNamePrefix$altName".trim()
+            }
+            val genres = seriesDetails.select(seriesGenreSelector).map { it.text() }.toMutableList()
+            // Add series type (manga/manhwa/manhua/other) to genre
+            seriesDetails.selectFirst(seriesTypeSelector)?.ownText().takeIf { it.isNullOrBlank().not() }?.let { genres.add(it) }
+            genre = genres.map { genre ->
+                genre.lowercase(Locale.forLanguageTag(lang)).replaceFirstChar { char ->
+                    if (char.isLowerCase()) {
+                        char.titlecase(Locale.forLanguageTag(lang))
+                    } else {
+                        char.toString()
+                    }
+                }
+            }
+                .joinToString { it.trim() }
+
+            status = seriesDetails.selectFirst(seriesStatusSelector)?.text().parseStatus()
+            thumbnail_url = seriesDetails.select(seriesThumbnailSelector).imgAttr()
+        }
+    }
+
     override fun chapterListSelector() = "div.komik_info-chapters li"
 
     override fun chapterFromElement(element: Element) = SChapter.create().apply {
         val urlElements = element.select("a")
         setUrlWithoutDomain(urlElements.attr("href"))
-        name = element.select(".lch a, .chapternum")!!.text().ifBlank { urlElements.first()!!.text() }
+        name = element.select(".chapter-link-item").text()
         date_upload = parseChapterDate2(element.select(".chapter-link-time").text())
     }
 
@@ -133,7 +158,7 @@ class KomikCast : MangaThemesia(
         }
 
         return doc.select(cssQuery)
-            .mapIndexed { i, img -> Page(i, "", img.imgAttr()) }
+            .mapIndexed { i, img -> Page(i, document.location(), img.imgAttr()) }
     }
 
     override val hasProjectPage: Boolean = true
@@ -218,17 +243,11 @@ class KomikCast : MangaThemesia(
             OrderByFilter(),
             Filter.Header("Genre exclusion is not available for all sources"),
             GenreListFilter(getGenreList()),
+            Filter.Separator(),
+            Filter.Header("NOTE: Can't be used with other filter!"),
+            Filter.Header("$name Project List page"),
+            ProjectFilter(),
         )
-        if (hasProjectPage) {
-            filters.addAll(
-                mutableListOf<Filter<*>>(
-                    Filter.Separator(),
-                    Filter.Header("NOTE: Can't be used with other filter!"),
-                    Filter.Header("$name Project List page"),
-                    ProjectFilter(),
-                ),
-            )
-        }
         return FilterList(filters)
     }
 }

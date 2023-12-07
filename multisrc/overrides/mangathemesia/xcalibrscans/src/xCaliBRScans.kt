@@ -8,13 +8,10 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import java.util.concurrent.TimeUnit
 
 class xCaliBRScans : MangaThemesia("xCaliBR Scans", "https://xcalibrscans.com", "en") {
 
-    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
+    override val client: OkHttpClient = super.client.newBuilder()
         .addInterceptor(AntiScrapInterceptor())
         .rateLimit(2)
         .build()
@@ -43,7 +40,7 @@ class xCaliBRScans : MangaThemesia("xCaliBR Scans", "https://xcalibrscans.com", 
                 }
             }
 
-        return imgUrls.mapIndexed { index, imageUrl -> Page(index, imageUrl = imageUrl) }
+        return imgUrls.mapIndexed { index, imageUrl -> Page(index, document.location(), imageUrl) }
     }
 
     private fun parseAntiScrapScramble(element: Element, destination: MutableList<String>) {

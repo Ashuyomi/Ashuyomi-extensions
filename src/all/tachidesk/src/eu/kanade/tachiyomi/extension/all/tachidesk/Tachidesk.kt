@@ -30,11 +30,11 @@ import okhttp3.Response
 import okhttp3.internal.toImmutableList
 import rx.Observable
 import rx.Single
-import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import uy.kohesive.injekt.injectLazy
+import java.util.concurrent.TimeUnit
 import kotlin.math.min
 
 class Tachidesk : ConfigurableSource, UnmeteredSource, HttpSource() {
@@ -52,6 +52,7 @@ class Tachidesk : ConfigurableSource, UnmeteredSource, HttpSource() {
     override val client: OkHttpClient =
         network.client.newBuilder()
             .dns(Dns.SYSTEM) // don't use DNS over HTTPS as it breaks IP addressing
+            .callTimeout(2, TimeUnit.MINUTES)
             .build()
 
     override fun headersBuilder(): Headers.Builder = Headers.Builder().apply {
@@ -206,7 +207,7 @@ class Tachidesk : ConfigurableSource, UnmeteredSource, HttpSource() {
             client.newCall(GET("$baseUrl/api/v1/category", headers)).execute()
         }
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.io())
             .subscribe(
                 { response ->
                     categoryList = try {

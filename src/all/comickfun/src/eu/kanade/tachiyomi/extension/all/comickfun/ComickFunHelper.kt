@@ -18,11 +18,11 @@ internal fun String.beautifyDescription(): String {
         .trim()
 }
 
-internal fun Int.parseStatus(translationComplete: Boolean): Int {
+internal fun Int?.parseStatus(translationComplete: Boolean?): Int {
     return when (this) {
         1 -> SManga.ONGOING
         2 -> {
-            if (translationComplete) {
+            if (translationComplete == true) {
                 SManga.COMPLETED
             } else {
                 SManga.PUBLISHING_FINISHED
@@ -34,11 +34,12 @@ internal fun Int.parseStatus(translationComplete: Boolean): Int {
     }
 }
 
-internal fun parseCover(thumbnailUrl: String?, mdCovers: List<MDcovers>): String {
-    val b2key = runCatching { mdCovers.first().b2key }
-        .getOrNull() ?: ""
+internal fun parseCover(thumbnailUrl: String?, mdCovers: List<MDcovers>): String? {
+    val b2key = mdCovers.firstOrNull()?.b2key
+        ?: return thumbnailUrl
+    val vol = mdCovers.firstOrNull()?.vol.orEmpty()
 
-    return "$thumbnailUrl#$b2key"
+    return thumbnailUrl?.replaceAfterLast("/", "$b2key#$vol")
 }
 
 internal fun thumbnailIntercept(chain: Interceptor.Chain): Response {
