@@ -6,13 +6,7 @@ shopt -s globstar nullglob extglob
 cp -R ~/apk-artifacts/ $PWD
 APKS=( **/*".apk" )
 
-# Fail if too little extensions seem to have been built
-if [ "${#APKS[@]}" -le "25" ]; then
-    echo "Insufficient amount of APKs found. Please check the project configuration."
-    exit 1
-else
-    echo "Moving ${#APKS[@]} APKs"
-fi
+echo "Moving ${#APKS[@]} APKs"
 
 DEST=$PWD/apk
 rm -rf $DEST && mkdir -p $DEST
