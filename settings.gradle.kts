@@ -17,10 +17,10 @@ if (System.getenv("CI") == null || System.getenv("CI_MODULE_GEN") == "true") {
      * Add or remove modules to load as needed for local development here.
      * To generate multisrc extensions first, run the `:multisrc:generateExtensions` task first.
      */
-    // loadAllIndividualExtensions()
-    // loadAllGeneratedMultisrcExtensions()
-    loadIndividualExtension("pt", "all")
-    loadGeneratedMultisrcExtension("pt", "all")
+    loadAllIndividualExtensions()
+    loadAllGeneratedMultisrcExtensions()
+    // loadIndividualExtension("pt", "all")
+    // loadGeneratedMultisrcExtension("pt", "all")
 } else {
     // Running in CI (GitHub Actions)
 
