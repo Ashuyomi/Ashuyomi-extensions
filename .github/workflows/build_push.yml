@@ -52,7 +52,7 @@ jobs:
           echo "NUM_MULTISRC_MODULES=$(cat projects.txt | grep '.*\:multisrc\:.*' | wc -l)" >> $GITHUB_ENV
       - id: generate-matrices
         name: Create output matrices
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const numIndividualModules = process.env.NUM_INDIVIDUAL_MODULES;
