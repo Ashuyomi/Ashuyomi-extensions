@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - new
     paths-ignore:
       - '**.md'
       - '.github/workflows/issue_moderator.yml'
@@ -71,7 +71,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.prepare.outputs.multisrcMatrix) }}
     steps:
-      - name: Checkout master branch
+      - name: Checkout new branch
         uses: actions/checkout@v4
 
       - name: Set up JDK
@@ -119,7 +119,7 @@ jobs:
     strategy:
       matrix: ${{ fromJSON(needs.prepare.outputs.individualMatrix) }}
     steps:
-      - name: Checkout master branch
+      - name: Checkout new branch
         uses: actions/checkout@v4
 
       - name: Set up JDK
@@ -172,15 +172,15 @@ jobs:
           java-version: 17
           distribution: adopt
 
-      - name: Checkout master branch
+      - name: Checkout new branch
         uses: actions/checkout@v4
         with:
-          ref: master
-          path: master
+          ref: new
+          path: new
 
       - name: Create repo artifacts
         run: |
-          cd master
+          cd new
           ./.github/scripts/move-apks.sh
           INSPECTOR_LINK="$(curl -s "https://api.github.com/repos/tachiyomiorg/tachiyomi-extensions-inspector/releases/latest" | jq -r '.assets[0].browser_download_url')"
           curl -L "$INSPECTOR_LINK" -o ./Inspector.jar
@@ -195,4 +195,4 @@ jobs:
       - name: Deploy repo
         run: |
           cd repo
-          ../master/.github/scripts/commit-repo.sh
+          ../new/.github/scripts/commit-repo.sh
