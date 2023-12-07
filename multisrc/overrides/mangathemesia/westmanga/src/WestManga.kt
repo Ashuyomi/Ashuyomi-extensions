@@ -5,7 +5,7 @@ import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
-class WestManga : MangaThemesia("West Manga", "https://westmanga.info", "id") {
+class WestManga : MangaThemesia("West Manga", "https://westmanga.org", "id") {
     // Formerly "West Manga (WP Manga Stream)"
     override val id = 8883916630998758688
 

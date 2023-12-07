@@ -2,10 +2,17 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 ext {
+<<<<<<< HEAD:src/pt/bakai/build.gradle
     extName = 'Bakai'
     pkgNameSuffix = 'pt.bakai'
     extClass = '.Bakai'
     extVersionCode = 3
+=======
+    extName = '999Hentai'
+    pkgNameSuffix = 'all.ninenineninehentai'
+    extClass = '.NineNineNineHentaiFactory'
+    extVersionCode = 5
+>>>>>>> upstream/master:src/all/ninenineninehentai/build.gradle
     isNsfw = true
 }
 

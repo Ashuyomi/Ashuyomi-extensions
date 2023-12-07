@@ -11,6 +11,7 @@ import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import uy.kohesive.injekt.injectLazy
@@ -38,6 +39,7 @@ class MdAtHomeReportInterceptor(
             return response
         }
 
+<<<<<<< HEAD
         val result = ImageReportDto(
             url,
             success = response.isSuccessful,
@@ -45,14 +47,11 @@ class MdAtHomeReportInterceptor(
             cached = response.header("X-Cache", "") == "HIT",
             duration = response.receivedResponseAtMillis - response.sentRequestAtMillis,
         )
+=======
+        Log.e("MangaDex", "Connecting to MD@Home node at $url")
+>>>>>>> upstream/master
 
-        val payload = json.encodeToString(result)
-
-        val reportRequest = POST(
-            url = MDConstants.atHomePostUrl,
-            headers = headers,
-            body = payload.toRequestBody(JSON_MEDIA_TYPE),
-        )
+        val reportRequest = mdAtHomeReportRequest(response)
 
         // Execute the report endpoint network call asynchronously to avoid blocking
         // the reader from showing the image once it's fully loaded if the report call
@@ -69,7 +68,46 @@ class MdAtHomeReportInterceptor(
             },
         )
 
+<<<<<<< HEAD
         return response
+=======
+        response.close()
+
+        Log.e("MangaDex", "Error connecting to MD@Home node, fallback to uploads server")
+
+        val imagePath = originalRequest.url.pathSegments
+            .dropWhile { it != "data" && it != "data-saver" }
+            .joinToString("/")
+
+        val fallbackUrl = MDConstants.cdnUrl.toHttpUrl().newBuilder()
+            .addPathSegments(imagePath)
+            .build()
+
+        val fallbackRequest = originalRequest.newBuilder()
+            .url(fallbackUrl)
+            .headers(headers)
+            .build()
+
+        return chain.proceed(fallbackRequest)
+    }
+
+    private fun mdAtHomeReportRequest(response: Response): Request {
+        val result = ImageReportDto(
+            url = response.request.url.toString(),
+            success = response.isSuccessful,
+            bytes = response.peekBody(Long.MAX_VALUE).bytes().size,
+            cached = response.headers["X-Cache"] == "HIT",
+            duration = response.receivedResponseAtMillis - response.sentRequestAtMillis,
+        )
+
+        val payload = json.encodeToString(result)
+
+        return POST(
+            url = MDConstants.atHomePostUrl,
+            headers = headers,
+            body = payload.toRequestBody(JSON_MEDIA_TYPE),
+        )
+>>>>>>> upstream/master
     }
 
     companion object {

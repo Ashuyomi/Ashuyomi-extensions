@@ -3,6 +3,9 @@ package eu.kanade.tachiyomi.extension.ar.hijala
 import eu.kanade.tachiyomi.multisrc.zeistmanga.Genre
 import eu.kanade.tachiyomi.multisrc.zeistmanga.Language
 import eu.kanade.tachiyomi.multisrc.zeistmanga.ZeistManga
+import eu.kanade.tachiyomi.source.model.MangasPage
+import okhttp3.Request
+import okhttp3.Response
 
 class Hijala : ZeistManga("Hijala", "https://hijala.blogspot.com", "ar") {
 
@@ -11,6 +14,11 @@ class Hijala : ZeistManga("Hijala", "https://hijala.blogspot.com", "ar") {
     override fun getLanguageList(): List<Language> = listOf(
         Language(intl.all, ""),
     )
+
+    override val supportsLatest = false
+
+    override fun popularMangaRequest(page: Int): Request = latestUpdatesRequest(page)
+    override fun popularMangaParse(response: Response): MangasPage = latestUpdatesParse(response)
 
     override fun getGenreList(): List<Genre> = listOf(
         Genre("أكشن", "Action"),

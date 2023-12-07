@@ -34,11 +34,20 @@ internal fun Int.parseStatus(translationComplete: Boolean): Int {
     }
 }
 
+<<<<<<< HEAD
 internal fun parseCover(thumbnailUrl: String?, mdCovers: List<MDcovers>): String {
     val b2key = runCatching { mdCovers.first().b2key }
         .getOrNull() ?: ""
 
     return "$thumbnailUrl#$b2key"
+=======
+internal fun parseCover(thumbnailUrl: String?, mdCovers: List<MDcovers>): String? {
+    val b2key = mdCovers.firstOrNull()?.b2key
+        ?: return thumbnailUrl
+    val vol = mdCovers.firstOrNull()?.vol.orEmpty()
+
+    return thumbnailUrl?.replaceAfterLast("/", "$b2key#$vol")
+>>>>>>> upstream/master
 }
 
 internal fun thumbnailIntercept(chain: Interceptor.Chain): Response {

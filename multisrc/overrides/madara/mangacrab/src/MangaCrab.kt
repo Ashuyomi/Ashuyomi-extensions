@@ -7,7 +7,11 @@ import java.util.Locale
 
 class MangaCrab : Madara(
     "Manga Crab",
+<<<<<<< HEAD
     "https://mangacrab.com",
+=======
+    "https://mangacrab3.com",
+>>>>>>> upstream/master
     "es",
     SimpleDateFormat("dd/MM/yyyy", Locale("es")),
 ) {

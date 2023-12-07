@@ -6,7 +6,11 @@ ext {
     extName = 'MangaDex'
     pkgNameSuffix = 'all.mangadex'
     extClass = '.MangaDexFactory'
+<<<<<<< HEAD
     extVersionCode = 183
+=======
+    extVersionCode = 192
+>>>>>>> upstream/master
     isNsfw = true
 }
 

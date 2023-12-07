@@ -10,7 +10,6 @@ import eu.kanade.tachiyomi.network.interceptor.rateLimit
 import eu.kanade.tachiyomi.source.model.Page
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import okhttp3.Headers
 import okhttp3.OkHttpClient
 import org.jsoup.nodes.Document
 import uy.kohesive.injekt.Injekt
@@ -20,11 +19,19 @@ import java.util.Locale
 
 class MangaSwat : MangaThemesia(
     "MangaSwat",
+<<<<<<< HEAD
     "https://swatmanga.me",
+=======
+    "https://goldragon.me",
+>>>>>>> upstream/master
     "ar",
     dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US),
 ) {
+<<<<<<< HEAD
     private val defaultBaseUrl = "https://swatmanga.me"
+=======
+    private val defaultBaseUrl = "https://goldragon.me"
+>>>>>>> upstream/master
 
     override val baseUrl by lazy { getPrefBaseUrl() }
 
@@ -36,8 +43,27 @@ class MangaSwat : MangaThemesia(
         .rateLimit(1)
         .build()
 
+<<<<<<< HEAD
     override fun headersBuilder(): Headers.Builder = super.headersBuilder()
         .add("Referer", "$baseUrl/")
+=======
+    override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
+        val request = super.searchMangaRequest(page, query, filters)
+        if (query.isBlank()) return request
+
+        val url = request.url.newBuilder()
+            .removePathSegment(0)
+            .removeAllQueryParameters("title")
+            .addQueryParameter("s", query)
+            .build()
+
+        return request.newBuilder()
+            .url(url)
+            .build()
+    }
+
+    override fun searchMangaNextPageSelector() = "a[rel=next]"
+>>>>>>> upstream/master
 
     override val seriesArtistSelector = "span:contains(الناشر) i"
     override val seriesAuthorSelector = "span:contains(المؤلف) i"
@@ -50,7 +76,7 @@ class MangaSwat : MangaThemesia(
         val jsonString = scriptContent.substringAfter("ts_reader.run(").substringBefore(");")
         val tsReader = json.decodeFromString<TSReader>(jsonString)
         val imageUrls = tsReader.sources.firstOrNull()?.images ?: return emptyList()
-        return imageUrls.mapIndexed { index, imageUrl -> Page(index, imageUrl = imageUrl) }
+        return imageUrls.mapIndexed { index, imageUrl -> Page(index, document.location(), imageUrl) }
     }
 
     override fun chapterListSelector() = "div.bxcl li, ul div:has(span.lchx)"

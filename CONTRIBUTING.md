@@ -176,6 +176,13 @@ Each extension should reside in `src/<lang>/<mysourcename>`. Use `all` as `<lang
 
 The `<lang>` used in the folder inside `src` should be the major `language` part. For example, if you will be creating a `pt-BR` source, use `<lang>` here as `pt` only. Inside the source class, use the full locale string instead.
 
+### Loading a subset of Gradle modules
+
+By default, all individual and generated multisrc extensions are loaded for local development. 
+This may be inconvenient if you only need to work on one extension at a time.
+
+To adjust which modules are loaded, make adjustments to the `settings.gradle.kts` file as needed.
+
 #### Extension file structure
 
 The simplest extension structure looks like this:
@@ -698,6 +705,8 @@ APKs can be created in Android Studio via `Build > Build Bundle(s) / APK(s) > Bu
 When you feel confident about your changes, submit a new Pull Request so your code can be reviewed and merged if it's approved. We encourage following a [GitHub Standard Fork & Pull Request Workflow](https://gist.github.com/Chaser324/ce0505fbed06b947d962) and following the good practices of the workflow, such as not commiting directly to `master`: always create a new branch for your changes.
 
 If you are more comfortable about using Git GUI-based tools, you can refer to [this guide](https://learntodroid.com/how-to-use-git-and-github-in-android-studio/) about the Git integration inside Android Studio, specifically the "How to Contribute to an to Existing Git Repository in Android Studio" section of the guide.
+
+Make sure you have generated the extension icon using the linked Icon Generator tool in the [Tools](#tools) section. The icon must follow the pattern adopted by all other extensions: a square with rounded corners.
 
 Please **do test your changes by compiling it through Android Studio** before submitting it. Also make sure to follow the PR checklist available in the PR body field when creating a new PR. As a reference, you can find it below.
 

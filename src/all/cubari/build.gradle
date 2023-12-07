@@ -6,7 +6,11 @@ ext {
     extName = 'Cubari'
     pkgNameSuffix = "all.cubari"
     extClass = '.CubariFactory'
+<<<<<<< HEAD
     extVersionCode = 19
+=======
+    extVersionCode = 22
+>>>>>>> upstream/master
 }
 
 apply from: "$rootDir/common.gradle"

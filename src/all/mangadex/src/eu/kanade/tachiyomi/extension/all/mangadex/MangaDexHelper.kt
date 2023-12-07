@@ -130,12 +130,19 @@ class MangaDexHelper(lang: String) {
         (MDConstants.latestChapterLimit * (page - 1)).toString()
 
     /**
-     * Remove any HTML characters in description or chapter name to actual
-     * characters. For example &hearts; will show ♥. It also removes
-     * Markdown syntax for links, italic and bold.
+     * Remove any HTML characters in manga or chapter name to actual
+     * characters. For example &hearts; will show ♥.
+     */
+    private fun String.removeEntities(): String {
+        return Parser.unescapeEntities(this, false)
+    }
+
+    /**
+     * Remove any HTML characters in description to actual characters.
+     * It also removes Markdown syntax for links, italic and bold.
      */
     private fun String.removeEntitiesAndMarkdown(): String {
-        return Parser.unescapeEntities(this, false)
+        return removeEntities()
             .substringBefore("---")
             .replace(markdownLinksRegex, "$1")
             .replace(markdownItalicBoldRegex, "$1")
@@ -265,6 +272,7 @@ class MangaDexHelper(lang: String) {
         coverFileName: String?,
         coverSuffix: String?,
         lang: String,
+<<<<<<< HEAD
     ): SManga {
         return SManga.create().apply {
             url = "/manga/${mangaDataDto.id}"
@@ -275,6 +283,17 @@ class MangaDexHelper(lang: String) {
                         .find { (it[lang] ?: it["en"]) !== null }
                         ?.values?.singleOrNull() // find something else from alt titles
             title = (dirtyTitle ?: "").removeEntitiesAndMarkdown()
+=======
+    ): SManga = SManga.create().apply {
+        url = "/manga/${mangaDataDto.id}"
+        val titleMap = mangaDataDto.attributes!!.title
+        val dirtyTitle =
+            titleMap.values.firstOrNull() // use literally anything from title as first resort
+                ?: mangaDataDto.attributes.altTitles
+                    .find { (it[lang] ?: it["en"]) !== null }
+                    ?.values?.singleOrNull() // find something else from alt titles
+        title = dirtyTitle?.removeEntities().orEmpty()
+>>>>>>> upstream/master
 
             coverFileName?.let {
                 thumbnail_url = when (!coverSuffix.isNullOrEmpty()) {
@@ -346,8 +365,13 @@ class MangaDexHelper(lang: String) {
 
             if (altTitles.isNotEmpty()) {
                 val altTitlesDesc = altTitles
+<<<<<<< HEAD
                     .joinToString("\n", "${intl.altTitleText}\n") { "• $it" }
                 desc += (if (desc.isNullOrBlank()) "" else "\n\n") + altTitlesDesc.removeEntitiesAndMarkdown()
+=======
+                    .joinToString("\n", "${intl["alternative_titles"]}\n") { "• $it" }
+                desc += (if (desc.isBlank()) "" else "\n\n") + altTitlesDesc.removeEntities()
+>>>>>>> upstream/master
             }
         }
 
@@ -415,7 +439,7 @@ class MangaDexHelper(lang: String) {
 
         return SChapter.create().apply {
             url = "/chapter/${chapterDataDto.id}"
-            name = chapterName.joinToString(" ").removeEntitiesAndMarkdown()
+            name = chapterName.joinToString(" ").removeEntities()
             date_upload = parseDate(attr.publishAt)
             scanlator = groups
         }

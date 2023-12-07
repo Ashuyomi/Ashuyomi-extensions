@@ -73,6 +73,7 @@ abstract class MangaThemesia(
         client.interceptors.toString().contains("uaIntercept")
     }
 
+<<<<<<< HEAD
     protected val uaIntercept = object : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
             val useRandomUa = preferences.getBoolean(PREF_KEY_RANDOM_UA, false)
@@ -135,6 +136,10 @@ abstract class MangaThemesia(
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
+=======
+    override fun headersBuilder() = super.headersBuilder()
+        .set("Referer", "$baseUrl/")
+>>>>>>> upstream/master
 
     open val projectPageString = "/project"
 
@@ -209,7 +214,7 @@ abstract class MangaThemesia(
             }
         }
         url.addPathSegment("")
-        return GET(url.toString())
+        return GET(url.build(), headers)
     }
 
     override fun searchMangaParse(response: Response): MangasPage {
@@ -274,7 +279,7 @@ abstract class MangaThemesia(
         }
     }
 
-    private fun String?.removeEmptyPlaceholder(): String? {
+    protected fun String?.removeEmptyPlaceholder(): String? {
         return if (this.isNullOrBlank() || this == "-" || this == "N/A") null else this
     }
 
@@ -283,6 +288,7 @@ abstract class MangaThemesia(
         listOf("ongoing", "publishing").any { this.contains(it, ignoreCase = true) } -> SManga.ONGOING
         this.contains("hiatus", ignoreCase = true) -> SManga.ON_HIATUS
         this.contains("completed", ignoreCase = true) -> SManga.COMPLETED
+        listOf("dropped", "cancelled").any { this.contains(it, ignoreCase = true) } -> SManga.CANCELLED
         else -> SManga.UNKNOWN
     }
 
@@ -331,9 +337,10 @@ abstract class MangaThemesia(
     open val pageSelector = "div#readerarea img"
 
     override fun pageListParse(document: Document): List<Page> {
+        val chapterUrl = document.location()
         val htmlPages = document.select(pageSelector)
             .filterNot { it.imgAttr().isEmpty() }
-            .mapIndexed { i, img -> Page(i, "", img.imgAttr()) }
+            .mapIndexed { i, img -> Page(i, chapterUrl, img.imgAttr()) }
 
         countViews(document)
 
@@ -348,10 +355,19 @@ abstract class MangaThemesia(
             emptyList()
         }
         val scriptPages = imageList.mapIndexed { i, jsonEl ->
-            Page(i, "", jsonEl.jsonPrimitive.content)
+            Page(i, chapterUrl, jsonEl.jsonPrimitive.content)
         }
 
         return scriptPages
+    }
+
+    override fun imageRequest(page: Page): Request {
+        val newHeaders = headersBuilder()
+            .set("Accept", "image/avif,image/webp,image/png,image/jpeg,*/*")
+            .set("Referer", page.url)
+            .build()
+
+        return GET(page.imageUrl!!, newHeaders)
     }
 
     /**

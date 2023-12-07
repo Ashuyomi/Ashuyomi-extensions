@@ -6,7 +6,11 @@ ext {
     extName = 'Pixiv'
     pkgNameSuffix = 'all.pixiv'
     extClass = '.PixivFactory'
+<<<<<<< HEAD
     extVersionCode = 3
+=======
+    extVersionCode = 8
+>>>>>>> upstream/master
     isNsfw = true
 }
 
