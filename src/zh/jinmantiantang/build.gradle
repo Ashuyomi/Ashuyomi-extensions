@@ -5,11 +5,7 @@ ext {
     extName = 'Jinman Tiantang'
     pkgNameSuffix = 'zh.jinmantiantang'
     extClass = '.Jinmantiantang'
-<<<<<<< HEAD
     extVersionCode = 37
-=======
-    extVersionCode = 40
->>>>>>> upstream/master
     isNsfw = true
 }
 

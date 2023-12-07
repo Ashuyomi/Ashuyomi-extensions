@@ -285,7 +285,7 @@ open class Cubari(override val lang: String) : HttpSource() {
 
     // ------------- Helpers and whatnot ---------------
 
-    private val volumeNotSpecifiedTerms = setOf("Uncategorized", "null", "")
+    private val volumeNotSpecifiedTerms = setOf("Uncategorized", "null")
 
     private fun parseChapterList(payload: String, manga: SManga): List<SChapter> {
         val jsonObj = json.parseToJsonElement(payload).jsonObject
@@ -325,10 +325,12 @@ open class Cubari(override val lang: String) : HttpSource() {
                         seriesPrefs.getLong(chapterNum, currentTimeMillis)
                     }
 
-                    name = buildString {
-                        if (!volume.isNullOrBlank()) append("Vol.$volume ")
-                        append("Ch.$chapterNum")
-                        if (title.isNotBlank()) append(" - $title")
+                    name = if (volume != null) {
+                        // Output "Vol. 1 Ch. 1 - Chapter Name"
+                        "Vol. $volume Ch. $chapterNum - $title"
+                    } else {
+                        // Output "Ch. 1 - Chapter Name"
+                        "Ch. $chapterNum - $title"
                     }
 
                     url = if (chapterGroups[groupNum] is JsonArray) {

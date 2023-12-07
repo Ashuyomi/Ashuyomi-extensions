@@ -3,17 +3,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
 ext {
-<<<<<<< HEAD:src/fr/japscan/build.gradle
     extName = 'Japscan'
     pkgNameSuffix = 'fr.japscan'
     extClass = '.Japscan'
     extVersionCode = 41
-=======
-    extName = 'LikeManga'
-    pkgNameSuffix = 'en.likemanga'
-    extClass = '.LikeManga'
-    extVersionCode = 3
->>>>>>> upstream/master:src/en/likemanga/build.gradle
 }
 
 apply from: "$rootDir/common.gradle"

@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 class SinensisScan : Madara(
     "Sinensis Scan",
-    "https://sinensisscan.net",
+    "https://sinensisscans.com",
     "pt-BR",
     SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR")),
 ) {

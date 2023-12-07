@@ -53,7 +53,6 @@ open class Kemono(
     override fun popularMangaRequest(page: Int): Request =
         GET("$baseUrl/artists?o=${PAGE_SIZE * (page - 1)}", headers)
 
-<<<<<<< HEAD
     override fun popularMangaParse(response: Response): MangasPage {
         val document = response.asJsoup()
         val cardList = document.selectFirst(Evaluator.Class("card-list"))!!
@@ -73,14 +72,6 @@ open class Kemono(
         }.filterUnsupported()
         return MangasPage(creators, document.hasNextPage())
     }
-=======
-    private val apiPath = "api/v1"
-
-    private val imgCdnUrl = when (name) {
-        "Kemono" -> baseUrl
-        else -> defaultUrl
-    }.replace("//", "//img.")
->>>>>>> upstream/master
 
     override fun latestUpdatesRequest(page: Int): Request =
         GET("$baseUrl/artists/updated?o=${PAGE_SIZE * (page - 1)}", headers)
@@ -144,13 +135,8 @@ open class Kemono(
         page: Int,
         block: (ArrayList<KemonoCreatorDto>) -> List<KemonoCreatorDto>,
     ): MangasPage {
-<<<<<<< HEAD
         val baseUrl = this.baseUrl
         val response = client.newCall(GET("$baseUrl/api/creators", headers)).execute()
-=======
-        val imgCdnUrl = this.imgCdnUrl
-        val response = client.newCall(GET("$baseUrl/$apiPath/creators", headers)).execute()
->>>>>>> upstream/master
         val allCreators = block(response.parseAs())
         val count = allCreators.size
         val fromIndex = (page - 1) * NEW_PAGE_SIZE
@@ -171,7 +157,7 @@ open class Kemono(
 
             override fun onFailure(call: Call, e: IOException) = Unit
         }
-        client.newCall(GET("$baseUrl/$apiPath/creators", headers)).enqueue(callback)
+        client.newCall(GET("$baseUrl/api/creators", headers)).enqueue(callback)
     }
 
     override fun searchMangaRequest(page: Int, query: String, filters: FilterList) = throw UnsupportedOperationException("Not used.")
@@ -192,7 +178,7 @@ open class Kemono(
         var hasNextPage = true
         val result = ArrayList<SChapter>()
         while (offset < maxPosts && hasNextPage) {
-            val request = GET("$baseUrl/$apiPath${manga.url}?limit=$POST_PAGE_SIZE&o=$offset", headers)
+            val request = GET("$baseUrl/api${manga.url}?limit=$POST_PAGE_SIZE&o=$offset", headers)
             val page: List<KemonoPostDto> = client.newCall(request).execute().parseAs()
             page.forEach { post -> if (post.images.isNotEmpty()) result.add(post.toSChapter()) }
             offset += POST_PAGE_SIZE
@@ -204,11 +190,11 @@ open class Kemono(
     override fun chapterListParse(response: Response) = throw UnsupportedOperationException("Not used.")
 
     override fun pageListRequest(chapter: SChapter): Request =
-        GET("$baseUrl/$apiPath${chapter.url}", headers)
+        GET("$baseUrl/api${chapter.url}", headers)
 
     override fun pageListParse(response: Response): List<Page> {
-        val post: KemonoPostDto = response.parseAs()
-        return post.images.mapIndexed { i, path -> Page(i, imageUrl = baseUrl + path) }
+        val post: List<KemonoPostDto> = response.parseAs()
+        return post[0].images.mapIndexed { i, path -> Page(i, imageUrl = baseUrl + path) }
     }
 
     override fun imageUrlParse(response: Response) = throw UnsupportedOperationException("Not used.")

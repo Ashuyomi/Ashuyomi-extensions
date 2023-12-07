@@ -18,6 +18,7 @@ class MyMangaCMSGenerator : ThemeSourceGenerator {
             "vi",
             overrideVersionCode = 9,
         ),
+        SingleLang("LKDTT", "https://lkdttee.com", "vi", true, overrideVersionCode = 4),
     )
 
     companion object {

@@ -235,7 +235,13 @@ class Remanga : ConfigurableSource, HttpSource() {
             // Do not change the title name to ensure work with a multilingual catalog!
             title = if (isEng.equals("rus")) rus_name else en_name
             url = "/api/titles/$dir/"
-            thumbnail_url = baseUrl + img.mid
+            thumbnail_url = if (img.high?.isNotEmpty() == true) {
+                baseUrl + img.high
+            } else if (img.mid?.isNotEmpty() == true) {
+                baseUrl + img.mid
+            } else {
+                baseUrl + img.low
+            }
         }
 
     private val simpleDateFormat by lazy { SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US) }
@@ -361,18 +367,10 @@ class Remanga : ConfigurableSource, HttpSource() {
             thumbnail_url = baseUrl + img.high
             var altName = ""
             if (another_name.isNotEmpty()) {
-                altName = "Альтернативные названия:\n" + another_name + "\n"
+                altName = "Альтернативные названия:\n" + another_name + "\n\n"
             }
             val mediaNameLanguage = if (isEng.equals("rus")) en_name else rus_name
-<<<<<<< HEAD
             this.description = mediaNameLanguage + "\n" + ratingStar + " " + ratingValue + " (голосов: " + count_rating + ")\n" + altName + Jsoup.parse(o.description.replace("<p>", "").replace("</p>", "REPLACbR")).text().replace("REPLACbR", "\n")
-=======
-            this.description = "$mediaNameLanguage\n$ratingStar $ratingValue (голосов: $count_rating)\n$altName" +
-                o.description?.let { Jsoup.parse(it) }
-                    ?.select("body:not(:has(p)),p,br")
-                    ?.prepend("\\n")?.text()?.replace("\\n", "\n")?.replace("\n ", "\n")
-                    .orEmpty()
->>>>>>> upstream/master
             genre = (parseType(type) + ", " + parseAge(age_limit) + ", " + (genres + categories).joinToString { it.name }).split(", ").filter { it.isNotEmpty() }.joinToString { it.trim() }
             status = parseStatus(o.status.id)
         }
@@ -388,7 +386,7 @@ class Remanga : ConfigurableSource, HttpSource() {
             .asObservable().doOnNext { response ->
                 if (!response.isSuccessful) {
                     response.close()
-                    if (USER_ID == "") warnLogin = true else throw Exception("HTTP error ${response.code}")
+                    if (response.code == 404 && USER_ID == "") warnLogin = true else throw Exception("HTTP error ${response.code}")
                 }
             }
             .map { response ->
@@ -409,14 +407,7 @@ class Remanga : ConfigurableSource, HttpSource() {
     }
 
     private fun mangaBranches(manga: SManga): List<BranchesDto> {
-        val requestString = client.newCall(GET(baseUrl + manga.url, headers)).execute()
-        if (!requestString.isSuccessful) {
-            if (USER_ID == "") {
-                throw Exception("HTTP error ${requestString.code}. Для просмотра контента необходима авторизация через WebView\uD83C\uDF0E")
-            }
-            throw Exception("HTTP error ${requestString.code}")
-        }
-        val responseString = requestString.body.string()
+        val responseString = client.newCall(GET(baseUrl + manga.url, headers)).execute().body.string()
         // manga requiring login return "content" as a JsonArray instead of the JsonObject we expect
         // callback request for update outside the library
         val content = json.decodeFromString<JsonObject>(responseString)["content"]
@@ -424,9 +415,6 @@ class Remanga : ConfigurableSource, HttpSource() {
             val series = json.decodeFromJsonElement<MangaDetDto>(content)
             branches[series.dir] = series.branches
             mangaIDs[series.dir] = series.id
-            if (parseStatus(series.status.id) == SManga.LICENSED && series.branches.maxByOrNull { selector(it) }!!.count_chapters == 0) {
-                throw Exception("Лицензировано - Нет глав")
-            }
             series.branches
         } else {
             emptyList()
@@ -434,16 +422,19 @@ class Remanga : ConfigurableSource, HttpSource() {
     }
 
     private fun filterPaid(tempChaptersList: MutableList<SChapter>): MutableList<SChapter> {
+        val lastEx = tempChaptersList.find { it.scanlator.equals("exmanga") }
         return if (!preferences.getBoolean(PAID_PREF, false)) {
-            val lastEx = tempChaptersList.find { !it.name.contains("\uD83D\uDCB2") }
-            tempChaptersList.filterNot {
-                it.name.contains("\uD83D\uDCB2") && if (lastEx != null) {
-                    val volCor = it.name.substringBefore(
-                        ". Глава",
-                    ).toIntOrNull()!!
-                    val volLast = lastEx.name.substringBefore(". Глава").toIntOrNull()!!
-                    (volCor > volLast) ||
-                        ((volCor == volLast) && (it.chapter_number > lastEx.chapter_number))
+            tempChaptersList.filter {
+                !it.name.contains("\uD83D\uDCB2") || if (lastEx != null) {
+                    (
+                        (
+                            it.name.substringBefore(
+                                ". Глава",
+                            ).toIntOrNull()!! <=
+                                (lastEx.name.substringBefore(". Глава").toIntOrNull()!!)
+                            ) &&
+                            (it.chapter_number < lastEx.chapter_number)
+                        )
                 } else {
                     false
                 }
@@ -544,7 +535,9 @@ class Remanga : ConfigurableSource, HttpSource() {
                     }
 
                     if (chapter.is_paid and (chapter.is_bought == true)) {
-                        url = "$url#is_bought"
+                        if (exChID == null) {
+                            url = "$url#is_bought"
+                        }
                     }
                 } else {
                     exChID = null

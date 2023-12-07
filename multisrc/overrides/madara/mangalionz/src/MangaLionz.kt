@@ -4,7 +4,7 @@ import eu.kanade.tachiyomi.multisrc.madara.Madara
 import eu.kanade.tachiyomi.source.model.SManga
 import org.jsoup.nodes.Element
 
-class MangaLionz : Madara("MangaLionz", "https://mangalionz.org", "ar") {
+class MangaLionz : Madara("MangaLionz", "https://mangalionz.com", "ar") {
     override fun popularMangaFromElement(element: Element): SManga {
         val manga = SManga.create()
 

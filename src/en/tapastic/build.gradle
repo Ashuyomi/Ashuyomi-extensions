@@ -6,7 +6,7 @@ ext {
     extName = 'Tapas'
     pkgNameSuffix = 'en.tapastic'
     extClass = '.Tapastic'
-    extVersionCode = 20
+    extVersionCode = 19
     isNsfw = true
 }
 

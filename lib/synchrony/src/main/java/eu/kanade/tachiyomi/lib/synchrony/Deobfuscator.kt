@@ -33,6 +33,7 @@ object Deobfuscator {
         }
     }
 
+    @Suppress("unused")
     private interface TestInterface {
         fun getValue(): String
     }

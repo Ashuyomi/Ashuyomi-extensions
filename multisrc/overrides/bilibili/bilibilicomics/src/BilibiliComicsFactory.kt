@@ -123,7 +123,12 @@ abstract class BilibiliComics(lang: String) : Bilibili(
         val userEpisodesResponse = client.newCall(userEpisodesRequest).execute()
         val unlockedEpisodes = userEpisodesParse(userEpisodesResponse)
 
-        return comic.episodeList.map { ep -> chapterFromObject(ep, comic.id, isUnlocked = ep.id in unlockedEpisodes) }
+        return comic.episodeList
+            .filter { episode ->
+                (episode.payMode == 0 && episode.payGold == 0) ||
+                    episode.id in unlockedEpisodes
+            }
+            .map { ep -> chapterFromObject(ep, comic.id) }
     }
 
     private fun userEpisodesRequest(comicId: Int): Request {

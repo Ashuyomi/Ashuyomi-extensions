@@ -19,10 +19,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import java.nio.charset.Charset
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
-
 /**
  * For sites based on the Flat-Manga CMS
  */
@@ -30,7 +27,6 @@ abstract class FMReader(
     override val name: String,
     override val baseUrl: String,
     override val lang: String,
-    private val dateFormat: SimpleDateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH),
 ) : ParsedHttpSource() {
 
     override val supportsLatest = true
@@ -241,7 +237,7 @@ abstract class FMReader(
                     name = element.attr(chapterNameAttrSelector).substringAfter("$mangaTitle ")
                 }
             }
-            date_upload = element.select(chapterTimeSelector).let { if (it.hasText()) parseRelativeDate(it.text()) else 0 }
+            date_upload = element.select(chapterTimeSelector).let { if (it.hasText()) parseChapterDate(it.text()) else 0 }
         }
     }
 
@@ -251,7 +247,7 @@ abstract class FMReader(
     // gets the unit of time (day, week hour) from "1 day ago"
     open val dateWordIndex = 1
 
-    private fun parseRelativeDate(date: String): Long {
+    private fun parseChapterDate(date: String): Long {
         val value = date.split(' ')[dateValueIndex].toInt()
         val dateWord = date.split(' ')[dateWordIndex].let {
             if (it.contains("(")) {
@@ -297,10 +293,6 @@ abstract class FMReader(
                 return 0
             }
         }
-    }
-    open fun parseAbsoluteDate(dateStr: String): Long {
-        return runCatching { dateFormat.parse(dateStr)?.time }
-            .getOrNull() ?: 0L
     }
 
     open val pageListImageSelector = "img.chapter-img"

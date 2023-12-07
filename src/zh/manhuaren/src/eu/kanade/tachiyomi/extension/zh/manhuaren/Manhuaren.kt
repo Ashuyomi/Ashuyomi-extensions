@@ -1,11 +1,6 @@
 package eu.kanade.tachiyomi.extension.zh.manhuaren
 
 import android.text.format.DateFormat
-<<<<<<< HEAD
-=======
-import android.util.Base64
-import eu.kanade.tachiyomi.network.GET
->>>>>>> upstream/master
 import eu.kanade.tachiyomi.source.model.Filter
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.MangasPage
@@ -43,129 +38,9 @@ class Manhuaren : HttpSource() {
     private val cacheControl: CacheControl by lazy { CacheControl.Builder().maxAge(10, MINUTES).build() }
     private val userId = (100000000..4294967295).random().toString()
 
-<<<<<<< HEAD
     private fun generateGSNHash(url: HttpUrl): String {
         var s = c + "GET"
         url.queryParameterNames.toSortedSet().forEach {
-=======
-    private fun randomNumber(length: Int): String {
-        var str = ""
-        for (i in 1..length) {
-            str += (0..9).random().toString()
-        }
-        return str
-    }
-
-    private fun addLuhnCheckDigit(str: String): String {
-        var sum = 0
-        str.toCharArray().forEachIndexed { i, it ->
-            var v = Character.getNumericValue(it)
-            sum += if (i % 2 == 0) {
-                v
-            } else {
-                v *= 2
-                if (v < 10) {
-                    v
-                } else {
-                    v - 9
-                }
-            }
-        }
-        var checkDigit = sum % 10
-        if (checkDigit != 0) {
-            checkDigit = 10 - checkDigit
-        }
-
-        return "$str$checkDigit"
-    }
-
-    private fun generateIMEI(): String {
-        return addLuhnCheckDigit(randomNumber(14))
-    }
-
-    private fun generateSimSerialNumber(): String {
-        return addLuhnCheckDigit("891253${randomNumber(12)}")
-    }
-
-    private fun fetchToken(): String {
-        val res = client.newCall(getAnonyUser()).execute()
-        val body = JSONObject(res.body.string())
-        val response = body.getJSONObject("response")
-        val tokenResult = response.getJSONObject("tokenResult")
-        val scheme = tokenResult.getString("scheme")
-        val parameter = tokenResult.getString("parameter")
-
-        userId = response.getString("userId")
-        lastUsedTime = generateLastUsedTime()
-        return "$scheme $parameter"
-    }
-
-    private fun generateLastUsedTime(): String {
-        return ((Date().time / 1000) * 1000).toString()
-    }
-
-    private fun encrypt(message: String): String {
-        val x509EncodedKeySpec = X509EncodedKeySpec(Base64.decode(encodedPublicKey, Base64.DEFAULT))
-        val publicKey = KeyFactory.getInstance("RSA").generatePublic(x509EncodedKeySpec)
-        val cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding")
-        cipher.init(Cipher.ENCRYPT_MODE, publicKey)
-
-        return Base64.encodeToString(cipher.doFinal(message.toByteArray()), Base64.NO_WRAP)
-    }
-
-    @OptIn(ExperimentalUnsignedTypes::class)
-    private fun getAnonyUser(): Request {
-        val url = baseHttpUrl.newBuilder()
-            .addPathSegments("v1/user/createAnonyUser2")
-            .build()
-
-        val simSerialNumber = generateSimSerialNumber()
-        val mac = Random.nextUBytes(6)
-            .joinToString(":") { it.toString(16).padStart(2, '0') }
-        val androidId = Random.nextUBytes(8)
-            .joinToString("") { it.toString(16).padStart(2, '0') }
-            .replaceFirst("^0+".toRegex(), "")
-            .uppercase()
-
-        val keysMap = ArrayList<HashMap<String, Any?>>().apply {
-            add(
-                HashMap<String, Any?>().apply {
-                    put("key", encrypt(androidId)) // https://developer.android.com/reference/android/provider/Settings.Secure#ANDROID_ID
-                    put("keyType", "2")
-                },
-            )
-            add(
-                HashMap<String, Any?>().apply {
-                    put("key", encrypt(UUID.randomUUID().toString()))
-                    put("keyType", "-1")
-                },
-            )
-        }
-        val bodyMap = HashMap<String, Any?>().apply {
-            put("keys", keysMap)
-        }
-
-        return myPost(
-            url,
-            JSONObject(bodyMap).toString()
-                .replaceFirst("^/+".toRegex(), "")
-                .toRequestBody("application/json".toMediaTypeOrNull()),
-        )
-    }
-
-    private fun addGsnHash(request: Request): Request {
-        val isPost = request.method == "POST"
-
-        val params = request.url.queryParameterNames.toMutableSet()
-        val bodyBuffer = Buffer()
-        if (isPost) {
-            params.add("body")
-            request.body?.writeTo(bodyBuffer)
-        }
-
-        var str = gsnSalt + request.method
-        params.toSortedSet().forEach {
->>>>>>> upstream/master
             if (it != "gsn") {
                 s += it
                 s += urlEncode(url.queryParameterValues(it)[0])
@@ -483,14 +358,6 @@ class Manhuaren : HttpSource() {
     }
 
     override fun imageUrlParse(response: Response) = throw UnsupportedOperationException("This method should not be called!")
-
-    override fun imageRequest(page: Page): Request {
-        val newHeaders = headersBuilder()
-            .set("Referer", "http://www.dm5.com/dm5api/")
-            .build()
-
-        return GET(page.imageUrl!!, newHeaders)
-    }
 
     override fun getFilterList() = FilterList(
         SortFilter(

@@ -5,7 +5,7 @@ ext {
     extName = 'MangaToon (Limited)'
     pkgNameSuffix = 'all.mangatoon'
     extClass = '.MangaToonFactory'
-    extVersionCode = 5
+    extVersionCode = 4
 }
 
 apply from: "$rootDir/common.gradle"

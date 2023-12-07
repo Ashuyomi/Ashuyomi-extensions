@@ -9,6 +9,7 @@ android {
 
     defaultConfig {
         minSdk = 29
+        targetSdk = AndroidConfig.targetSdk
     }
 
     kotlinOptions {
@@ -39,7 +40,6 @@ dependencies {
 
 tasks {
     register<JavaExec>("generateExtensions") {
-        val buildDir = layout.buildDirectory.asFile.get()
         classpath = configurations.compileOnly.get() +
             configurations.androidApis.get() + // android.jar path
             files("$buildDir/intermediates/aar_main_jar/debug/classes.jar") // jar made from this module

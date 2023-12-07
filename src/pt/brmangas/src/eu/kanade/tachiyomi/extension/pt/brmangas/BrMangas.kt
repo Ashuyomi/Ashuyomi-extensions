@@ -8,7 +8,7 @@ import eu.kanade.tachiyomi.source.model.SChapter
 import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.ParsedHttpSource
 import okhttp3.Headers
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -20,7 +20,7 @@ class BrMangas : ParsedHttpSource() {
 
     override val name = "BR Mangás"
 
-    override val baseUrl = "https://www.brmangas.net"
+    override val baseUrl = "https://brmangas.com"
 
     override val lang = "pt-BR"
 
@@ -38,15 +38,14 @@ class BrMangas : ParsedHttpSource() {
     override fun popularMangaRequest(page: Int): Request {
         val listPath = if (page == 1) "" else "page/${page - 1}"
         val newHeaders = headersBuilder()
-            .set("Referer", "$baseUrl/$listPath")
+            .set("Referer", "$baseUrl/lista-de-mangas/$listPath")
             .build()
 
         val pageStr = if (page != 1) "page/$page" else ""
-        return GET("$baseUrl/$pageStr", newHeaders)
+        return GET("$baseUrl/lista-de-mangas/$pageStr", newHeaders)
     }
 
-    override fun popularMangaSelector(): String =
-        "span.heading:contains(Todos os Mangás) ~ div.listagem.row div.item a[title]"
+    override fun popularMangaSelector(): String = "div.listagem.row div.item a[title]"
 
     override fun popularMangaFromElement(element: Element): SManga = SManga.create().apply {
         val thumbnailEl = element.select("img").first()!!
@@ -78,14 +77,13 @@ class BrMangas : ParsedHttpSource() {
     override fun latestUpdatesNextPageSelector() = popularMangaNextPageSelector()
 
     override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
-        val url = baseUrl.toHttpUrl().newBuilder()
+        val url = baseUrl.toHttpUrlOrNull()!!.newBuilder()
             .addQueryParameter("s", query)
-            .build()
 
-        return GET(url, headers)
+        return GET(url.toString(), headers)
     }
 
-    override fun searchMangaSelector() = "div.listagem.row div.item a[title]"
+    override fun searchMangaSelector() = popularMangaSelector()
 
     override fun searchMangaFromElement(element: Element): SManga = popularMangaFromElement(element)
 

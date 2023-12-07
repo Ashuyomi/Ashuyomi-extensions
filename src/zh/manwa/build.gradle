@@ -5,11 +5,7 @@ ext {
     extName = 'Manwa'
     pkgNameSuffix = 'zh.manwa'
     extClass = '.Manwa'
-<<<<<<< HEAD
     extVersionCode = 2
-=======
-    extVersionCode = 4
->>>>>>> upstream/master
     isNsfw = true
 }
 

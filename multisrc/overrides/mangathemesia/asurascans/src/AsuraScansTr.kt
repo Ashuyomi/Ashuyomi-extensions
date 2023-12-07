@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 class AsuraScansTr : MangaThemesia(
     "Asura Scans",
-    "https://armoniscans.com",
+    "https://asurascanstr.com",
     "tr",
     dateFormat = SimpleDateFormat("MMM d, yyyy", Locale("tr")),
 ) {
@@ -53,7 +53,7 @@ class AsuraScansTr : MangaThemesia(
         val jsonString = scriptContent.substringAfter("ts_reader.run(").substringBefore(");")
         val tsReader = json.decodeFromString<TSReader>(jsonString)
         val imageUrls = tsReader.sources.firstOrNull()?.images ?: return emptyList()
-        return imageUrls.mapIndexed { index, imageUrl -> Page(index, document.location(), imageUrl) }
+        return imageUrls.mapIndexed { index, imageUrl -> Page(index, imageUrl = imageUrl) }
     }
 
     @Serializable

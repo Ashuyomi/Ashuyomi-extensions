@@ -9,20 +9,9 @@ import eu.kanade.tachiyomi.source.model.SManga
 import eu.kanade.tachiyomi.source.online.ParsedHttpSource
 import okhttp3.Headers
 import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.Interceptor
 import okhttp3.Request
-<<<<<<< HEAD
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-=======
-import okhttp3.Response
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
-import rx.Observable
-import java.io.IOException
-import java.net.URLEncoder
->>>>>>> upstream/master
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -33,82 +22,8 @@ class MangaDemon : ParsedHttpSource() {
     override val name = "Manga Demon"
     override val baseUrl = "https://mangademon.org"
 
-<<<<<<< HEAD
     override fun headersBuilder(): Headers.Builder = Headers.Builder()
         .add("referrer", "origin")
-=======
-    override val client = network.cloudflareClient.newBuilder()
-        .rateLimit(1)
-        .addInterceptor { chain ->
-            val request = chain.request()
-            val headers = request.headers.newBuilder()
-                .removeAll("Accept-Encoding")
-                .build()
-            chain.proceed(request.newBuilder().headers(headers).build())
-        }
-        .addInterceptor(::dynamicUrlInterceptor)
-        .build()
-
-    // Cache suffix
-    private var dynamicUrlSuffix = ""
-    private var dynamicUrlSuffixUpdated: Long = 0
-    private val dynamicUrlSuffixValidity: Long = 10 * 60 // 10 minutes
-
-    private fun dynamicUrlInterceptor(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-        val timeNow = System.currentTimeMillis() / 1000
-
-        // Check if request requires an up-to-date suffix
-        if (request.url.pathSegments[0] == "manga") {
-            // Force update suffix if required
-            if (timeNow - dynamicUrlSuffixUpdated > dynamicUrlSuffixValidity) {
-                client.newCall(GET(baseUrl)).execute()
-                if (timeNow - dynamicUrlSuffixUpdated > dynamicUrlSuffixValidity) {
-                    throw IOException("Failed to update dynamic url suffix")
-                }
-            }
-
-            val newPath = request.url
-                .encodedPath
-                .replaceAfterLast("-", dynamicUrlSuffix)
-
-            val newUrl = request.url.newBuilder()
-                .encodedPath(newPath)
-                .build()
-
-            val newRequest = request.newBuilder()
-                .url(newUrl)
-                .build()
-
-            return chain.proceed(newRequest)
-        }
-
-        // Always update suffix
-        val response = chain.proceed(request)
-        val document = Jsoup.parse(
-            response.peekBody(Long.MAX_VALUE).string(),
-            request.url.toString(),
-        )
-
-        val links = document.select("a[href^='/manga/']")
-
-        // Get the most popular suffix after last `-`
-        val suffix = links.map { it.attr("href").substringAfterLast("-") }
-            .groupBy { it }
-            .maxByOrNull { it.value.size }
-            ?.key
-
-        if (suffix != null) {
-            dynamicUrlSuffix = suffix
-            dynamicUrlSuffixUpdated = timeNow
-        }
-
-        return response
-    }
-
-    override fun headersBuilder() = super.headersBuilder()
-        .add("Referer", baseUrl)
->>>>>>> upstream/master
 
     // latest
     override fun latestUpdatesRequest(page: Int): Request {
@@ -119,7 +34,6 @@ class MangaDemon : ParsedHttpSource() {
 
     override fun latestUpdatesSelector() = "div.leftside"
 
-<<<<<<< HEAD
     override fun latestUpdatesFromElement(element: Element): SManga {
         return SManga.create().apply {
             element.select("a").apply() {
@@ -127,13 +41,6 @@ class MangaDemon : ParsedHttpSource() {
                 url = attr("href")
             }
             thumbnail_url = element.select("img").attr("abs:src")
-=======
-    override fun latestUpdatesFromElement(element: Element) = SManga.create().apply {
-        element.select("a").apply {
-            title = attr("title")
-            val url = URLEncoder.encode(attr("href"), "UTF-8")
-            setUrlWithoutDomain(url)
->>>>>>> upstream/master
         }
     }
 
@@ -158,7 +65,6 @@ class MangaDemon : ParsedHttpSource() {
 
     override fun searchMangaSelector() = "a.boxsizing"
 
-<<<<<<< HEAD
     override fun searchMangaFromElement(element: Element): SManga {
         return SManga.create().apply {
             element.select("a").first().let {
@@ -168,14 +74,6 @@ class MangaDemon : ParsedHttpSource() {
                 thumbnail_url = ("https://readermc.org/images/thumbnails/$urlsorter.webp")
             }
         }
-=======
-    override fun searchMangaFromElement(element: Element) = SManga.create().apply {
-        title = element.text()
-        val url = URLEncoder.encode(element.attr("href"), "UTF-8")
-        setUrlWithoutDomain(url)
-        val urlSorter = title.replace(":", "%20")
-        thumbnail_url = ("https://readermc.org/images/thumbnails/$urlSorter.webp")
->>>>>>> upstream/master
     }
 
     override fun searchMangaNextPageSelector() = latestUpdatesNextPageSelector()
@@ -207,12 +105,7 @@ class MangaDemon : ParsedHttpSource() {
     override fun chapterFromElement(element: Element): SChapter {
         return SChapter.create().apply {
             element.select("a").let { urlElement ->
-<<<<<<< HEAD
                 url = (urlElement.attr("href"))
-=======
-                val url = URLEncoder.encode(urlElement.attr("href"), "UTF-8")
-                setUrlWithoutDomain(url)
->>>>>>> upstream/master
                 name = element.select("strong.chapter-title").text()
             }
             val date = element.select("time.chapter-update").text()

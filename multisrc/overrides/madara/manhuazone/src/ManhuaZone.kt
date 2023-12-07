@@ -6,7 +6,7 @@ import java.util.Locale
 
 class ManhuaZone : Madara(
     "ManhuaZone",
-    "https://manhuazone.org",
+    "https://manhuazone.com",
     "en",
     dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.US),
 )

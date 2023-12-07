@@ -1,6 +1,5 @@
 package eu.kanade.tachiyomi.lib.textinterceptor
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -54,7 +53,7 @@ class TextInterceptor : Interceptor {
         }
 
         @Suppress("DEPRECATION")
-        val heading = StaticLayout(
+        val heading: StaticLayout = StaticLayout(
             creator, paintHeading, (WIDTH - 2 * X_PADDING).toInt(),
             Layout.Alignment.ALIGN_NORMAL, SPACING_MULT, SPACING_ADD, true
         )
@@ -68,7 +67,7 @@ class TextInterceptor : Interceptor {
         }
 
         @Suppress("DEPRECATION")
-        val body = StaticLayout(
+        val body: StaticLayout = StaticLayout(
             story, paintBody, (WIDTH - 2 * X_PADDING).toInt(),
             Layout.Alignment.ALIGN_NORMAL, SPACING_MULT, SPACING_ADD, true
         )
@@ -76,12 +75,12 @@ class TextInterceptor : Interceptor {
         // Image building
         val imgHeight: Int = (heading.height + body.height + 2 * Y_PADDING).toInt()
         val bitmap: Bitmap = Bitmap.createBitmap(WIDTH, imgHeight, Bitmap.Config.ARGB_8888)
+        val canvas: Canvas = Canvas(bitmap)
 
-        Canvas(bitmap).apply {
-            drawColor(Color.WHITE)
-            heading.draw(this, X_PADDING, Y_PADDING)
-            body.draw(this, X_PADDING, Y_PADDING + heading.height.toFloat())
-        }
+        // Image drawing
+        canvas.drawColor(Color.WHITE)
+        heading.draw(canvas, X_PADDING, Y_PADDING)
+        body.draw(canvas, X_PADDING, Y_PADDING + heading.height.toFloat())
 
         // Image converting & returning
         val stream = ByteArrayOutputStream()
@@ -96,17 +95,14 @@ class TextInterceptor : Interceptor {
             .build()
     }
 
-    @SuppressLint("ObsoleteSdkInt")
     private fun textFixer(htmlString: String): String {
         return if (Build.VERSION.SDK_INT >= 24) {
             Html.fromHtml(htmlString , Html.FROM_HTML_MODE_LEGACY).toString()
         } else {
-            @Suppress("DEPRECATION")
             Html.fromHtml(htmlString).toString()
         }
     }
 
-    @Suppress("SameParameterValue")
     private fun StaticLayout.draw(canvas: Canvas, x: Float, y: Float) {
         canvas.save()
         canvas.translate(x, y)

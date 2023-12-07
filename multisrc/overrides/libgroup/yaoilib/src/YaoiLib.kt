@@ -181,9 +181,14 @@ class YaoiLib : LibGroup("YaoiLib", "https://v1.slashlib.me", "ru") {
             this.setDefaultValue(DOMAIN_DEFAULT)
             dialogTitle = DOMAIN_TITLE
             setOnPreferenceChangeListener { _, newValue ->
-                val warning = "Для смены домена необходимо перезапустить приложение с полной остановкой."
-                Toast.makeText(screen.context, warning, Toast.LENGTH_LONG).show()
-                true
+                try {
+                    val res = preferences.edit().putString(DOMAIN_TITLE, newValue as String).commit()
+                    Toast.makeText(screen.context, "Для смены домена необходимо перезапустить приложение с полной остановкой.", Toast.LENGTH_LONG).show()
+                    res
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    false
+                }
             }
         }.let(screen::addPreference)
     }

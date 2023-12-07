@@ -5,11 +5,7 @@ ext {
     extName = 'Everia.club'
     pkgNameSuffix = 'all.everiaclub'
     extClass = '.EveriaClub'
-<<<<<<< HEAD
     extVersionCode = 6
-=======
-    extVersionCode = 9
->>>>>>> upstream/master
     isNsfw = true
 }
 

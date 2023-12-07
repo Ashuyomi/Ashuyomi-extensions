@@ -1,21 +1,8 @@
 package eu.kanade.tachiyomi.extension.es.yugenmangas
 
-import android.app.Application
-import android.content.SharedPreferences
 import eu.kanade.tachiyomi.multisrc.heancms.Genre
 import eu.kanade.tachiyomi.multisrc.heancms.HeanCms
-<<<<<<< HEAD
 import eu.kanade.tachiyomi.network.interceptor.rateLimit
-=======
-import eu.kanade.tachiyomi.network.interceptor.rateLimitHost
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.Interceptor
-import okhttp3.ProtocolException
-import okhttp3.Response
-import uy.kohesive.injekt.Injekt
-import uy.kohesive.injekt.api.get
-import java.io.IOException
->>>>>>> upstream/master
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
@@ -30,77 +17,10 @@ class YugenMangas : HeanCms(
     // Site changed from Madara to HeanCms.
     override val versionId = 2
 
-<<<<<<< HEAD
     override val client = super.client.newBuilder()
         .connectTimeout(60, TimeUnit.SECONDS)
         .readTimeout(90, TimeUnit.SECONDS)
         .rateLimit(1, 1)
-=======
-    override val baseUrl by lazy { getPrefBaseUrl() }
-
-    private val preferences by lazy {
-        Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
-    }
-
-    private var lastDomain = ""
-
-    private fun domainChangeIntercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-
-        if (!request.url.host.startsWith("yugenmangas")) {
-            return chain.proceed(request)
-        }
-
-        if (lastDomain.isNotEmpty()) {
-            val newUrl = request.url.newBuilder()
-                .host(preferences.baseUrlHost)
-                .build()
-
-            return chain.proceed(
-                request.newBuilder()
-                    .url(newUrl)
-                    .build(),
-            )
-        }
-
-        val response = try {
-            chain.proceed(request)
-        } catch (e: ProtocolException) {
-            if (e.message?.contains("Too many follow-up requests") == true) {
-                throw IOException("No se pudo obtener la nueva URL del sitio")
-            } else {
-                throw e
-            }
-        }
-
-        if (request.url.host == response.request.url.host) return response
-
-        response.close()
-
-        preferences.baseUrlHost = response.request.url.host
-
-        lastDomain = request.url.host
-
-        val newUrl = request.url.newBuilder()
-            .host(response.request.url.host)
-            .build()
-
-        return chain.proceed(
-            request.newBuilder()
-                .url(newUrl)
-                .build(),
-        )
-    }
-
-    override val slugStrategy = SlugStrategy.ID
-    override val useNewQueryEndpoint = true
-
-    override val client = super.client.newBuilder()
-        .connectTimeout(60, TimeUnit.SECONDS)
-        .readTimeout(90, TimeUnit.SECONDS)
-        .rateLimitHost(apiUrl.toHttpUrl(), 2, 3)
-        .addInterceptor(::domainChangeIntercept)
->>>>>>> upstream/master
         .build()
 
     override val coverPath: String = ""
@@ -159,17 +79,4 @@ class YugenMangas : HeanCms(
         Genre("Yaoi", 43),
         Genre("Yuri", 44),
     )
-
-    companion object {
-        private const val defaultBaseUrlHost = "yugenmangas.net"
-        private const val BASE_URL_PREF = "prefOverrideBaseUrl"
-    }
-
-    private var SharedPreferences.baseUrlHost
-        get() = getString(BASE_URL_PREF, defaultBaseUrlHost) ?: defaultBaseUrlHost
-        set(newHost) {
-            edit().putString(BASE_URL_PREF, newHost).commit()
-        }
-
-    private fun getPrefBaseUrl(): String = preferences.baseUrlHost.let { "https://$it" }
 }

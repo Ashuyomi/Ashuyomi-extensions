@@ -43,7 +43,7 @@ class xCaliBRScans : MangaThemesia("xCaliBR Scans", "https://xcalibrscans.com", 
                 }
             }
 
-        return imgUrls.mapIndexed { index, imageUrl -> Page(index, document.location(), imageUrl) }
+        return imgUrls.mapIndexed { index, imageUrl -> Page(index, imageUrl = imageUrl) }
     }
 
     private fun parseAntiScrapScramble(element: Element, destination: MutableList<String>) {

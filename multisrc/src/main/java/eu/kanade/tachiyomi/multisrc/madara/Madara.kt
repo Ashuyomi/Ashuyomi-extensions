@@ -549,7 +549,7 @@ abstract class Madara(
         "OnGoing", "Продолжается", "Updating", "Em Lançamento", "Em lançamento", "Em andamento",
         "Em Andamento", "En cours", "En Cours", "En cours de publication", "Ativo", "Lançando", "Đang Tiến Hành", "Devam Ediyor",
         "Devam ediyor", "In Corso", "In Arrivo", "مستمرة", "مستمر", "En Curso", "En curso", "Emision",
-        "Curso", "En marcha", "Publicandose", "En emision", "连载中", "Em Lançamento",
+        "Curso", "En marcha", "Publicandose", "En emision", "连载中",
     )
 
     protected val hiatusStatusList: Array<String> = arrayOf(
@@ -713,6 +713,7 @@ abstract class Madara(
         val xhrHeaders = headersBuilder()
             .add("Content-Length", form.contentLength().toString())
             .add("Content-Type", form.contentType().toString())
+            .add("Referer", "$baseUrl/")
             .add("X-Requested-With", "XMLHttpRequest")
             .build()
 
@@ -721,6 +722,7 @@ abstract class Madara(
 
     protected open fun xhrChaptersRequest(mangaUrl: String): Request {
         val xhrHeaders = headersBuilder()
+            .add("Referer", "$baseUrl/")
             .add("X-Requested-With", "XMLHttpRequest")
             .build()
 

@@ -22,18 +22,5 @@ class MangaSpark : Madara("MangaSpark", "https://mangaspark.com", "ar") {
         return manga
     }
 
-<<<<<<< HEAD
-=======
-class MangaSpark : Madara(
-    "MangaSpark",
-    "https://mangaspark.org",
-    "ar",
-    dateFormat = SimpleDateFormat("d MMMM، yyyy", Locale("ar")),
-) {
->>>>>>> upstream/master
     override val chapterUrlSuffix = ""
-
-    override val useNewChapterEndpoint = false
-
-    override fun searchPage(page: Int): String = if (page == 1) "" else "page/$page/"
 }

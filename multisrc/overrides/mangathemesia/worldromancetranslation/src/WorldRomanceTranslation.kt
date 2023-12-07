@@ -2,6 +2,7 @@ package eu.kanade.tachiyomi.extension.id.worldromancetranslation
 
 import eu.kanade.tachiyomi.multisrc.mangathemesia.MangaThemesia
 import eu.kanade.tachiyomi.source.model.SManga
+import okhttp3.Headers
 import org.jsoup.nodes.Document
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -15,6 +16,10 @@ class WorldRomanceTranslation : MangaThemesia(
     override val projectPageString = "/project-wrt"
 
     override val hasProjectPage = true
+
+    override fun headersBuilder(): Headers.Builder {
+        return super.headersBuilder().add("Referer", baseUrl)
+    }
 
     override fun mangaDetailsParse(document: Document): SManga {
         val thumbnail = document.select(seriesThumbnailSelector)

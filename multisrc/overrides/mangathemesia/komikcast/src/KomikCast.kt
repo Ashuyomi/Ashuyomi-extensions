@@ -7,7 +7,6 @@ import eu.kanade.tachiyomi.source.model.Filter
 import eu.kanade.tachiyomi.source.model.FilterList
 import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.source.model.SChapter
-import eu.kanade.tachiyomi.source.model.SManga
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import okhttp3.Headers
@@ -18,14 +17,14 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.util.Calendar
-<<<<<<< HEAD
 import java.util.concurrent.TimeUnit
-=======
-import java.util.Locale
 
-class KomikCast : MangaThemesia("Komik Cast", "https://komikcast.lol", "id", "/daftar-komik") {
->>>>>>> upstream/master
-
+class KomikCast : MangaThemesia(
+    "Komik Cast",
+    baseUrl = "https://komikcast.io",
+    "id",
+    mangaUrlDirectory = "/daftar-komik",
+) {
     // Formerly "Komik Cast (WP Manga Stream)"
     override val id = 972717448578983812
 
@@ -38,6 +37,7 @@ class KomikCast : MangaThemesia("Komik Cast", "https://komikcast.lol", "id", "/d
     override fun headersBuilder(): Headers.Builder = Headers.Builder()
         .add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
         .add("Accept-language", "en-US,en;q=0.9,id;q=0.8")
+        .add("Referer", baseUrl)
 
     override fun imageRequest(page: Page): Request {
         val newHeaders = headersBuilder()
@@ -70,37 +70,6 @@ class KomikCast : MangaThemesia("Komik Cast", "https://komikcast.lol", "id", "/d
     override val seriesGenreSelector = ".komik_info-content-genre a"
     override val seriesThumbnailSelector = ".komik_info-content-thumbnail img"
     override val seriesStatusSelector = ".komik_info-content-info:contains(Status)"
-
-    override fun mangaDetailsParse(document: Document) = SManga.create().apply {
-        document.selectFirst(seriesDetailsSelector)?.let { seriesDetails ->
-            title = seriesDetails.selectFirst(seriesTitleSelector)?.text()
-                ?.replace("bahasa indonesia", "", ignoreCase = true)?.trim().orEmpty()
-            artist = seriesDetails.selectFirst(seriesArtistSelector)?.ownText().removeEmptyPlaceholder()
-            author = seriesDetails.selectFirst(seriesAuthorSelector)?.ownText().removeEmptyPlaceholder()
-            description = seriesDetails.select(seriesDescriptionSelector).joinToString("\n") { it.text() }.trim()
-            // Add alternative name to manga description
-            val altName = seriesDetails.selectFirst(seriesAltNameSelector)?.ownText().takeIf { it.isNullOrBlank().not() }
-            altName?.let {
-                description = "$description\n\n$altNamePrefix$altName".trim()
-            }
-            val genres = seriesDetails.select(seriesGenreSelector).map { it.text() }.toMutableList()
-            // Add series type (manga/manhwa/manhua/other) to genre
-            seriesDetails.selectFirst(seriesTypeSelector)?.ownText().takeIf { it.isNullOrBlank().not() }?.let { genres.add(it) }
-            genre = genres.map { genre ->
-                genre.lowercase(Locale.forLanguageTag(lang)).replaceFirstChar { char ->
-                    if (char.isLowerCase()) {
-                        char.titlecase(Locale.forLanguageTag(lang))
-                    } else {
-                        char.toString()
-                    }
-                }
-            }
-                .joinToString { it.trim() }
-
-            status = seriesDetails.selectFirst(seriesStatusSelector)?.text().parseStatus()
-            thumbnail_url = seriesDetails.select(seriesThumbnailSelector).imgAttr()
-        }
-    }
 
     override fun chapterListSelector() = "div.komik_info-chapters li"
 
@@ -164,7 +133,7 @@ class KomikCast : MangaThemesia("Komik Cast", "https://komikcast.lol", "id", "/d
         }
 
         return doc.select(cssQuery)
-            .mapIndexed { i, img -> Page(i, document.location(), img.imgAttr()) }
+            .mapIndexed { i, img -> Page(i, "", img.imgAttr()) }
     }
 
     override val hasProjectPage: Boolean = true
@@ -249,11 +218,17 @@ class KomikCast : MangaThemesia("Komik Cast", "https://komikcast.lol", "id", "/d
             OrderByFilter(),
             Filter.Header("Genre exclusion is not available for all sources"),
             GenreListFilter(getGenreList()),
-            Filter.Separator(),
-            Filter.Header("NOTE: Can't be used with other filter!"),
-            Filter.Header("$name Project List page"),
-            ProjectFilter(),
         )
+        if (hasProjectPage) {
+            filters.addAll(
+                mutableListOf<Filter<*>>(
+                    Filter.Separator(),
+                    Filter.Header("NOTE: Can't be used with other filter!"),
+                    Filter.Header("$name Project List page"),
+                    ProjectFilter(),
+                ),
+            )
+        }
         return FilterList(filters)
     }
 }

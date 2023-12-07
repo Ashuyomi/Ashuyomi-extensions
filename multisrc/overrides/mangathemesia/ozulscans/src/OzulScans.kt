@@ -6,11 +6,7 @@ import java.util.Locale
 
 class OzulScans : MangaThemesia(
     "Ozul Scans",
-<<<<<<< HEAD
     "https://ozulscans.com",
-=======
-    "https://kingofmanga.com",
->>>>>>> upstream/master
     "ar",
     dateFormat = SimpleDateFormat("MMM d, yyy", Locale("ar")),
 )

@@ -1,10 +1,8 @@
 include(":core")
 
-// Load all modules under /lib
-File(rootDir, "lib").eachDir {
-    val libName = it.name
-    include(":lib-$libName")
-    project(":lib-$libName").projectDir = File("lib/$libName")
+listOf("dataimage", "unpacker", "cryptoaes", "textinterceptor", "synchrony").forEach {
+    include(":lib-$it")
+    project(":lib-$it").projectDir = File("lib/$it")
 }
 
 if (System.getenv("CI") == null || System.getenv("CI_MODULE_GEN") == "true") {
@@ -13,14 +11,57 @@ if (System.getenv("CI") == null || System.getenv("CI_MODULE_GEN") == "true") {
     include(":multisrc")
     project(":multisrc").projectDir = File("multisrc")
 
+    // Loads all extensions
+    File(rootDir, "src").eachDir { dir ->
+        dir.eachDir { subdir ->
+            
+            //ANTIGO
+            val name = ":extensions:individual:${dir.name}:${subdir.name}"
+            include(name)
+            project(name).projectDir = File("src/${dir.name}/${subdir.name}")
+           
+            
+            /* NOVO
+            val lang = "pt"
+            val projectName = ":extensions:individual:$lang:${subdir.name}"
+            println(projectName)
+            include(projectName)
+            project(projectName).projectDir = File("src/${lang}/${subdir.name}")
+             */
+        }
+    }
+    // Loads all generated extensions from multisrc
+    File(rootDir, "generated-src").eachDir { dir ->
+        dir.eachDir { subdir ->
+            
+            //ANTIGO
+            val name = ":extensions:multisrc:${dir.name}:${subdir.name}"
+            include(name)
+            project(name).projectDir = File("generated-src/${dir.name}/${subdir.name}")
+            
+
+            /* NOVO
+            val lang = "pt"
+            val projectName = ":extensions:multisrc:$lang:${subdir.name}"
+            println(projectName)
+            include(projectName)
+            project(projectName).projectDir = File("generated-src/${lang}/${subdir.name}")
+            */
+        }
+    }
+
     /**
-     * Add or remove modules to load as needed for local development here.
-     * To generate multisrc extensions first, run the `:multisrc:generateExtensions` task first.
+     * If you're developing locally and only want to work with a single module,
+     * comment out the parts above and uncomment below.
      */
-    loadAllIndividualExtensions()
-    loadAllGeneratedMultisrcExtensions()
-    // loadIndividualExtension("all", "mangadex")
-    // loadGeneratedMultisrcExtension("en", "guya")
+//    val lang = "all"
+//    val name = "mangadex"
+//    val projectName = ":extensions:individual:$lang:$name"
+//    val projectName = ":extensions:multisrc:$lang:$name"
+//    include(projectName)
+//    project(projectName).projectDir = File("src/${lang}/${name}")
+//    project(projectName).projectDir = File("generated-src/${lang}/${name}")
+
 } else {
     // Running in CI (GitHub Actions)
 
@@ -68,35 +109,6 @@ if (System.getenv("CI") == null || System.getenv("CI_MODULE_GEN") == "true") {
             project(projectName).projectDir = File("src/${lang}/${it.name}")
         }
     }
-}
-
-fun loadAllIndividualExtensions() {
-    File(rootDir, "src").eachDir { dir ->
-        dir.eachDir { subdir ->
-            val name = ":extensions:individual:${dir.name}:${subdir.name}"
-            include(name)
-            project(name).projectDir = File("src/${dir.name}/${subdir.name}")
-        }
-    }
-}
-fun loadAllGeneratedMultisrcExtensions() {
-    File(rootDir, "generated-src").eachDir { dir ->
-        dir.eachDir { subdir ->
-            val name = ":extensions:multisrc:${dir.name}:${subdir.name}"
-            include(name)
-            project(name).projectDir = File("generated-src/${dir.name}/${subdir.name}")
-        }
-    }
-}
-fun loadIndividualExtension(lang: String, name: String) {
-    val projectName = ":extensions:individual:$lang:$name"
-    include(projectName)
-    project(projectName).projectDir = File("src/${lang}/${name}")
-}
-fun loadGeneratedMultisrcExtension(lang: String, name: String) {
-    val projectName = ":extensions:multisrc:$lang:$name"
-    include(projectName)
-    project(projectName).projectDir = File("generated-src/${lang}/${name}")
 }
 
 fun File.getChunk(chunk: Int, chunkSize: Int): List<File>? {

@@ -3,18 +3,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
 ext {
-<<<<<<<< HEAD:src/en/lynxscans/build.gradle
     extName = 'LynxScans'
     pkgNameSuffix = 'en.lynxscans'
     extClass = '.LynxScans'
     extVersionCode = 7
-========
-    extName = 'Temple Scan'
-    pkgNameSuffix = 'es.templescanesp'
-    extClass = '.TempleScanEsp'
-    extVersionCode = 33
-    isNsfw = true
->>>>>>>> upstream/master:src/es/templescanesp/build.gradle
 }
 
 apply from: "$rootDir/common.gradle"
