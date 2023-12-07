@@ -749,7 +749,7 @@
         "name": "HikariScan",
         "lang": "pt-BR",
         "id": "1758222659181620068",
-        "baseUrl": "https://hikariscan.org/",
+        "baseUrl": "https://hikariscan.org",
         "versionId": 1,
         "hasCloudflare": 1
       }
