@@ -13,13 +13,14 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 class BacaKomik : ParsedHttpSource() {
     override val name = "BacaKomik"
-    override val baseUrl = "https://bacakomik.me"
+    override val baseUrl = "https://bacakomik.net"
     override val lang = "id"
     override val supportsLatest = true
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("MMM d, yyyy", Locale.US)
@@ -30,15 +31,15 @@ class BacaKomik : ParsedHttpSource() {
     override val id = 4383360263234319058
 
     override val client: OkHttpClient = network.cloudflareClient.newBuilder()
-        .rateLimit(20, 5)
+        .rateLimit(12, 3)
         .build()
 
     override fun popularMangaRequest(page: Int): Request {
-        return GET("$baseUrl/daftar-manga/page/$page/?order=popular", headers)
+        return GET("$baseUrl/daftar-komik/page/$page/?order=popular", headers)
     }
 
     override fun latestUpdatesRequest(page: Int): Request {
-        return GET("$baseUrl/daftar-manga/page/$page/?order=update", headers)
+        return GET("$baseUrl/daftar-komik/page/$page/?order=update", headers)
     }
 
     override fun popularMangaSelector() = "div.animepost"
@@ -56,13 +57,13 @@ class BacaKomik : ParsedHttpSource() {
         val manga = SManga.create()
         manga.setUrlWithoutDomain(element.select("div.animposx > a").first()!!.attr("href"))
         manga.title = element.select(".animposx .tt h4").text()
-        manga.thumbnail_url = element.select("div.limit img").attr("src")
+        manga.thumbnail_url = element.select("div.limit img").imgAttr()
 
         return manga
     }
 
     override fun searchMangaRequest(page: Int, query: String, filters: FilterList): Request {
-        val builtUrl = if (page == 1) "$baseUrl/daftar-manga/" else "$baseUrl/daftar-manga/page/$page/?order="
+        val builtUrl = if (page == 1) "$baseUrl/daftar-komik/" else "$baseUrl/daftar-komik/page/$page/?order="
         val url = builtUrl.toHttpUrlOrNull()!!.newBuilder()
         url.addQueryParameter("title", query)
         url.addQueryParameter("page", page.toString())
@@ -103,19 +104,17 @@ class BacaKomik : ParsedHttpSource() {
         val descElement = document.select("div.desc > .entry-content.entry-content-single").first()!!
         val manga = SManga.create()
         manga.title = document.select("#breadcrumbs li:last-child span").text()
-        // need authorCleaner to take "pengarang:" string to remove it from author
-        val authorCleaner = document.select(".infox .spe b:contains(Pengarang)").text()
-        manga.author = document.select(".infox .spe span:contains(Pengarang)").text().substringAfter(authorCleaner)
-        manga.artist = manga.author
+        manga.author = document.select(".infox .spe span:contains(Author) :not(b)").text()
+        manga.artist = document.select(".infox .spe span:contains(Artis) :not(b)").text()
         val genres = mutableListOf<String>()
         infoElement.select(".infox > .genre-info > a, .infox .spe span:contains(Jenis Komik) a").forEach { element ->
             val genre = element.text()
             genres.add(genre)
         }
         manga.genre = genres.joinToString(", ")
-        manga.status = parseStatus(infoElement.select(".infox > .spe > span:nth-child(1)").text())
+        manga.status = parseStatus(document.select(".infox .spe span:contains(Status)").text())
         manga.description = descElement.select("p").text().substringAfter("bercerita tentang ")
-        manga.thumbnail_url = document.select(".thumb > img:nth-child(1)").attr("src")
+        manga.thumbnail_url = document.select(".thumb > img:nth-child(1)").imgAttr()
         return manga
     }
 
@@ -188,7 +187,10 @@ class BacaKomik : ParsedHttpSource() {
     override fun pageListParse(document: Document): List<Page> {
         val pages = mutableListOf<Page>()
         var i = 0
-        document.select("div:has(>img[alt*=\"Chapter\"]) img").forEach { element ->
+        document.select("div:has(>img[alt*=\"Chapter\"]) img").filter { element ->
+            val parent = element.parent()
+            parent != null && parent.tagName() != "noscript"
+        }.forEach { element ->
             val url = element.attr("onError").substringAfter("src='").substringBefore("';")
             i++
             if (url.isNotEmpty()) {
@@ -320,6 +322,14 @@ class BacaKomik : ParsedHttpSource() {
         Genre("Webtoons", "webtoons"),
         Genre("Yuri", "yuri"),
     )
+
+    private fun Element.imgAttr(): String = when {
+        hasAttr("data-lazy-src") -> attr("abs:data-lazy-src")
+        hasAttr("data-src") -> attr("abs:data-src")
+        else -> attr("abs:src")
+    }
+
+    private fun Elements.imgAttr(): String = this.first()!!.imgAttr()
 
     private open class UriPartFilter(displayName: String, val vals: Array<Pair<String, String>>) :
         Filter.Select<String>(displayName, vals.map { it.first }.toTypedArray()) {

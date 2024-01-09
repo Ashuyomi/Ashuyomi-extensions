@@ -7,7 +7,7 @@ import java.util.Locale
 
 class OrigamiOrpheans : MangaThemesia(
     "Origami Orpheans",
-    "https://origami-orpheans.com.br",
+    "https://origami-orpheans.com",
     "pt-BR",
     dateFormat = SimpleDateFormat("MMMMM dd, yyyy", Locale("pt", "BR")),
 ) {
