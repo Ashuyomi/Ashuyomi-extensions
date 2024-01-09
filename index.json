@@ -21,27 +21,6 @@
     ]
   },
   {
-    "name": "Tachiyomi: Akuma no Tenshi",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.akumanotenshi",
-    "apk": "tachiyomi-pt.akumanotenshi-v1.4.32.apk",
-    "lang": "pt-BR",
-    "code": 32,
-    "version": "1.4.32",
-    "nsfw": 0,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Akuma no Tenshi",
-        "lang": "pt-BR",
-        "id": "93518012887924139",
-        "baseUrl": "https://akumanotenshi.com",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
     "name": "Tachiyomi: Ama Scans",
     "pkg": "eu.kanade.tachiyomi.extension.pt.amascans",
     "apk": "tachiyomi-pt.amascans-v1.4.8.apk",
@@ -231,27 +210,6 @@
     ]
   },
   {
-    "name": "Tachiyomi: Banana Cítrica",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.bananamecanica",
-    "apk": "tachiyomi-pt.bananamecanica-v1.4.36.apk",
-    "lang": "pt-BR",
-    "code": 36,
-    "version": "1.4.36",
-    "nsfw": 1,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Banana Cítrica",
-        "lang": "pt-BR",
-        "id": "4770070980248873010",
-        "baseUrl": "https://bananacitrica.com",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
     "name": "Tachiyomi: Boruto Explorer",
     "pkg": "eu.kanade.tachiyomi.extension.pt.borutoexplorer",
     "apk": "tachiyomi-pt.borutoexplorer-v1.4.33.apk",
@@ -267,27 +225,6 @@
         "lang": "pt-BR",
         "id": "2962682340286299668",
         "baseUrl": "https://leitor.borutoexplorer.com.br",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
-    "name": "Tachiyomi: BR Mangás",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.brmangas",
-    "apk": "tachiyomi-pt.brmangas-v1.4.5.apk",
-    "lang": "pt-BR",
-    "code": 5,
-    "version": "1.4.5",
-    "nsfw": 1,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "BR Mangás",
-        "lang": "pt-BR",
-        "id": "3995626938844406015",
-        "baseUrl": "https://www.brmangas.net",
         "versionId": 1,
         "hasCloudflare": 1
       }
@@ -567,33 +504,12 @@
     ]
   },
   {
-    "name": "Tachiyomi: Gekkou Hentai",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.gekkouhentai",
-    "apk": "tachiyomi-pt.gekkouhentai-v1.4.32.apk",
-    "lang": "pt-BR",
-    "code": 32,
-    "version": "1.4.32",
-    "nsfw": 1,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Gekkou Hentai",
-        "lang": "pt-BR",
-        "id": "3463585693082078397",
-        "baseUrl": "https://hentai.gekkouscans.com.br",
-        "versionId": 2,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
     "name": "Tachiyomi: Gekkou Scans",
     "pkg": "eu.kanade.tachiyomi.extension.pt.gekkouscan",
-    "apk": "tachiyomi-pt.gekkouscan-v1.4.32.apk",
+    "apk": "tachiyomi-pt.gekkouscan-v1.4.33.apk",
     "lang": "pt-BR",
-    "code": 32,
-    "version": "1.4.32",
+    "code": 33,
+    "version": "1.4.33",
     "nsfw": 1,
     "hasReadme": 0,
     "hasChangelog": 0,
@@ -602,7 +518,7 @@
         "name": "Gekkou Scans",
         "lang": "pt-BR",
         "id": "38569701795132984",
-        "baseUrl": "https://gekkou.com.br",
+        "baseUrl": "https://gekkouscans.top",
         "versionId": 2,
         "hasCloudflare": 1
       }
@@ -945,27 +861,6 @@
     ]
   },
   {
-    "name": "Tachiyomi: Lady Estelar Scan",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.ladyestelarscan",
-    "apk": "tachiyomi-pt.ladyestelarscan-v1.4.32.apk",
-    "lang": "pt-BR",
-    "code": 32,
-    "version": "1.4.32",
-    "nsfw": 0,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Lady Estelar Scan",
-        "lang": "pt-BR",
-        "id": "3823669266857536564",
-        "baseUrl": "https://ladyestelarscan.com.br",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
     "name": "Tachiyomi: Leitor.net",
     "pkg": "eu.kanade.tachiyomi.extension.pt.leitornet",
     "apk": "tachiyomi-pt.leitornet-v1.4.23.apk",
@@ -987,12 +882,33 @@
     ]
   },
   {
+    "name": "Tachiyomi: Ler 999",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.ler999",
+    "apk": "tachiyomi-pt.ler999-v1.4.8.apk",
+    "lang": "pt-BR",
+    "code": 8,
+    "version": "1.4.8",
+    "nsfw": 0,
+    "hasReadme": 0,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "Ler 999",
+        "lang": "pt-BR",
+        "id": "11864058740306611",
+        "baseUrl": "https://ler999.blogspot.com",
+        "versionId": 1,
+        "hasCloudflare": 0
+      }
+    ]
+  },
+  {
     "name": "Tachiyomi: Ler Mangá",
     "pkg": "eu.kanade.tachiyomi.extension.pt.lermanga",
-    "apk": "tachiyomi-pt.lermanga-v1.4.2.apk",
+    "apk": "tachiyomi-pt.lermanga-v1.4.4.apk",
     "lang": "pt-BR",
-    "code": 2,
-    "version": "1.4.2",
+    "code": 4,
+    "version": "1.4.4",
     "nsfw": 1,
     "hasReadme": 0,
     "hasChangelog": 0,
@@ -1149,6 +1065,27 @@
         "lang": "pt-BR",
         "id": "2691607827452752161",
         "baseUrl": "https://mangaschan.net",
+        "versionId": 1,
+        "hasCloudflare": 1
+      }
+    ]
+  },
+  {
+    "name": "Tachiyomi: Mangás Online",
+    "pkg": "eu.kanade.tachiyomi.extension.pt.mangasonline",
+    "apk": "tachiyomi-pt.mangasonline-v1.4.27.apk",
+    "lang": "pt-BR",
+    "code": 27,
+    "version": "1.4.27",
+    "nsfw": 0,
+    "hasReadme": 1,
+    "hasChangelog": 0,
+    "sources": [
+      {
+        "name": "Mangás Online",
+        "lang": "pt-BR",
+        "id": "2782054023338547343",
+        "baseUrl": "https://mangasonline.cc",
         "versionId": 1,
         "hasCloudflare": 1
       }
@@ -1463,7 +1400,7 @@
         "name": "Origami Orpheans",
         "lang": "pt-BR",
         "id": "4038055363600290082",
-        "baseUrl": "https://origami-orpheans.com.br",
+        "baseUrl": "https://origami-orpheans.com",
         "versionId": 2,
         "hasCloudflare": 1
       }
@@ -1659,27 +1596,6 @@
     ]
   },
   {
-    "name": "Tachiyomi: Reaper Scans",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.reaperscans",
-    "apk": "tachiyomi-pt.reaperscans-v1.4.56.apk",
-    "lang": "pt-BR",
-    "code": 56,
-    "version": "1.4.56",
-    "nsfw": 0,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Reaper Scans",
-        "lang": "pt-BR",
-        "id": "8225529306937468421",
-        "baseUrl": "https://reaperscans.net",
-        "versionId": 2,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
     "name": "Tachiyomi: Remangas",
     "pkg": "eu.kanade.tachiyomi.extension.pt.remangas",
     "apk": "tachiyomi-pt.remangas-v1.4.33.apk",
@@ -1869,27 +1785,6 @@
     ]
   },
   {
-    "name": "Tachiyomi: Taberu Mangás",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.taberumangas",
-    "apk": "tachiyomi-pt.taberumangas-v1.4.32.apk",
-    "lang": "pt-BR",
-    "code": 32,
-    "version": "1.4.32",
-    "nsfw": 1,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Taberu Mangás",
-        "lang": "pt-BR",
-        "id": "3136904121410078242",
-        "baseUrl": "https://taberu.org",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
     "name": "Tachiyomi: Tankou Hentai",
     "pkg": "eu.kanade.tachiyomi.extension.pt.tankouhentai",
     "apk": "tachiyomi-pt.tankouhentai-v1.4.32.apk",
@@ -2037,27 +1932,6 @@
     ]
   },
   {
-    "name": "Tachiyomi: Vórtce Scan",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.vortcescan",
-    "apk": "tachiyomi-pt.vortcescan-v1.4.32.apk",
-    "lang": "pt-BR",
-    "code": 32,
-    "version": "1.4.32",
-    "nsfw": 0,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Vórtce Scan",
-        "lang": "pt-BR",
-        "id": "6177334053229518446",
-        "baseUrl": "https://vortcescan.com.br",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
     "name": "Tachiyomi: Wicked Witch Scan",
     "pkg": "eu.kanade.tachiyomi.extension.pt.wickedwitchscan",
     "apk": "tachiyomi-pt.wickedwitchscan-v1.4.32.apk",
@@ -2163,27 +2037,6 @@
     ]
   },
   {
-    "name": "Tachiyomi: Yaoi Toshokan",
-    "pkg": "eu.kanade.tachiyomi.extension.pt.yaoitoshokan",
-    "apk": "tachiyomi-pt.yaoitoshokan-v1.4.36.apk",
-    "lang": "pt-BR",
-    "code": 36,
-    "version": "1.4.36",
-    "nsfw": 1,
-    "hasReadme": 0,
-    "hasChangelog": 0,
-    "sources": [
-      {
-        "name": "Yaoi Toshokan",
-        "lang": "pt-BR",
-        "id": "6528893207032794482",
-        "baseUrl": "https://www.yaoitoshokan.net",
-        "versionId": 1,
-        "hasCloudflare": 1
-      }
-    ]
-  },
-  {
     "name": "Tachiyomi: Yomu Mangás",
     "pkg": "eu.kanade.tachiyomi.extension.pt.yomumangas",
     "apk": "tachiyomi-pt.yomumangas-v1.4.3.apk",
@@ -2207,10 +2060,10 @@
   {
     "name": "Tachiyomi: Yugen Mangás",
     "pkg": "eu.kanade.tachiyomi.extension.pt.yugenmangas",
-    "apk": "tachiyomi-pt.yugenmangas-v1.4.37.apk",
+    "apk": "tachiyomi-pt.yugenmangas-v1.4.38.apk",
     "lang": "pt-BR",
-    "code": 37,
-    "version": "1.4.37",
+    "code": 38,
+    "version": "1.4.38",
     "nsfw": 0,
     "hasReadme": 0,
     "hasChangelog": 0,
@@ -2219,7 +2072,7 @@
         "name": "Yugen Mangás",
         "lang": "pt-BR",
         "id": "386974442889227227",
-        "baseUrl": "https://yugenmangas.org",
+        "baseUrl": "https://yugenmangas.net.br",
         "versionId": 1,
         "hasCloudflare": 1
       }
