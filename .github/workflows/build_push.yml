@@ -36,7 +36,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 11
+          java-version: 25
           distribution: adopt
 
       - name: Generate multisrc sources
@@ -77,7 +77,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 11
+          java-version: 25
           distribution: adopt
 
       - name: Prepare signing key
@@ -125,7 +125,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 11
+          java-version: 25
           distribution: adopt
 
       - name: Prepare signing key
@@ -169,7 +169,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 25
           distribution: adopt
 
       - name: Checkout master branch
